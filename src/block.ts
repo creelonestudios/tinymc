@@ -1,11 +1,15 @@
-export default class Block {
+import Texture from "./texture";
 
-	static fromYSON(x) {
+export default class Block {
+	#namespace: string;
+	#id: string;
+	texture: Texture | null;
+
+	static fromYSON(x: any) {
 		if (x instanceof Array && x.length == 2) return new Block(x[0], x[1])
 	}
 
-	#namespace; #id
-	constructor(namespace, id, texture) {
+	constructor(namespace: string, id: string, texture?: Texture) {
 		this.#namespace = namespace
 		this.#id = id
 		this.texture = texture || null
@@ -17,10 +21,6 @@ export default class Block {
 
 	get assetsPath() {
 		return `${this.#namespace}/textures/block/${this.#id}.png`
-	}
-
-	get color() {
-		return "red"
 	}
 
 }

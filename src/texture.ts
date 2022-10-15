@@ -5,7 +5,7 @@ export default class Texture {
 	static FAILED  = 2
 
 	#image; #state
-	constructor(path) {
+	constructor(path: string) {
 		const img = new Image()
 		img.addEventListener("load", () => {
 			this.#state = Texture.LOADED

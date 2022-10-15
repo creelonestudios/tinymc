@@ -1,16 +1,16 @@
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
-import Block from "./block.mjs"
-import Texture from "./texture.mjs"
+import Block from "./block.js"
+import Texture from "./texture.js"
 
 console.log("Never Gonna Give You Up")
 
-function $(q) {
+function $(q: string) {
 	return document.querySelector(q)
 }
 
-const blocks = await YSON.load("blocks.yson", [Block])
-const grid = []
-const textures = new Map()
+const blocks: Map<String, Block> = await YSON.load("blocks.yson", [Block])
+const grid: Block[][] = []
+const textures: Map<String,Texture> = new Map()
 const blockSize = 80
 const cam = [8, 5, 0]
 const mouse = [0, 0]
@@ -41,7 +41,7 @@ function fillGrid() {
 }
 
 function draw() {
-	const game = $("#game")
+	const game: any = $("#game")
 	game.width  = innerWidth
 	game.height = innerHeight
 	game.style.width  = innerWidth  + "px"
@@ -56,7 +56,7 @@ function draw() {
 	for (let i in grid) {
 		for (let j in grid[i]) {
 			const block = grid[i][j]
-			if (!block.texture || !grid[i][j].texture.ready()) continue
+			if (!block.texture || !grid[i][j].texture?.ready()) continue
 
 			let x = Math.floor((Number(j) - cam[0]) *  blockSize + game.width/2)
 			let y = Math.floor((Number(i) - cam[1]) * -blockSize + game.height/2)
@@ -77,7 +77,8 @@ function draw() {
 		let y1 = Math.floor((y - cam[1]) * -blockSize + game.height/2)
 		ctx.fillStyle = "transparent"
 		ctx.strokeStyle = "white"
-		ctx.strokeRect(x1, y1, blockSize, blockSize)
+		ctx.lineWidth = 2
+		ctx.strokeRect(x1 /*+ 0.5*/, y1 /*+ 0.5*/, blockSize /*- 1*/, blockSize /*- 1*/) // +0.5 and -1 to align the lines in the pixel grid
 	}
 
 	// player
