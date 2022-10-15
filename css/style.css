@@ -1,0 +1,11 @@
+body {
+	margin: 0px;
+	width: 100vw;
+	height: 100vh;
+	background-color: black;
+	overflow: hidden;
+}
+
+canvas#game {
+	display: flex;
+}
