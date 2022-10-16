@@ -39,7 +39,6 @@ export default class World {
 	clearBlock(x: number, y: number, z: number) {
 		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) return
 		this.blocks.set(`${x},${y},${z}`, new Block("tiny:air", x, y, z))
-		console.log("deleted block", x, y, z)
 	}
 
 }
