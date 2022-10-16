@@ -1,26 +1,26 @@
-import Texture from "./texture";
+import BlockDef from "./blockdef.js"
+import { blockdefs } from "./main.js"
 
 export default class Block {
-	#namespace: string;
-	#id: string;
-	texture: Texture | null;
 
-	static fromYSON(x: any) {
-		if (x instanceof Array && x.length == 2) return new Block(x[0], x[1])
-	}
+	readonly def: BlockDef
+	readonly x: number
+	readonly y: number
+	readonly z: number
 
-	constructor(namespace: string, id: string, texture?: Texture) {
-		this.#namespace = namespace
-		this.#id = id
-		this.texture = texture || null
-	}
-
-	get id() {
-		return this.#namespace + ":" + this.#id
-	}
-
-	get assetsPath() {
-		return `${this.#namespace}/textures/block/${this.#id}.png`
+	constructor(def: BlockDef | string, x: number, y: number, z: number) {
+		if (def instanceof BlockDef) this.def = def
+		else {
+			let blockdef = blockdefs.get(def)
+			if (blockdef) this.def = blockdef
+			else {
+				console.trace()
+				throw "Block definition not found: " + def
+			}
+		}
+		this.x = x
+		this.y = y
+		this.z = z
 	}
 
 }

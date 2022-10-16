@@ -1,6 +1,8 @@
-Map {
-	air:   Block ["tiny","air"],
-	dirt:  Block ["tiny","dirt"],
-	stone: Block ["tiny","stone"],
-	water: Block ["tiny","water"]
+{
+	tiny: {
+		air: {},
+		dirt: {},
+		stone: {},
+		water: {}
+	}
 }

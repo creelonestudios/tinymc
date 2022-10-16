@@ -1,6 +1,8 @@
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 import Block from "./block.js"
+import BlockDef from "./blockdef.js"
 import Texture from "./texture.js"
+import World from "./world.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -8,36 +10,59 @@ function $(q: string) {
 	return document.querySelector(q)
 }
 
-const blocks: Map<String, Block> = await YSON.load("blocks.yson", [Block])
-const grid: Block[][] = []
-const textures: Map<String,Texture> = new Map()
+const textures: Map<String, Texture> = new Map()
+export const blockdefs: Map<String, BlockDef> = await loadBlocksDefs()
+const world = new World([-20, 20, -20, 20, -1, 1])
 const blockSize = 80
 const cam = [8, 5, 0]
 const mouse = [0, 0]
 const game: any = $("#game")
 
-for (let b of blocks.values()) {
-	if (b.id == "tiny:air") continue
-	const path = b.assetsPath
-	let texture = new Texture(path)
-	textures.set(path, texture)
-	b.texture = texture
-}
 const skin = new Texture("tiny/textures/skin/jens/jens.png")
 textures.set("tiny/textures/skin/jens/jens.png", skin)
 
-fillGrid()
+fillWorld()
 setInterval(() => requestAnimationFrame(draw), 100)
 
-function fillGrid() {
-	let blockArray = Array.from(blocks.values())
-	for (let i = 0; i < 12; i++) {
-		let row = []
-		for (let j = 0; j < 16; j++) {
-			let r = Math.floor(Math.random() * blocks.size)
-			row.push(blockArray[r])
+async function loadBlocksDefs() {
+	let data = await YSON.load("blocks.yson")
+	let blockdefs = new Map<String, BlockDef>()
+	let namespaces = Object.keys(data)
+
+	for (let ns of namespaces) {
+		let ids = Object.keys(data[ns])
+
+		for (let id of ids) {
+			blockdefs.set(`${ns}:${id}`, new BlockDef(ns, id, data[ns][id]))
 		}
-		grid.push(row)
+	}
+	return blockdefs
+}
+
+export function getTexture(path: string) {
+	let texture = textures.get(path)
+	if (texture) {
+		if (texture.state != Texture.FAILED) return texture
+	}
+	texture = new Texture(path)
+	textures.set(path, texture)
+	return texture
+}
+
+function fillWorld() { // temp
+	let blockArray = Array.from(blockdefs.values())
+	console.log(blockArray)
+
+	for (let z = world.minZ; z <= world.maxZ; z++) {
+		for (let y = world.minY; y <= world.maxY; y++) {
+			for (let x = world.minX; x <= world.maxX; x++) {
+
+				let r = Math.floor(Math.random() * (blockArray.length + 5)) - 5
+				if (r < 0) r = 0
+				world.setBlock(x, y, z, new Block(blockArray[r], x, y, z))
+
+			}
+		}
 	}
 }
 
@@ -52,19 +77,32 @@ function draw() {
 	ctx.fillRect(0, 0, game.width, game.height)
 	ctx.imageSmoothingEnabled = false
 
-	// blocks
-	for (let i in grid) {
-		for (let j in grid[i]) {
-			const block = grid[i][j]
-			if (!block.texture || !grid[i][j].texture?.ready()) continue
+	// world
+	for (let z = world.minZ; z <= world.maxZ; z++) {
+		for (let y = world.minY; y <= world.maxY; y++) {
+			for (let x = world.minX; x <= world.maxX; x++) {
 
-			let x = Math.floor((Number(j) - cam[0]) *  blockSize + game.width/2)
-			let y = Math.floor((Number(i) - cam[1]) * -blockSize + game.height/2)
-			//console.log(Number(j) - cam[0], Number(i) + cam[1])
-			//ctx.fillStyle = grid[i][j].color
-			//ctx.fillRect(x, y, blockSize, blockSize)
+				const block = world.getBlock(x, y, z)
+				if (!block || !block.def.texture || !block.def.texture?.ready()) continue
 
-			ctx.drawImage(block.texture.img, x, y, blockSize, blockSize)
+				let screenX = Math.floor((y - cam[0]) *  blockSize + game.width/2)
+				let screenY = Math.floor((x - cam[1]) * -blockSize + game.height/2)
+				//console.log(Number(j) - cam[0], Number(i) + cam[1])
+				//ctx.fillStyle = grid[i][j].color
+				//ctx.fillRect(x, y, blockSize, blockSize)
+	
+				ctx.drawImage(block.def.texture.img, screenX, screenY, blockSize, blockSize)
+			}
+		}
+		if (z == 0) {
+			// player
+			{
+				let x = Math.floor(-0.25 *  blockSize + game.width/2)
+				let y = Math.floor(0.5 * -blockSize + game.height/2)
+				if (skin.ready()) {
+					ctx.drawImage(skin.img, x, y, blockSize*1.5, blockSize*1.5)
+				}
+			}
 		}
 	}
 
@@ -79,14 +117,6 @@ function draw() {
 		ctx.strokeRect(x1 /*+ 0.5*/, y1 /*+ 0.5*/, blockSize /*- 1*/, blockSize /*- 1*/) // +0.5 and -1 to align the lines in the pixel grid
 	}
 
-	// player
-	{
-		let x = Math.floor(-0.25 *  blockSize + game.width/2)
-		let y = Math.floor(0.5 * -blockSize + game.height/2)
-		if (skin.ready()) {
-			ctx.drawImage(skin.img, x, y, blockSize*1.5, blockSize*1.5)
-		}
-	}
 }
 
 function getMouseBlock() {
@@ -112,7 +142,6 @@ window.addEventListener("click", e => {
 	let {x, y} = getMouseBlock()
 	switch (e.button) {
 		case 0:
-			let air: Block | undefined = blocks.get("air")
-			if (y >= 0 && x >= 0 && y < grid.length && x < grid[y].length && air != undefined) grid[y][x] = air
+			world.clearBlock(x, y, 0)
 	}
 })
