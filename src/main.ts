@@ -14,6 +14,7 @@ const textures: Map<String,Texture> = new Map()
 const blockSize = 80
 const cam = [8, 5, 0]
 const mouse = [0, 0]
+const game: any = $("#game")
 
 for (let b of blocks.values()) {
 	if (b.id == "tiny:air") continue
@@ -41,7 +42,6 @@ function fillGrid() {
 }
 
 function draw() {
-	const game: any = $("#game")
 	game.width  = innerWidth
 	game.height = innerHeight
 	game.style.width  = innerWidth  + "px"
@@ -70,9 +70,7 @@ function draw() {
 
 	// block highlight
 	{
-		let x =  Math.floor((mouse[0] - game.width/2  + cam[0]*blockSize) / blockSize)
-		let y = -Math.floor((mouse[1] - game.height/2 - cam[1]*blockSize) / blockSize)
-		console.log(x, y)
+		let {x, y} = getMouseBlock()
 		let x1 = Math.floor((x - cam[0]) *  blockSize + game.width/2)
 		let y1 = Math.floor((y - cam[1]) * -blockSize + game.height/2)
 		ctx.fillStyle = "transparent"
@@ -91,6 +89,13 @@ function draw() {
 	}
 }
 
+function getMouseBlock() {
+	return {
+		x:  Math.floor((mouse[0] - game.width/2  + cam[0]*blockSize) / blockSize),
+		y: -Math.floor((mouse[1] - game.height/2 - cam[1]*blockSize) / blockSize)
+	}
+}
+
 window.addEventListener("keydown", e => {
 	if (e.key == "w") cam[1] += 0.25
 	if (e.key == "a") cam[0] -= 0.25
@@ -101,4 +106,13 @@ window.addEventListener("keydown", e => {
 window.addEventListener("mousemove", e => {
 	mouse[0] = e.x
 	mouse[1] = e.y
+})
+
+window.addEventListener("click", e => {
+	let {x, y} = getMouseBlock()
+	switch (e.button) {
+		case 0:
+			let air: Block | undefined = blocks.get("air")
+			if (y >= 0 && x >= 0 && y < grid.length && x < grid[y].length && air != undefined) grid[y][x] = air
+	}
 })
