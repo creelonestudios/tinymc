@@ -2,8 +2,11 @@ import Base from "./base.js"
 
 export default class BlockDef extends Base {
 
-	constructor(namespace: string, idname: string, data: object) {
+	readonly maxItemStack: number
+
+	constructor(namespace: string, idname: string, data: any) {
 		super(namespace, idname)
+		this.maxItemStack = data.maxItemStack as number || 0
 	}
 
 	get assetsPath() {

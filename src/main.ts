@@ -4,6 +4,7 @@ import BlockDef from "./blockdef.js"
 import Texture from "./texture.js"
 import World from "./world.js"
 import Player from "./player.js"
+import ItemDef from "./itemdef.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -12,7 +13,8 @@ function $(q: string) {
 }
 
 const textures: Map<String, Texture> = new Map()
-export const blockdefs: Map<String, BlockDef> = await loadBlocksDefs()
+export const blockdefs = await loadDefs<BlockDef>("blocks.yson", BlockDef)
+export const itemdefs  = await loadDefs<ItemDef>("items.yson", ItemDef)
 const world = new World([-20, 20, -20, 20, -1, 1])
 const blockSize = 80
 const cam = [8, 5, 0]
@@ -23,19 +25,19 @@ const player = new Player("jens")
 fillWorld()
 setInterval(() => requestAnimationFrame(draw), 100)
 
-async function loadBlocksDefs() {
-	let data = await YSON.load("blocks.yson")
-	let blockdefs = new Map<String, BlockDef>()
+async function loadDefs<T>(path: string, cls: any): Promise<Map<String, T>> {
+	let data = await YSON.load(path)
+	let defs = new Map<String, T>()
 	let namespaces = Object.keys(data)
 
 	for (let ns of namespaces) {
 		let ids = Object.keys(data[ns])
 
 		for (let id of ids) {
-			blockdefs.set(`${ns}:${id}`, new BlockDef(ns, id, data[ns][id]))
+			defs.set(`${ns}:${id}`, new cls(ns, id, data[ns][id]))
 		}
 	}
-	return blockdefs
+	return defs
 }
 
 export function getTexture(path: string) {
