@@ -3,6 +3,7 @@ import Block from "./block.js"
 import BlockDef from "./blockdef.js"
 import Texture from "./texture.js"
 import World from "./world.js"
+import Player from "./player.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -17,9 +18,7 @@ const blockSize = 80
 const cam = [8, 5, 0]
 const mouse = [0, 0]
 const game: any = $("#game")
-
-const skin = new Texture("tiny/textures/skin/jens/jens.png")
-textures.set("tiny/textures/skin/jens/jens.png", skin)
+const player = new Player("jens")
 
 fillWorld()
 setInterval(() => requestAnimationFrame(draw), 100)
@@ -99,8 +98,8 @@ function draw() {
 			{
 				let x = Math.floor(-0.25 *  blockSize + game.width/2)
 				let y = Math.floor(0.5 * -blockSize + game.height/2)
-				if (skin.ready()) {
-					ctx.drawImage(skin.img, x, y, blockSize*1.5, blockSize*1.5)
+				if (player.texture.ready()) {
+					ctx.drawImage(player.texture.img, x, y, blockSize*1.5, blockSize*1.5)
 				}
 			}
 		}
