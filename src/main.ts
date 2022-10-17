@@ -5,9 +5,9 @@ import Texture from "./texture.js"
 import World from "./world.js"
 import Player from "./player.js"
 import ItemDef from "./itemdef.js"
-import Sound from "./sound.js";
 import MenuState from "./menustate.js";
 import { MathUtils } from "./math.js"
+import Hotbar from "./hotbar.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -26,8 +26,8 @@ export let mouseDown = false;
 const game: HTMLCanvasElement = $("#game") as HTMLCanvasElement;
 const player = new Player("jens")
 let menu: MenuState = MenuState.MENU;
-const music = new Sound("assets/tiny/BlueMin.ogg");
-let musicPlaying = false;
+
+Hotbar.loadTexture()
 
 setInterval(() => requestAnimationFrame(draw), 100)
 
@@ -91,7 +91,7 @@ function draw() {
 				for (let x = world.minX; x <= world.maxX; x++) {
 
 					const block = world.getBlock(x, y, z)
-					if (!block || !block.def.texture || !block.def.texture?.ready()) continue
+					if (!block || !block.texture || !block.texture.ready()) continue
 
 					let screenX = Math.floor((y - cam[0]) *  blockSize + game.width/2)
 					let screenY = Math.floor((x - cam[1]) * -blockSize + game.height/2)
@@ -99,7 +99,7 @@ function draw() {
 					//ctx.fillStyle = grid[i][j].color
 					//ctx.fillRect(x, y, blockSize, blockSize)
 		
-					ctx.drawImage(block.def.texture.img, screenX, screenY, blockSize, blockSize)
+					ctx.drawImage(block.texture.img, screenX, screenY, blockSize, blockSize)
 				}
 			}
 			if (z == 0) {
@@ -123,6 +123,11 @@ function draw() {
 			ctx.strokeStyle = "white"
 			ctx.lineWidth = 2
 			ctx.strokeRect(x1 /*+ 0.5*/, y1 /*+ 0.5*/, blockSize /*- 1*/, blockSize /*- 1*/) // +0.5 and -1 to align the lines in the pixel grid
+		}
+
+		// hotbar
+		{
+			Hotbar.drawHotbar(player, ctx, game.width, game.height)
 		}
 	} else if(menu == MenuState.MENU) {
 		ctx.fillStyle = "white";
@@ -182,10 +187,6 @@ window.addEventListener("keydown", e => {
 	if (e.key == "a") cam[0] -= 0.25
 	if (e.key == "s") cam[1] -= 0.25
 	if (e.key == "d") cam[0] += 0.25
-	if(!musicPlaying) {
-		//music.audio.play();
-		musicPlaying = true;
-	}
 })
 
 window.addEventListener("mousemove", e => {

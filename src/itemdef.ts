@@ -6,7 +6,7 @@ export default class ItemDef extends Base {
 
 	constructor(namespace: string, idname: string, data: any) {
 		super(namespace, idname)
-		this.maxItemStack = data.maxItemStack as number || 0
+		this.maxItemStack = data.maxItemStack as number || 128
 	}
 
 	get assetsPath() {
