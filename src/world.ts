@@ -11,13 +11,14 @@ export default class World {
 				dims[i] = Number(dims[i])
 			}
 		} else return // fill in default dimensions
-		let world = new World(dims)
+		let world = new World(dims, data.name)
 		for (let b of data.blocks) {
 			world.setBlock(b.x, b.y, b.z, b)
 		}
 		return world
 	}
 
+	readonly name: string;
 	private blocks: Map<string, Block>
 	readonly minX: number
 	readonly maxX: number
@@ -26,7 +27,8 @@ export default class World {
 	readonly minZ: number
 	readonly maxZ: number
 
-	constructor(dimensions: number[]) {
+	constructor(dimensions: number[], name: string) {
+		this.name = name;
 		[this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ] = dimensions
 		this.blocks = new Map()
 
@@ -60,7 +62,8 @@ export default class World {
 	toYSON() {
 		return {
 			dims: [this.minX, this.maxX, this.minY, this.maxY, this.minY, this.maxZ],
-			blocks: this.getAllBlocks()
+			blocks: this.getAllBlocks(),
+			name: this.name
 		}
 	}
 
