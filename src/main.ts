@@ -6,7 +6,7 @@ import World from "./world.js"
 import Player from "./player.js"
 import ItemDef from "./itemdef.js"
 import MenuState from "./menustate.js";
-import { MathUtils } from "./math.js"
+import { MathUtils } from "./util.js"
 import Hotbar from "./hotbar.js"
 
 console.log("Never Gonna Give You Up")
@@ -18,7 +18,7 @@ function $(q: string) {
 const textures: Map<String, Texture> = new Map()
 export const blockdefs = await loadDefs<BlockDef>("blocks.yson", BlockDef)
 export const itemdefs  = await loadDefs<ItemDef>("items.yson", ItemDef)
-let world = new World([-20, 20, -20, 20, -1, 1])
+let world: World;
 const blockSize = 80
 const cam = [8, 5, 0]
 export const mouse = [0, 0]
@@ -85,6 +85,8 @@ function draw() {
 	ctx.imageSmoothingEnabled = false
 
 	if(menu == MenuState.INGAME) {
+		console.log(world);
+		
 		// world
 		for (let z = world.minZ; z <= world.maxZ; z++) {
 			for (let y = world.minY; y <= world.maxY; y++) {
@@ -135,32 +137,36 @@ function draw() {
 		ctx.textAlign = "center";
 		ctx.fillText("Tiny MC", game.width / 2, 70);
 
-		if(MathUtils.buttonRect(ctx, game.height / 2, 150, 300, 70, "white", "gray", "red")) {
+		if(MathUtils.buttonRect(ctx, game.width / 2 - 300 / 2, 150, 300, 70, "white", "gray", "red")) {
 			menu = MenuState.INGAME;
+			const wname = Math.random() + "";
+			world = new World([-20, 20, -20, 20, -1, 1], wname);
 			fillWorld();
-			saveWorld(Math.random() + "");
+			saveWorld();
 		}
-		ctx.fillStyle = "black";
+		ctx.fillStyle = "green";
 		ctx.font = "30px Consolas"
-		ctx.fillText("Create New World", game.width / 2 + 35, 150 + 50);
+		ctx.fillText("Create New World", game.width / 2, 150 + 50);
 
-		const worlds = JSON.parse(localStorage.getItem("worlds") as string);
-		console.log(worlds);
-		if(worlds) {
+		const storageworlds = localStorage.getItem("worlds") as string;
+		let worlds: Array<World> = [];
+		if(storageworlds != undefined) worlds = YSON.parse(storageworlds, [World, Block]);
+
+		if(worlds.length != 0) {
 			for(let i = 0; i < worlds.length; i++) {
 				ctx.fillStyle = "white";
-				if(MathUtils.buttonRect(ctx, game.height / 2, 200 + i * 75, 300, 70, "white", "gray", "red")) {
+				if(MathUtils.buttonRect(ctx, game.width / 2 - 300 / 2, 250 + i * 75, 300, 70, "white", "gray", "red")) {
 					menu = MenuState.INGAME;
 					world = worlds[i];
 				}
 				ctx.fillStyle = "blue";
 				ctx.font = "30px Consolas";
-				ctx.fillText(Object.keys(worlds)[i], game.width / 2 + 35, 200 + 50 + i * 75);
+				ctx.fillText(worlds[i].name, game.width / 2, 250 + 50 + i * 75);
 			}
 		} else {
 			ctx.fillStyle = "gray";
 			ctx.font = "20px Consolas";
-			ctx.fillText("Saved worlds will show up here", game.width / 2, 200);
+			ctx.fillText("Saved worlds will show up here", game.width / 2, 250);
 		}
 
 		ctx.fillStyle = "blue";
@@ -168,11 +174,12 @@ function draw() {
 
 }
 
-function saveWorld(name: string) {
-	let worlds = JSON.parse(localStorage.getItem("worlds") as string);
-	if(worlds == null) worlds = {};
-	worlds[name] = world;
-	localStorage.setItem("worlds", JSON.stringify(worlds));
+function saveWorld() {
+	const storageworlds = localStorage.getItem("worlds") as string
+	let worlds = [];
+	if(storageworlds != undefined) worlds = YSON.parse(storageworlds, [World, Block]);
+	worlds.push(world);
+	localStorage.setItem("worlds", YSON.stringify(worlds));
 }
 
 function getMouseBlock() {
