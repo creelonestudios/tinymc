@@ -5,6 +5,7 @@ import Texture from "./texture.js"
 import World from "./world.js"
 import Player from "./player.js"
 import ItemDef from "./itemdef.js"
+import Hotbar from "./hotbar.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -22,8 +23,7 @@ const mouse = [0, 0]
 const game: any = $("#game")
 const player = new Player("jens")
 
-const widgets = getTexture("tiny/textures/gui/widgets.png")
-
+Hotbar.loadTexture()
 fillWorld()
 setInterval(() => requestAnimationFrame(draw), 100)
 
@@ -122,13 +122,7 @@ function draw() {
 
 	// hotbar
 	{
-		let x = game.width / 2 - 204
-		let y = game.height - 100
-		ctx.drawImage(widgets.img,      0, 0, 21, 22, x,                      y, 21 * 4, 22 * 4)
-		for (let i = 0; i < 3; i++) {	
-			ctx.drawImage(widgets.img, 21, 0, 20, 22, x + (i+1) * 20 * 4 + 4, y, 20 * 4, 22 * 4)
-		}
-		ctx.drawImage(widgets.img,    161, 0, 21, 22, x +   4   * 20 * 4 + 4, y, 21 * 4, 22 * 4)
+		Hotbar.drawHotbar(player, ctx, game.width, game.height)
 	}
 
 }
