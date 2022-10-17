@@ -4,6 +4,11 @@ import { itemdefs, blockdefs } from "./main.js"
 
 export default class Item {
 
+	static fromYSON(data: any) {
+		if (!(data instanceof Object) || typeof data.id != "string") throw new Error("Could not parse Block:", data)
+		return new Item(data.id)
+	}
+
 	private readonly def: ItemDef | BlockDef
 
 	constructor(def: ItemDef | BlockDef | string) {
@@ -28,6 +33,12 @@ export default class Item {
 
 	get maxItemStack() {
 		return this.def.maxItemStack
+	}
+
+	toYSON() {
+		return {
+			id: this.id
+		}
 	}
 
 }
