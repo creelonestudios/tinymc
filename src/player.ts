@@ -10,6 +10,7 @@ export default class Player extends Entity {
 	private name: string
 	private skin: string
 	#texture: Texture
+	#selectedItemSlot: number
 	readonly hotbar: Inventory
 	
 	constructor(skin: string) {
@@ -18,6 +19,7 @@ export default class Player extends Entity {
 		this.hotbar = new Inventory(5)
 		this.skin = skin
 		this.#texture = getTexture(`tiny/textures/skin/${this.skin}/${this.skin}.png`)
+		this.#selectedItemSlot = 0
 
 		// for testing, temp
 		this.hotbar.set(0, new ItemStack(new Item("tiny:stone")))
@@ -29,6 +31,20 @@ export default class Player extends Entity {
 
 	get texture() {
 		return this.#texture
+	}
+
+	get selectedItemSlot() {
+		return this.#selectedItemSlot
+	}
+
+	set selectedItemSlot(x: number) {
+		if (x >= 0 && x < this.hotbar.size) {
+			this.#selectedItemSlot = Math.floor(x)
+		}
+	}
+
+	get selectedItem() {
+		return this.hotbar.get(this.selectedItemSlot)
 	}
 
 }

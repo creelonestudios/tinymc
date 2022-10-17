@@ -22,7 +22,7 @@ const blockSize = 80
 const cam = [0, 1, 0]
 const mouse = [0, 0]
 const game: any = $("#game")
-const player = new Player("jens")
+export const player = new Player("jens")
 
 Hotbar.loadTexture()
 WorldGenerator.flat(world)
@@ -123,6 +123,11 @@ window.addEventListener("keydown", e => {
 	if (e.key == "a") cam[0] -= 0.25
 	if (e.key == "s") cam[1] -= 0.25
 	if (e.key == "d") cam[0] += 0.25
+	if (e.key == "1") player.selectedItemSlot = 0
+	if (e.key == "2") player.selectedItemSlot = 1
+	if (e.key == "3") player.selectedItemSlot = 2
+	if (e.key == "4") player.selectedItemSlot = 3
+	if (e.key == "5") player.selectedItemSlot = 4
 })
 
 window.addEventListener("mousemove", e => {
@@ -135,5 +140,20 @@ window.addEventListener("click", e => {
 	switch (e.button) {
 		case 0:
 			world.clearBlock(x, y, 0)
+			break
+		case 1:
+			let stack = player.selectedItem
+			if (world.getBlock(x, y, 0)?.id == "tiny:air" && stack.item.isBlock())
+				world.setBlock(x, y, 0, new Block(stack.item.id, x, y, 0))
+			break
 	}
+	e.preventDefault()
+})
+
+window.addEventListener("contextmenu", e => {
+	let {x, y} = getMouseBlock()
+	let stack = player.selectedItem
+	if (world.getBlock(x, y, 0)?.id == "tiny:air" && stack.item.isBlock())
+		world.setBlock(x, y, 0, new Block(stack.item.id, x, y, 0))
+	e.preventDefault()
 })

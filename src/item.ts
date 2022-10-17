@@ -35,6 +35,10 @@ export default class Item {
 		return this.def.maxItemStack
 	}
 
+	isBlock() {
+		return this.def instanceof BlockDef
+	}
+
 	toYSON() {
 		return {
 			id: this.id

@@ -1,5 +1,5 @@
 import ItemStack from "./itemstack.js";
-import { getTexture } from "./main.js";
+import { getTexture, player } from "./main.js";
 import Player from "./player.js";
 import Texture from "./texture.js";
 
@@ -34,6 +34,9 @@ export default class Hotbar {
             let cy = y + scale*22/2 - itemSize/2
             ctx.drawImage(stack.item.texture?.img, cx, cy, itemSize, itemSize)
         }
+
+        // selected slot
+        ctx.drawImage(widgets.img, 0, 22, 24, 24, x - scale + player.selectedItemSlot * 20 * scale, y - scale, 24 * scale, 24 * scale)
     
     }
 
