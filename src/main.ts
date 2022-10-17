@@ -86,7 +86,7 @@ function draw() {
 			for (let x = world.minX; x <= world.maxX; x++) {
 
 				const block = world.getBlock(x, y, z)
-				if (!block || !block.def.texture || !block.def.texture?.ready()) continue
+				if (!block || !block.texture || !block.texture.ready()) continue
 
 				let screenX = Math.floor((y - cam[0]) *  blockSize + game.width/2)
 				let screenY = Math.floor((x - cam[1]) * -blockSize + game.height/2)
@@ -94,7 +94,7 @@ function draw() {
 				//ctx.fillStyle = grid[i][j].color
 				//ctx.fillRect(x, y, blockSize, blockSize)
 	
-				ctx.drawImage(block.def.texture.img, screenX, screenY, blockSize, blockSize)
+				ctx.drawImage(block.texture.img, screenX, screenY, blockSize, blockSize)
 			}
 		}
 		if (z == 0) {

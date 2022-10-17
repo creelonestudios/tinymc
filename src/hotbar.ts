@@ -28,12 +28,11 @@ export default class Hotbar {
 
         for (let i = 0; i < hotbar.size; i++) {
             let stack = hotbar.get(i)
-            if (stack.item.def.id == "tiny:air") continue
+            if (stack.item.id == "tiny:air") continue
 
             let cx = x + scale + scale*20/2 - itemSize/2 + i * 20 * scale
             let cy = y + scale + scale*20/2 - itemSize/2
-            console.log(stack.item.def.id)
-            ctx.drawImage(stack.item.def.texture?.img, cx, cy, itemSize, itemSize)
+            ctx.drawImage(stack.item.texture?.img, cx, cy, itemSize, itemSize)
         }
     
     }

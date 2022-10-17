@@ -4,7 +4,7 @@ import { itemdefs, blockdefs } from "./main.js"
 
 export default class Item {
 
-	readonly def: ItemDef | BlockDef
+	private readonly def: ItemDef | BlockDef
 
 	constructor(def: ItemDef | BlockDef | string) {
 		if (def instanceof ItemDef || def instanceof BlockDef) this.def = def
@@ -16,6 +16,18 @@ export default class Item {
 				throw "Item definition not found: " + def
 			}
 		}
+	}
+
+	get id() {
+		return this.def.id
+	}
+
+	get texture() {
+		return this.def.texture
+	}
+
+	get maxItemStack() {
+		return this.def.maxItemStack
 	}
 
 }

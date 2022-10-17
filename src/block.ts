@@ -3,7 +3,7 @@ import { blockdefs } from "./main.js"
 
 export default class Block {
 
-	readonly def: BlockDef
+	private readonly def: BlockDef
 	readonly x: number
 	readonly y: number
 	readonly z: number
@@ -21,6 +21,18 @@ export default class Block {
 		this.x = x
 		this.y = y
 		this.z = z
+	}
+
+	get id() {
+		return this.def.id
+	}
+
+	get texture() {
+		return this.def.texture
+	}
+
+	get maxItemStack() {
+		return this.def.maxItemStack
 	}
 
 }
