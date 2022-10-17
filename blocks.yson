@@ -3,6 +3,7 @@
 		air: {},
 		dirt: {},
 		stone: {},
-		water: {}
+		water: {},
+		grass_block: {}
 	}
 }

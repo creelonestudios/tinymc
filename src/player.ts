@@ -23,7 +23,7 @@ export default class Player extends Entity {
 		this.hotbar.set(0, new ItemStack(new Item("tiny:stone")))
 		this.hotbar.set(1, new ItemStack(new Item("tiny:dirt")))
 		this.hotbar.set(2, new ItemStack(new Item("tiny:water")))
-		this.hotbar.set(3, new ItemStack(new Item("tiny:air")))
+		this.hotbar.set(3, new ItemStack(new Item("tiny:grass_block")))
 		this.hotbar.set(4, new ItemStack(new Item("tiny:air")))
 	}
 

@@ -6,6 +6,7 @@ import World from "./world.js"
 import Player from "./player.js"
 import ItemDef from "./itemdef.js"
 import Hotbar from "./hotbar.js"
+import WorldGenerator from "./worldgen.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -18,13 +19,13 @@ export const blockdefs = await loadDefs<BlockDef>("blocks.yson", BlockDef)
 export const itemdefs  = await loadDefs<ItemDef>("items.yson", ItemDef)
 const world = new World([-20, 20, -20, 20, -1, 1])
 const blockSize = 80
-const cam = [8, 5, 0]
+const cam = [0, 1, 0]
 const mouse = [0, 0]
 const game: any = $("#game")
 const player = new Player("jens")
 
 Hotbar.loadTexture()
-fillWorld()
+WorldGenerator.flat(world)
 setInterval(() => requestAnimationFrame(draw), 100)
 
 async function loadDefs<T>(path: string, cls: any): Promise<Map<String, T>> {
@@ -52,23 +53,6 @@ export function getTexture(path: string) {
 	return texture
 }
 
-function fillWorld() { // temp
-	let blockArray = Array.from(blockdefs.values())
-	console.log(blockArray)
-
-	for (let z = world.minZ; z <= world.maxZ; z++) {
-		for (let y = world.minY; y <= world.maxY; y++) {
-			for (let x = world.minX; x <= world.maxX; x++) {
-
-				let r = Math.floor(Math.random() * (blockArray.length + 5)) - 5
-				if (r < 0) r = 0
-				world.setBlock(x, y, z, new Block(blockArray[r], x, y, z))
-
-			}
-		}
-	}
-}
-
 function draw() {
 	game.width  = innerWidth
 	game.height = innerHeight
@@ -88,8 +72,8 @@ function draw() {
 				const block = world.getBlock(x, y, z)
 				if (!block || !block.texture || !block.texture.ready()) continue
 
-				let screenX = Math.floor((y - cam[0]) *  blockSize + game.width/2)
-				let screenY = Math.floor((x - cam[1]) * -blockSize + game.height/2)
+				let screenX = Math.floor((x - cam[0]) *  blockSize + game.width/2)
+				let screenY = Math.floor((y - cam[1]) * -blockSize + game.height/2)
 				//console.log(Number(j) - cam[0], Number(i) + cam[1])
 				//ctx.fillStyle = grid[i][j].color
 				//ctx.fillRect(x, y, blockSize, blockSize)
