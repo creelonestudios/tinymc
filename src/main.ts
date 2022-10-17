@@ -6,7 +6,7 @@ import World from "./world.js"
 import Player from "./player.js"
 import ItemDef from "./itemdef.js"
 import MenuState from "./menustate.js";
-import { MathUtils } from "./util.js"
+import { MathUtils, TextureCutout } from "./util.js"
 import Hotbar from "./hotbar.js"
 
 console.log("Never Gonna Give You Up")
@@ -73,6 +73,8 @@ function fillWorld() { // temp
 	}
 }
 
+const widgetsTex = new Texture("tiny/textures/gui/widgets.png");
+
 function draw() {
 	game.width  = innerWidth
 	game.height = innerHeight
@@ -131,20 +133,20 @@ function draw() {
 		}
 	} else if(menu == MenuState.MENU) {
 		ctx.fillStyle = "white";
-		ctx.font = "50px Consolas";
+		ctx.font = "50px Minecraft Regular";
 		ctx.textAlign = "center";
 		ctx.fillText("Tiny MC", game.width / 2, 70);
 
-		if(MathUtils.buttonRect(ctx, game.width / 2 - 300 / 2, 150, 300, 70, "white", "gray", "red")) {
+		if(MathUtils.buttonImg(ctx, game.width / 2 - 300 / 2, 150, 300, 70, widgetsTex, new TextureCutout(0, 66, 200, 20), new TextureCutout(0, 86, 200, 20), new TextureCutout(0, 86, 200, 20))) {
 			menu = MenuState.INGAME;
 			const wname = Math.random() + "";
 			world = new World([-20, 20, -20, 20, -1, 1], wname);
 			fillWorld();
 			saveWorld();
 		}
-		ctx.fillStyle = "green";
-		ctx.font = "30px Consolas"
-		ctx.fillText("Create New World", game.width / 2, 150 + 50);
+		ctx.fillStyle = "white";
+		ctx.font = "30px Minecraft Regular";
+		ctx.fillText("Create New World", game.width / 2, 150 + 45);
 
 		const storageworlds = localStorage.getItem("worlds") as string;
 		let worlds: Array<World> = [];
@@ -153,17 +155,17 @@ function draw() {
 		if(worlds.length != 0) {
 			for(let i = 0; i < worlds.length; i++) {
 				ctx.fillStyle = "white";
-				if(MathUtils.buttonRect(ctx, game.width / 2 - 300 / 2, 250 + i * 75, 300, 70, "white", "gray", "red")) {
+				if(MathUtils.buttonImg(ctx, game.width / 2 - 300 / 2, 250 + i * 75, 300, 70, widgetsTex, new TextureCutout(0, 66, 200, 20), new TextureCutout(0, 86, 200, 20), new TextureCutout(0, 86, 200, 20))) {
 					menu = MenuState.INGAME;
 					world = worlds[i];
 				}
-				ctx.fillStyle = "blue";
-				ctx.font = "30px Consolas";
+				ctx.fillStyle = "white";
+				ctx.font = "30px Minecraft Regular";
 				ctx.fillText(worlds[i].name, game.width / 2, 250 + 50 + i * 75);
 			}
 		} else {
 			ctx.fillStyle = "gray";
-			ctx.font = "20px Consolas";
+			ctx.font = "20px Minecraft Regular";
 			ctx.fillText("Saved worlds will show up here", game.width / 2, 250);
 		}
 

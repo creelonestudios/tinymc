@@ -1,3 +1,5 @@
+import { TextureCutout } from "./util";
+
 export default class Texture {
 
 	static LOADING = 0
