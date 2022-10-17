@@ -85,8 +85,6 @@ function draw() {
 	ctx.imageSmoothingEnabled = false
 
 	if(menu == MenuState.INGAME) {
-		console.log(world);
-		
 		// world
 		for (let z = world.minZ; z <= world.maxZ; z++) {
 			for (let y = world.minY; y <= world.maxY; y++) {
