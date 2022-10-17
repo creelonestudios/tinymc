@@ -60,7 +60,7 @@ function draw() {
 	game.style.height = innerHeight + "px"
 
 	const ctx = game.getContext("2d")
-	ctx.fillStyle = "black"
+	ctx.fillStyle = "#78A7FF"
 	ctx.fillRect(0, 0, game.width, game.height)
 	ctx.imageSmoothingEnabled = false
 
