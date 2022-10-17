@@ -12,7 +12,9 @@ export default class World {
 			}
 		} else return // fill in default dimensions
 		let world = new World(dims, data.name)
-		world.blocks = data.blocks
+		for (let b of data.blocks) {
+			world.setBlock(b.x, b.y, b.z, b)
+		}
 		return world
 	}
 

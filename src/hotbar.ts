@@ -30,8 +30,8 @@ export default class Hotbar {
             let stack = hotbar.get(i)
             if (stack.item.id == "tiny:air") continue
 
-            let cx = x + scale + scale*20/2 - itemSize/2 + i * 20 * scale
-            let cy = y + scale + scale*20/2 - itemSize/2
+            let cx = x + scale*22/2 - itemSize/2 + i * 20 * scale
+            let cy = y + scale*22/2 - itemSize/2
             ctx.drawImage(stack.item.texture?.img, cx, cy, itemSize, itemSize)
         }
     
