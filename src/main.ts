@@ -7,6 +7,8 @@ import Player from "./player.js"
 import ItemDef from "./itemdef.js"
 import Hotbar from "./hotbar.js"
 import WorldGenerator from "./worldgen.js"
+import Cam from "./cam.js"
+import Input from "./input.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -19,10 +21,10 @@ export const blockdefs = await loadDefs<BlockDef>("blocks.yson", BlockDef)
 export const itemdefs  = await loadDefs<ItemDef>("items.yson", ItemDef)
 const world = new World([-20, 20, -20, 20, -1, 1])
 const blockSize = 80
-const cam = [0, 1, 0]
-const mouse = [0, 0]
 const game: any = $("#game")
 export const player = new Player("jens")
+const cam = new Cam(player)
+const input = new Input()
 
 Hotbar.loadTexture()
 WorldGenerator.flat(world)
@@ -59,6 +61,12 @@ function draw() {
 	game.style.width  = innerWidth  + "px"
 	game.style.height = innerHeight + "px"
 
+	// tick
+	player.motion.x = (Number(input.pressed("KeyD")) - Number(input.pressed("KeyA"))) * 0.25
+	player.motion.y = (Number(input.pressed("KeyW")) - Number(input.pressed("KeyS"))) * 0.25
+	player.tick()
+
+	// draw
 	const ctx = game.getContext("2d")
 	ctx.fillStyle = "#78A7FF"
 	ctx.fillRect(0, 0, game.width, game.height)
@@ -72,8 +80,8 @@ function draw() {
 				const block = world.getBlock(x, y, z)
 				if (!block || !block.texture || !block.texture.ready()) continue
 
-				let screenX = Math.floor((x - cam[0]) *  blockSize + game.width/2)
-				let screenY = Math.floor((y - cam[1]) * -blockSize + game.height/2)
+				let screenX = Math.floor((x - cam.x) *  blockSize + game.width/2)
+				let screenY = Math.floor((y - cam.y) * -blockSize + game.height/2)
 				//console.log(Number(j) - cam[0], Number(i) + cam[1])
 				//ctx.fillStyle = grid[i][j].color
 				//ctx.fillRect(x, y, blockSize, blockSize)
@@ -96,8 +104,8 @@ function draw() {
 	// block highlight
 	{
 		let {x, y} = getMouseBlock()
-		let x1 = Math.floor((x - cam[0]) *  blockSize + game.width/2)
-		let y1 = Math.floor((y - cam[1]) * -blockSize + game.height/2)
+		let x1 = Math.floor((x - cam.x) *  blockSize + game.width/2)
+		let y1 = Math.floor((y - cam.y) * -blockSize + game.height/2)
 		ctx.fillStyle = "transparent"
 		ctx.strokeStyle = "white"
 		ctx.lineWidth = 2
@@ -113,31 +121,22 @@ function draw() {
 
 function getMouseBlock() {
 	return {
-		x:  Math.floor((mouse[0] - game.width/2  + cam[0]*blockSize) / blockSize),
-		y: -Math.floor((mouse[1] - game.height/2 - cam[1]*blockSize) / blockSize)
+		x:  Math.floor((input.mouseX - game.width/2  + cam.x*blockSize) / blockSize),
+		y: -Math.floor((input.mouseY - game.height/2 - cam.y*blockSize) / blockSize)
 	}
 }
 
-window.addEventListener("keydown", e => {
-	if (e.key == "w") cam[1] += 0.25
-	if (e.key == "a") cam[0] -= 0.25
-	if (e.key == "s") cam[1] -= 0.25
-	if (e.key == "d") cam[0] += 0.25
-	if (e.key == "1") player.selectedItemSlot = 0
-	if (e.key == "2") player.selectedItemSlot = 1
-	if (e.key == "3") player.selectedItemSlot = 2
-	if (e.key == "4") player.selectedItemSlot = 3
-	if (e.key == "5") player.selectedItemSlot = 4
+input.on("keydown", (key: string) => {
+	if (key == "Digit1") player.selectedItemSlot = 0
+	if (key == "Digit2") player.selectedItemSlot = 1
+	if (key == "Digit3") player.selectedItemSlot = 2
+	if (key == "Digit4") player.selectedItemSlot = 3
+	if (key == "Digit5") player.selectedItemSlot = 4
 })
 
-window.addEventListener("mousemove", e => {
-	mouse[0] = e.x
-	mouse[1] = e.y
-})
-
-window.addEventListener("click", e => {
+input.on("click", (button: number) => {
 	let {x, y} = getMouseBlock()
-	switch (e.button) {
+	switch (button) {
 		case 0:
 			world.clearBlock(x, y, 0)
 			break
@@ -147,13 +146,4 @@ window.addEventListener("click", e => {
 				world.setBlock(x, y, 0, new Block(stack.item.id, x, y, 0))
 			break
 	}
-	e.preventDefault()
-})
-
-window.addEventListener("contextmenu", e => {
-	let {x, y} = getMouseBlock()
-	let stack = player.selectedItem
-	if (world.getBlock(x, y, 0)?.id == "tiny:air" && stack.item.isBlock())
-		world.setBlock(x, y, 0, new Block(stack.item.id, x, y, 0))
-	e.preventDefault()
 })

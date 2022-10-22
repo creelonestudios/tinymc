@@ -1,14 +1,19 @@
+import Dim3 from "./dim3.js"
+
 export default class Entity {
-	#x: number
-	#y: number
-	#z: number
-	#rotation: number[]
+
+	readonly position: Dim3
+	readonly rotation: Dim3
+	readonly motion: Dim3
 
 	constructor() {
-		this.#x = 0
-		this.#y = 0
-		this.#z = 0
-		this.#rotation = [0, 0, 0]
+		this.position = new Dim3()
+		this.rotation = new Dim3()
+		this.motion   = new Dim3()
+	}
+
+	tick() {
+		this.position.add(this.motion)
 	}
 
 }

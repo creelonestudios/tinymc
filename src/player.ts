@@ -47,4 +47,8 @@ export default class Player extends Entity {
 		return this.hotbar.get(this.selectedItemSlot)
 	}
 
+	tick() {
+		super.tick()
+	}
+
 }
