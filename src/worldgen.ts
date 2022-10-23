@@ -7,9 +7,9 @@ export default class WorldGenerator {
     static flat(world: World) {
         for (let y = world.minY; y <= world.maxY && y <= 0; y++) {
             for (let x = world.minX; x <= world.maxX; x++) {
-                if (y <= -3) world.setBlock(x, y, 0, new Block("tiny:stone", x, y, 0))
-                else if(y < 0) world.setBlock(x, y, 0, new Block("tiny:dirt", x, y, 0))
-                else if(y == 0) world.setBlock(x, y, 0, new Block("tiny:grass_block", x, y, 0))
+                if (y <= -3) world.setBlock(x, y, 0, new Block("tiny:stone"))
+                else if(y < 0) world.setBlock(x, y, 0, new Block("tiny:dirt"))
+                else if(y == 0) world.setBlock(x, y, 0, new Block("tiny:grass_block"))
             }
         }
     }
@@ -24,7 +24,7 @@ export default class WorldGenerator {
 
                     let r = Math.floor(Math.random() * (blockArray.length + 5)) - 5
                     if (r < 0) r = 0
-                    world.setBlock(x, y, z, new Block(blockArray[r], x, y, z))
+                    world.setBlock(x, y, z, new Block(blockArray[r]))
 
                 }
             }

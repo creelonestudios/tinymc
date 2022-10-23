@@ -1,8 +1,10 @@
+import Dim3 from "./dim3.js"
 import Entity from "./entity.js"
 import Inventory from "./inventory.js"
 import Item from "./item.js"
 import ItemStack from "./itemstack.js"
 import { getTexture } from "./main.js"
+import PlayerDef from "./playerdef.js"
 import Texture from "./texture.js"
 
 export default class Player extends Entity {
@@ -14,12 +16,14 @@ export default class Player extends Entity {
 	readonly hotbar: Inventory
 	
 	constructor(skin: string) {
-		super()
+		super(new PlayerDef())
 		this.name = "tinypersson" // temp
 		this.hotbar = new Inventory(5)
 		this.skin = skin
-		this.#texture = getTexture(`tiny/textures/skin/${this.skin}/${this.skin}.png`)
+		this.#texture = getTexture((this.def as PlayerDef).skinAssetsPath(skin))
 		this.#selectedItemSlot = 0
+
+		this.position.set(new Dim3(0, 1, 0))
 
 		// for testing, temp
 		this.hotbar.set(0, new ItemStack(new Item("tiny:stone")))
@@ -49,6 +53,10 @@ export default class Player extends Entity {
 
 	tick() {
 		super.tick()
+	}
+
+	draw(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
+		super.draw(ctx, x, y, size, size*1.5)
 	}
 
 }

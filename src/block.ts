@@ -1,23 +1,16 @@
 import BlockDef from "./blockdef.js"
-import { blockdefs } from "./main.js"
+import { blockdefs, cam, debug, game } from "./main.js"
 
 export default class Block {
 
 	static fromYSON(data: any) {
-		if (!(data instanceof Object) || !(data.c instanceof Array) || typeof data.id != "string" || data.c.length < 3) throw new Error("Could not parse Block:", data)
-		for (let i in data.c) {
-			if (isNaN(data.c[i])) new Error("Could not parse Block:", data)
-			data.c[i] = Number(data.c[i])
-		}
-		return new Block(data.id, data.c[0], data.c[1], data.c[2])
+		if (!(data instanceof Object) || typeof data.id != "string") throw new Error("Could not parse Block:", data)
+		return new Block(data.id)
 	}
 
 	private readonly def: BlockDef
-	readonly x: number
-	readonly y: number
-	readonly z: number
 
-	constructor(def: BlockDef | string, x: number, y: number, z: number) {
+	constructor(def: BlockDef | string) {
 		if (def instanceof BlockDef) this.def = def
 		else {
 			let blockdef = blockdefs.get(def)
@@ -27,9 +20,6 @@ export default class Block {
 				throw "Block definition not found: " + def
 			}
 		}
-		this.x = x
-		this.y = y
-		this.z = z
 	}
 
 	get id() {
@@ -44,10 +34,29 @@ export default class Block {
 		return this.def.maxItemStack
 	}
 
+	update() {
+
+	}
+
+	draw(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
+		if (!this.texture || !this.texture.ready()) return
+
+		let screenX = Math.floor((x-0.5 - cam.x) *  size + game.width /2) // x-0.5 to center 
+		let screenY = Math.floor((y-1   - cam.y) * -size + game.height/2) // y-1   because canvas draws downwards
+		
+		ctx.drawImage(this.texture.img, screenX, screenY, size, size)
+
+		// hitbox
+		if (debug.showHitboxes) {
+			ctx.strokeStyle = "blue"
+			ctx.lineWidth = 1
+			ctx.strokeRect(screenX, screenY, size, size)
+		}
+	}
+
 	toYSON() {
 		return {
-			id: this.id,
-			c: [this.x, this.y, this.z] // c -> coordinates
+			id: this.id
 		}
 	}
 

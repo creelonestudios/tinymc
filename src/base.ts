@@ -10,9 +10,8 @@ export default class Base {
 		this.namespace = namespace
 		this.idname = idname
 		
-		if (this.id != "tiny:air") {
-			this.texture = getTexture(this.assetsPath)
-		} else this.texture = null
+		if (["tiny:air","tiny:player"].includes(this.id)) this.texture = null
+		else this.texture = getTexture(this.assetsPath)
 	}
 
 	get id() {

@@ -1,9 +1,11 @@
 import Block from "./block.js"
+import Entity from "./entity.js"
 
 export default class World {
 
 	static fromYSON(data: any) {
-		if (!(data instanceof Object) || !data.blocks || !(data.blocks instanceof Array)) throw new Error("Could not parse World:", data)
+		if (!(data instanceof Object) || !data.blocks || !(data.blocks instanceof Map)) throw new Error("Could not parse World:", data)
+		if (data.entities && !(data.entites instanceof Set)) throw new Error("Could not parse World:", data)
 		let dims = data.dims
 		if (dims instanceof Array && dims.length >= 6) {
 			for (let i in dims) {
@@ -15,10 +17,12 @@ export default class World {
 		for (let b of data.blocks) {
 			world.setBlock(b.x, b.y, b.z, b)
 		}
+		world.entities = data.entities || new Set()
 		return world
 	}
 
 	private blocks: Map<string, Block>
+	private entities: Set<Entity>
 	readonly minX: number
 	readonly maxX: number
 	readonly minY: number
@@ -29,11 +33,12 @@ export default class World {
 	constructor(dimensions: number[]) {
 		[this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ] = dimensions
 		this.blocks = new Map()
+		this.entities = new Set()
 
 		for (let x = this.minX; x <= this.maxX; x++) {
 			for (let y = this.minY; y <= this.maxY; y++) {
 				for (let z = this.minZ; z <= this.maxZ; z++) {
-					this.blocks.set(`${x},${y},${z}`, new Block("tiny:air", x, y, z))
+					this.blocks.set(`${x},${y},${z}`, new Block("tiny:air"))
 				}
 			}
 		}
@@ -54,13 +59,18 @@ export default class World {
 
 	clearBlock(x: number, y: number, z: number) {
 		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) return
-		this.blocks.set(`${x},${y},${z}`, new Block("tiny:air", x, y, z))
+		this.blocks.set(`${x},${y},${z}`, new Block("tiny:air"))
+	}
+
+	getAllEntities() {
+		return Array.from(this.entities.values())
 	}
 
 	toYSON() {
 		return {
 			dims: [this.minX, this.maxX, this.minY, this.maxY, this.minY, this.maxZ],
-			blocks: this.getAllBlocks()
+			blocks: this.blocks,
+			entites: this.entities
 		}
 	}
 
