@@ -8,6 +8,7 @@ import ItemStack from "./itemstack.js"
 import { getTexture } from "./main.js"
 import PlayerDef from "./playerdef.js"
 import Texture from "./texture.js"
+import World from "./world.js"
 
 export default class Player extends Entity {
 

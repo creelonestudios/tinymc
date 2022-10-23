@@ -2,6 +2,7 @@ import Dim3 from "./dim3.js";
 import Entity from "./entity.js";
 import EntityDef from "./entitydef.js";
 import ItemStack from "./itemstack.js";
+import World from "./world.js";
 
 export default class ItemEntity extends Entity {
 
@@ -18,6 +19,8 @@ export default class ItemEntity extends Entity {
 	}
 
 	tick(world: World) {
+		if (!this.onGround) super.applyGravity()
+		//console.log(this.id, this.onGround)
 		super.tick(world)
 	}
 
