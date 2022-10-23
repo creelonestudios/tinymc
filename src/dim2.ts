@@ -1,4 +1,6 @@
-export default class Dim2 {
+import Dim from "./dim"
+
+export default class Dim2 implements Dim {
 	
 	x: number
 	y: number
@@ -8,14 +10,31 @@ export default class Dim2 {
 		this.y = y
 	}
 
-	add(dim: Dim2) {
+	add(dim: Dim2): Dim2 {
 		this.x += dim.x
 		this.y += dim.y
+		return this
 	}
 
-	set(dim: Dim2) {
-		this.x = dim.x
-		this.y = dim.y
+	mult(dim: Dim2): Dim2 {
+		return this
+	}
+
+	set(dim: Dim2 | number, y?: number): Dim2 {
+		if (dim instanceof Dim2) {
+			this.x = dim.x
+			this.y = dim.y
+		} else {
+			this.x = dim
+			this.y = y || 0
+		}
+		return this
+	}
+
+	scale(x: number): Dim2 {
+		this.x *= x
+		this.y *= x
+		return this
 	}
 
 	copy() {

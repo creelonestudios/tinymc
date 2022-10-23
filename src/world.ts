@@ -1,4 +1,5 @@
 import Block from "./block.js"
+import Dim3 from "./dim3.js"
 import Entity from "./entity.js"
 
 export default class World {
@@ -45,6 +46,9 @@ export default class World {
 	}
 
 	getBlock(x: number, y: number, z: number) {
+		x = Math.floor(x)
+		y = Math.floor(y)
+		z = Math.floor(z)
 		return this.blocks.get(`${x},${y},${z}`)
 	}
 
@@ -53,11 +57,17 @@ export default class World {
 	}
 
 	setBlock(x: number, y: number, z: number, block: Block) {
+		x = Math.floor(x)
+		y = Math.floor(y)
+		z = Math.floor(z)
 		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) throw new Error(`Tried to set block outside the world: ${x},${y},${z}; ${block.id}`)
 		this.blocks.set(`${x},${y},${z}`, block)
 	}
 
 	clearBlock(x: number, y: number, z: number) {
+		x = Math.floor(x)
+		y = Math.floor(y)
+		z = Math.floor(z)
 		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) return
 		this.blocks.set(`${x},${y},${z}`, new Block("tiny:air"))
 	}
@@ -68,6 +78,12 @@ export default class World {
 
 	spawn(entity: Entity) {
 		this.entities.add(entity)
+	}
+
+	tick() {
+		for (let entity of this.entities.values()) {
+			entity.tick(this)
+		}
 	}
 
 	toYSON() {

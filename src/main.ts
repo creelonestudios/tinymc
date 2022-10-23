@@ -69,7 +69,8 @@ function draw() {
 	// tick
 	player.motion.x = (Number(input.pressed("KeyD")) - Number(input.pressed("KeyA"))) * 0.25
 	player.motion.y = (Number(input.pressed("KeyW")) - Number(input.pressed("KeyS"))) * 0.25
-	player.tick()
+	player.tick(world)
+	world.tick()
 
 	// draw
 	const ctx: CanvasRenderingContext2D = game.getContext("2d")
@@ -87,7 +88,7 @@ function draw() {
 		if (z == 0) {
 			// player
 			for (let entity of world.getAllEntities()) {
-				entity.draw(ctx, entity.position.x, entity.position.y, blockSize, blockSize)
+				entity.draw(ctx, entity.position.x, entity.position.y, blockSize)
 			}
 			player.draw(ctx, player.position.x, player.position.y, blockSize)
 		}
@@ -96,12 +97,12 @@ function draw() {
 	// block highlight
 	{
 		let {x, y} = getMouseBlock()
-		let x1 = Math.floor((x-0.5  - cam.x) *  blockSize + game.width/2)
+		let x1 = Math.floor((x  - cam.x) *  blockSize + game.width/2)
 		let y1 = Math.floor((y-1 - cam.y) * -blockSize + game.height/2)
 		ctx.fillStyle = "transparent"
 		ctx.strokeStyle = "white"
 		ctx.lineWidth = 2
-		ctx.strokeRect(x1 /*+ 0.5*/, y1 /*+ 0.5*/, blockSize /*- 1*/, blockSize /*- 1*/) // +0.5 and -1 to align the lines in the pixel grid
+		ctx.strokeRect(x1, y1, blockSize, blockSize)
 	}
 
 	// hotbar
@@ -113,7 +114,7 @@ function draw() {
 
 function getMouseBlock() {
 	return {
-		x:  Math.floor((input.mouseX - game.width/2  + cam.x*blockSize) / blockSize +0.5),
+		x:  Math.floor((input.mouseX - game.width/2  + cam.x*blockSize) / blockSize),
 		y: -Math.floor((input.mouseY - game.height/2 - cam.y*blockSize) / blockSize) +1
 	}
 }
