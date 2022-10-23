@@ -66,6 +66,10 @@ export default class World {
 		return Array.from(this.entities.values())
 	}
 
+	spawn(entity: Entity) {
+		this.entities.add(entity)
+	}
+
 	toYSON() {
 		return {
 			dims: [this.minX, this.maxX, this.minY, this.maxY, this.minY, this.maxZ],

@@ -16,14 +16,12 @@ export default class Player extends Entity {
 	readonly hotbar: Inventory
 	
 	constructor(skin: string) {
-		super(new PlayerDef())
+		super(new PlayerDef(), new Dim3(0, 1, 0))
 		this.name = "tinypersson" // temp
 		this.hotbar = new Inventory(5)
 		this.skin = skin
 		this.#texture = getTexture((this.def as PlayerDef).skinAssetsPath(skin))
 		this.#selectedItemSlot = 0
-
-		this.position.set(new Dim3(0, 1, 0))
 
 		// for testing, temp
 		this.hotbar.set(0, new ItemStack(new Item("tiny:stone")))

@@ -5,8 +5,9 @@ export default class ItemStack {
 	readonly item: Item
 	#amount: number
 
-	constructor(item: Item, amount: number = 1) {
-		this.item = item
+	constructor(item: Item | string, amount: number = 1) {
+		if (item instanceof Item) this.item = item
+		else this.item = new Item(item)
 		if (amount > 0 && amount < this.item.maxItemStack) this.#amount = amount
 		else throw new Error(`ItemStack amount (${amount}) exceeds maxItemStack (${this.item.maxItemStack}) of ${this.item.id}`)
 	}

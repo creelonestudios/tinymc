@@ -10,6 +10,8 @@ import WorldGenerator from "./worldgen.js"
 import Cam from "./cam.js"
 import Input from "./input.js"
 import EntityDef from "./entitydef.js"
+import ItemEntity from "./itementity.js"
+import ItemStack from "./itemstack.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -111,7 +113,7 @@ function draw() {
 
 function getMouseBlock() {
 	return {
-		x:  Math.floor((input.mouseX - game.width/2  + cam.x*blockSize) / blockSize),
+		x:  Math.floor((input.mouseX - game.width/2  + cam.x*blockSize) / blockSize +0.5),
 		y: -Math.floor((input.mouseY - game.height/2 - cam.y*blockSize) / blockSize) +1
 	}
 }
@@ -123,6 +125,7 @@ input.on("keydown", (key: string) => {
 	if (key == "Digit4") player.selectedItemSlot = 3
 	if (key == "Digit5") player.selectedItemSlot = 4
 	if (key == "KeyM") debug.showHitboxes = !debug.showHitboxes
+	if (key == "KeyQ") world.spawn(new ItemEntity(new ItemStack(player.selectedItem.item.id), player.position.copy()))
 })
 
 input.on("click", (button: number) => {

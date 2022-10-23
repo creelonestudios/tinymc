@@ -10,7 +10,7 @@ export default class Entity {
 	readonly rotation: Dim3
 	readonly motion: Dim3
 
-	constructor(def: EntityDef | string) {
+	constructor(def: EntityDef | string, position: Dim3) {
 		if (def instanceof EntityDef) this.def = def
 		else {
 			let entitydef = entitydefs.get(def)
@@ -20,7 +20,7 @@ export default class Entity {
 				throw "Block definition not found: " + def
 			}
 		}
-		this.position = new Dim3()
+		this.position = position
 		this.rotation = new Dim3()
 		this.motion   = new Dim3()
 	}
