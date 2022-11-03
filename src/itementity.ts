@@ -2,6 +2,7 @@ import Dim3 from "./dim3.js";
 import Entity from "./entity.js";
 import EntityDef from "./entitydef.js";
 import ItemStack from "./itemstack.js";
+import World from "./world.js";
 
 export default class ItemEntity extends Entity {
 
