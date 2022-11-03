@@ -3,7 +3,7 @@ import Dim2 from "./dim2.js"
 import Dim3 from "./dim3.js"
 import EntityDef from "./entitydef.js"
 import { cam, debug, entitydefs, game } from "./main.js"
-import Texture from "./texture.js"
+import World from "./world.js"
 
 export default class Entity {
 
@@ -12,6 +12,7 @@ export default class Entity {
 	readonly rotation: Dim3
 	readonly motion: Dim3
 	protected readonly size: Dim2
+	readonly spawnTime: number
 
 	constructor(def: EntityDef | string, position: Dim3) {
 		if (def instanceof EntityDef) this.def = def
@@ -27,6 +28,7 @@ export default class Entity {
 		this.rotation = new Dim3()
 		this.motion   = new Dim3()
 		this.size     = new Dim2()
+		this.spawnTime = Date.now() // TODO: ticks since world creation
 	}
 
 	get id() {

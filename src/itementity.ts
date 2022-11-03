@@ -2,8 +2,12 @@ import Dim3 from "./dim3.js";
 import Entity from "./entity.js";
 import EntityDef from "./entitydef.js";
 import ItemStack from "./itemstack.js";
+import { getMousePos, player } from "./main.js";
+import World from "./world.js";
 
 export default class ItemEntity extends Entity {
+
+	static PICKUP_TIME: number = 40 * 50 // 40 ticks
 
 	readonly itemstack: ItemStack
 
@@ -19,6 +23,15 @@ export default class ItemEntity extends Entity {
 
 	tick(world: World) {
 		super.tick(world)
+		let pickupDelay = this.spawnTime + ItemEntity.PICKUP_TIME - Date.now()
+		if (this.getBoundingBox().touch(getMousePos())) {
+			player.addItems(this.itemstack)
+			world.removeEntity(this)
+		}
+		if (this.getBoundingBox().intersect(player.getBoundingBox()) && pickupDelay <= 0) {
+			player.addItems(this.itemstack)
+			world.removeEntity(this)
+		}
 	}
 
 	draw(ctx: CanvasRenderingContext2D, x: number, y: number, blockSize: number) {
