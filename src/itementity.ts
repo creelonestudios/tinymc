@@ -22,8 +22,8 @@ export default class ItemEntity extends Entity {
 		super.tick(world)
 	}
 
-	draw(ctx: CanvasRenderingContext2D, x: number, y: number, blockSize: number) {
-		super.draw(ctx, x, y, blockSize)
+	draw(ctx: CanvasRenderingContext2D, x: number, y: number) {
+		super.draw(ctx, x, y)
 	}
 
 }

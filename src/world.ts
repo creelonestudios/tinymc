@@ -1,6 +1,6 @@
 import Block from "./block.js"
-import Dim3 from "./dim3.js"
 import Entity from "./entity.js"
+import { player } from "./main.js"
 
 export default class World {
 
@@ -84,6 +84,25 @@ export default class World {
 		for (let entity of this.entities.values()) {
 			entity.tick(this)
 		}
+	}
+
+	draw(ctx: CanvasRenderingContext2D) {
+
+		for (let z = this.minZ; z <= this.maxZ; z++) {
+			for (let y = this.minY; y <= this.maxY; y++) {
+				for (let x = this.minX; x <= this.maxX; x++) {
+					this.getBlock(x, y, z)?.draw(ctx, x, y)
+				}
+			}
+			if (z == 0) {
+				// player
+				for (let entity of this.getAllEntities()) {
+					entity.draw(ctx, entity.position.x, entity.position.y)
+				}
+				player.draw(ctx, player.position.x, player.position.y)
+			}
+		}
+
 	}
 
 	toYSON() {

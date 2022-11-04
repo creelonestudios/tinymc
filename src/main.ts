@@ -12,6 +12,7 @@ import Input from "./input.js"
 import EntityDef from "./entitydef.js"
 import ItemEntity from "./itementity.js"
 import ItemStack from "./itemstack.js"
+import Dim2 from "./dim2.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -19,13 +20,23 @@ function $(q: string) {
 	return document.querySelector(q)
 }
 
-const textures: Map<String, Texture> = new Map()
-export const blockdefs = await loadDefs<BlockDef>("blocks.yson", BlockDef)
-export const itemdefs  = await loadDefs<ItemDef>("items.yson", ItemDef)
-export const entitydefs  = await loadDefs<EntityDef>("entities.yson", EntityDef)
-const world = new World([-20, 20, -20, 20, -1, 1])
-const blockSize = 80
+// constants
+export const blockSize = 80
+const gameOffset = new Dim2(0, 0)
+
+// canvas
 export const game: any = $("#game")
+
+// assets
+const textures: Map<String, Texture> = new Map()
+
+// defs
+export const blockdefs  = await loadDefs<BlockDef>("blocks.yson", BlockDef)
+export const itemdefs   = await loadDefs<ItemDef>("items.yson", ItemDef)
+export const entitydefs = await loadDefs<EntityDef>("entities.yson", EntityDef)
+
+// other
+const world = new World([-20, 20, -20, 20, -1, 1])
 export const player = new Player("jens")
 export const cam = new Cam(player)
 const input = new Input()
@@ -78,32 +89,33 @@ function draw() {
 	ctx.fillRect(0, 0, game.width, game.height)
 	ctx.imageSmoothingEnabled = false
 
+	ctx.save()
+	ctx.translate(game.width/2, game.height/2) // center game
+	ctx.scale(1, -1) // flip y-axis
+	ctx.translate(gameOffset.x * blockSize, gameOffset.y * blockSize) // move game by offset
+	ctx.translate(-cam.x * blockSize, -cam.y * blockSize) // move game into view
+
 	// world
-	for (let z = world.minZ; z <= world.maxZ; z++) {
-		for (let y = world.minY; y <= world.maxY; y++) {
-			for (let x = world.minX; x <= world.maxX; x++) {
-				world.getBlock(x, y, z)?.draw(ctx, x, y, blockSize)
-			}
-		}
-		if (z == 0) {
-			// player
-			for (let entity of world.getAllEntities()) {
-				entity.draw(ctx, entity.position.x, entity.position.y, blockSize)
-			}
-			player.draw(ctx, player.position.x, player.position.y, blockSize)
-		}
-	}
+	world.draw(ctx)
 
 	// block highlight
 	{
-		let {x, y} = getMouseBlock()
-		let x1 = Math.floor((x  - cam.x) *  blockSize + game.width/2)
-		let y1 = Math.floor((y-1 - cam.y) * -blockSize + game.height/2)
+		let mousePos = getMouseBlock().floor().scale(blockSize)
+		let camPos = cam.getPos().scale(blockSize)
+
+		ctx.save()
+		ctx.translate(mousePos.x, mousePos.y)
+		ctx.scale(1, -1)
+
 		ctx.fillStyle = "transparent"
 		ctx.strokeStyle = "white"
 		ctx.lineWidth = 2
-		ctx.strokeRect(x1, y1, blockSize, blockSize)
+		ctx.strokeRect(0, 0, blockSize, blockSize)
+
+		ctx.restore()
 	}
+
+	ctx.restore()
 
 	// hotbar
 	{
@@ -113,10 +125,10 @@ function draw() {
 }
 
 function getMouseBlock() {
-	return {
-		x:  Math.floor((input.mouseX - game.width/2  + cam.x*blockSize) / blockSize),
-		y: -Math.floor((input.mouseY - game.height/2 - cam.y*blockSize) / blockSize) +1
-	}
+	return new Dim2(
+		 Math.floor((input.mouseX - game.width/2  + cam.x*blockSize) / blockSize) - gameOffset.x,
+		-Math.floor((input.mouseY - game.height/2 - cam.y*blockSize) / blockSize) - gameOffset.y
+	)
 }
 
 input.on("keydown", (key: string) => {

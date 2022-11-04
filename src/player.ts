@@ -8,6 +8,7 @@ import ItemStack from "./itemstack.js"
 import { getTexture } from "./main.js"
 import PlayerDef from "./playerdef.js"
 import Texture from "./texture.js"
+import World from "./world.js"
 
 export default class Player extends Entity {
 
@@ -56,8 +57,8 @@ export default class Player extends Entity {
 		super.tick(world)
 	}
 
-	draw(ctx: CanvasRenderingContext2D, x: number, y: number, blockSize: number) {
-		super.draw(ctx, x, y, blockSize)
+	draw(ctx: CanvasRenderingContext2D, x: number, y: number) {
+		super.draw(ctx, x, y)
 	}
 
 }

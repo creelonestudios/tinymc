@@ -1,3 +1,5 @@
+import { blockSize } from "./main.js";
+
 export default class Texture {
 
 	static LOADING = 0
@@ -30,6 +32,14 @@ export default class Texture {
 
 	ready() {
 		return this.#state == Texture.LOADED
+	}
+
+	draw(ctx: CanvasRenderingContext2D) {
+		if (!this.ready) return
+		ctx.save()
+		ctx.scale(1, -1) // flip y-axis
+		ctx.drawImage(this.img, 0, -blockSize, blockSize, blockSize)
+		ctx.restore()
 	}
 
 }
