@@ -1,4 +1,5 @@
 import { blockSize } from "./main.js";
+import Subtexture from "./subtexture.js";
 
 export default class Texture {
 
@@ -6,7 +7,9 @@ export default class Texture {
 	static LOADED  = 1
 	static FAILED  = 2
 
-	#image; #state
+	private image: HTMLImageElement
+	#state: number
+
 	constructor(path: string) {
 		const img = new Image()
 		img.addEventListener("load", () => {
@@ -18,12 +21,8 @@ export default class Texture {
 		})
 		img.src = "./assets/" + path
 
-		this.#image = img
+		this.image = img
 		this.#state = Texture.LOADING
-	}
-
-	get img() {
-		return this.#image
 	}
 
 	get state() {
@@ -34,11 +33,30 @@ export default class Texture {
 		return this.#state == Texture.LOADED
 	}
 
-	draw(ctx: CanvasRenderingContext2D) {
+	draw(ctx: CanvasRenderingContext2D, flip?: boolean) {
 		if (!this.ready) return
 		ctx.save()
-		ctx.scale(1, -1) // flip y-axis
-		ctx.drawImage(this.img, 0, -blockSize, blockSize, blockSize)
+		if (flip) {
+			ctx.scale(1, -1) // flip y-axis
+			ctx.translate(0, -1)
+		}
+		ctx.drawImage(this.image, 0, 0, 1, 1)
+		ctx.restore()
+	}
+
+	getSubtexture(x: number, y: number, w: number, h: number) {
+		return new Subtexture(this, x, y, w, h)
+	}
+
+	drawMap(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, flip?: boolean) {
+		if (!this.ready) return
+
+		ctx.save()
+		if (flip) {
+			ctx.scale(1, -1) // flip y-axis
+			ctx.translate(0, -1)
+		}
+		ctx.drawImage(this.image, x, y, w, h, 0, 0, 1, 1)
 		ctx.restore()
 	}
 

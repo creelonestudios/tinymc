@@ -22,7 +22,7 @@ function $(q: string) {
 
 // constants
 export const blockSize = 80
-const gameOffset = new Dim2(0, 0)
+const gameOffset = new Dim2(0, -2)
 
 // canvas
 export const game: any = $("#game")
@@ -89,28 +89,29 @@ function draw() {
 	ctx.fillRect(0, 0, game.width, game.height)
 	ctx.imageSmoothingEnabled = false
 
-	ctx.save()
 	ctx.translate(game.width/2, game.height/2) // center game
+
+	ctx.save()
 	ctx.scale(1, -1) // flip y-axis
-	ctx.translate(gameOffset.x * blockSize, gameOffset.y * blockSize) // move game by offset
-	ctx.translate(-cam.x * blockSize, -cam.y * blockSize) // move game into view
+	ctx.scale(blockSize, blockSize) // scale to size of one block
+	ctx.translate(gameOffset.x, gameOffset.y) // move game by offset
+	ctx.translate(-cam.x, -cam.y) // move game into view
 
 	// world
 	world.draw(ctx)
 
 	// block highlight
 	{
-		let mousePos = getMouseBlock().floor().scale(blockSize)
-		let camPos = cam.getPos().scale(blockSize)
+		let mousePos = getMouseBlock().floor()
 
 		ctx.save()
-		ctx.translate(mousePos.x, mousePos.y)
+		ctx.translate(mousePos.x, mousePos.y +1)
 		ctx.scale(1, -1)
 
 		ctx.fillStyle = "transparent"
 		ctx.strokeStyle = "white"
-		ctx.lineWidth = 2
-		ctx.strokeRect(0, 0, blockSize, blockSize)
+		ctx.lineWidth = 2 / blockSize
+		ctx.strokeRect(0, 0, 1, 1)
 
 		ctx.restore()
 	}
@@ -119,7 +120,7 @@ function draw() {
 
 	// hotbar
 	{
-		Hotbar.drawHotbar(player, ctx, game.width, game.height)
+		Hotbar.drawHotbar(ctx)
 	}
 
 }
@@ -127,7 +128,7 @@ function draw() {
 function getMouseBlock() {
 	return new Dim2(
 		 Math.floor((input.mouseX - game.width/2  + cam.x*blockSize) / blockSize) - gameOffset.x,
-		-Math.floor((input.mouseY - game.height/2 - cam.y*blockSize) / blockSize) - gameOffset.y
+		-Math.floor((input.mouseY - game.height/2 - cam.y*blockSize) / blockSize) - gameOffset.y -1
 	)
 }
 

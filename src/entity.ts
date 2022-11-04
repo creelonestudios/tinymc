@@ -48,20 +48,18 @@ export default class Entity {
 	}
 
 	draw(ctx: CanvasRenderingContext2D, x: number, y: number) {
-		let screenSize = this.size.copy().scale(blockSize)
-
 		ctx.save()
-		ctx.translate(x * blockSize, y * blockSize)
-		ctx.translate(-screenSize.x/2, 0) // to center (x)
+		ctx.translate(x, y)
+		ctx.translate(-this.size.x/2, 0) // to center (x)
 		ctx.scale(this.size.x, this.size.y)		
 
-		this.texture?.draw(ctx)
+		this.texture?.draw(ctx, true)
 
 		// hitbox
 		if (debug.showHitboxes) {
 			ctx.strokeStyle = "red"
-			ctx.lineWidth = 1
-			ctx.strokeRect(0, 0, blockSize, blockSize)
+			ctx.lineWidth = 1 / blockSize
+			ctx.strokeRect(0, 0, 1, 1)
 		}
 		ctx.restore()
 	}
