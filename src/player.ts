@@ -1,6 +1,4 @@
 import Block from "./block.js"
-import BoundingBox from "./boundingbox.js"
-import Dim2 from "./dim2.js"
 import Dim3 from "./dim3.js"
 import Entity from "./entity.js"
 import Inventory from "./inventory.js"

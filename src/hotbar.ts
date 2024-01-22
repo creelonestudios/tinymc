@@ -1,6 +1,4 @@
-import ItemStack from "./itemstack.js";
 import { game, getTexture, player } from "./main.js";
-import Player from "./player.js";
 import Subtexture from "./subtexture.js";
 import Texture from "./texture.js";
 

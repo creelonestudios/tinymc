@@ -13,19 +13,16 @@ import EntityDef from "./entitydef.js"
 import ItemEntity from "./itementity.js"
 import ItemStack from "./itemstack.js"
 import Dim2 from "./dim2.js"
+import { $ } from "./util.js"
 
 console.log("Never Gonna Give You Up")
-
-function $(q: string) {
-	return document.querySelector(q)
-}
 
 // constants
 export const blockSize = 80
 const gameOffset = new Dim2(0, -2)
 
 // canvas
-export const game: any = $("#game")
+export const game = $<HTMLCanvasElement>("#game")
 
 // assets
 const textures: Map<String, Texture> = new Map()
@@ -37,8 +34,6 @@ export const entitydefs = await loadDefs<EntityDef>("entities.yson", EntityDef)
 
 // other
 export const world = new World([-20, 20, -20, 20, -1, 1])
-export const blockSize = 80
-export const game: any = $("#game")
 export const player = new Player("jens")
 export const cam = new Cam(player)
 export const input = new Input()
@@ -86,7 +81,7 @@ function draw() {
 	world.tick()
 
 	// draw
-	const ctx: CanvasRenderingContext2D = game.getContext("2d")
+	const ctx: CanvasRenderingContext2D = game.getContext("2d")!
 	ctx.fillStyle = "#78A7FF"
 	ctx.fillRect(0, 0, game.width, game.height)
 	ctx.imageSmoothingEnabled = false

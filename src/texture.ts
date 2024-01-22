@@ -1,4 +1,3 @@
-import { blockSize } from "./main.js";
 import Subtexture from "./subtexture.js";
 
 export default class Texture {
