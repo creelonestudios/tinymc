@@ -2,8 +2,8 @@ import BoundingBox from "./boundingbox.js"
 import Dim2 from "./dim2.js"
 import Dim3 from "./dim3.js"
 import EntityDef from "./entitydef.js"
-import { cam, debug, entitydefs, game } from "./main.js"
-import Texture from "./texture.js"
+import { blockSize, entitydefs } from "./main.js"
+import World from "./world.js"
 
 export default class Entity {
 
@@ -37,30 +37,47 @@ export default class Entity {
 		return this.def.texture
 	}
 
+	get x() {
+		return this.position.x
+	}
+
+	get y() {
+		return this.position.y
+	}
+
 	getBoundingBox() {
 		let pos = this.position.copy()
 		pos.x -= this.size.x/2
 		return new BoundingBox(pos, this.size)
 	}
+
 	tick(world: World) {
 		this.position.add(this.motion)
 	}
 
-	draw(ctx: CanvasRenderingContext2D, x: number, y: number, blockSize: number) {
-		if (!this.texture?.ready()) return
+	draw(ctx: CanvasRenderingContext2D) {
+		ctx.save()
+		ctx.translate(this.x, -this.y)
+		ctx.translate(-this.size.x/2, 1 - this.size.y) // to center
+		ctx.scale(this.size.x, this.size.y)		
 
-		let screenSize = this.size.copy().scale(blockSize)
-		let screenX = Math.floor((x-0.5 - cam.x) *  blockSize + game.width /2) - (screenSize.x-blockSize)/2 // x-0.5 to center 
-		let screenY = Math.floor((y-1   - cam.y) * -blockSize + game.height/2) - (screenSize.y-blockSize)   // y-1   because canvas draws downwards
+		this.texture?.draw(ctx)
 
-		ctx.drawImage(this.texture.img, screenX, screenY, screenSize.x, screenSize.y)
+		ctx.restore()
+	}
+
+	drawHitbox(ctx: CanvasRenderingContext2D) {
+		ctx.save()
+		ctx.translate(this.x, -this.y)
+		ctx.translate(-this.size.x/2, 1 - this.size.y) // to center
+		ctx.scale(this.size.x, this.size.y)		
 
 		// hitbox
-		if (debug.showHitboxes) {
-			ctx.strokeStyle = "red"
-			ctx.lineWidth = 1
-			ctx.strokeRect(screenX, screenY, screenSize.x, screenSize.y)
-		}
+		ctx.strokeStyle = "red"
+		ctx.lineWidth = 1 / blockSize
+		ctx.strokeRect(0, 0, 1, 1)
+
+		ctx.restore()
 	}
 
 }
