@@ -3,6 +3,7 @@ import BoundingBox from "./boundingbox.js"
 import Dim2 from "./dim/dim2.js"
 import Dim3 from "./dim/dim3.js"
 import { blockdefs, blockSize } from "./main.js"
+import Graphics from "./Graphics.js"
 
 export default class Block {
 
@@ -47,26 +48,26 @@ export default class Block {
 
 	}
 
-	draw(ctx: CanvasRenderingContext2D, x: number, y: number) {
+	draw(g: Graphics, x: number, y: number) {
 		if (this.def.id == "tiny:air") return
-		ctx.save()
-		ctx.translate(x, -y)
+		g.save()
+		g.translate(x, y)
 
-		this.texture?.draw(ctx)
+		this.texture?.draw(g)
 
-		ctx.restore()
+		g.restore()
 	}
 
-	drawHitbox(ctx: CanvasRenderingContext2D, x: number, y: number) {
+	drawHitbox(g: Graphics, x: number, y: number) {
 		if (this.def.id == "tiny:air") return
-		ctx.save()
-		ctx.translate(x, -y)
+		g.save()
+		g.translate(x, y)
 
-		ctx.strokeStyle = "blue"
-		ctx.lineWidth = 1 / blockSize
-		ctx.strokeRect(0, 0, 1, 1)
+		g.strokeStyle = "blue"
+		g.lineWidth = 1 / blockSize
+		g.strokeRect(0, 0, 1, 1)
 		
-		ctx.restore()
+		g.restore()
 	}
 
 	toYSON() {

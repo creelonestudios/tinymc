@@ -1,3 +1,4 @@
+import Graphics from "../Graphics.js"
 import Block from "../block.js"
 import Entity from "../entity/entity.js"
 import { player } from "../main.js"
@@ -90,39 +91,39 @@ export default class World {
 		}
 	}
 
-	draw(ctx: CanvasRenderingContext2D) {
+	draw(g: Graphics) {
 
 		for (let z = this.minZ; z <= this.maxZ; z++) {
 			for (let y = this.minY; y <= this.maxY; y++) {
 				for (let x = this.minX; x <= this.maxX; x++) {
-					this.getBlock(x, y, z)?.draw(ctx, x, y)
+					this.getBlock(x, y, z)?.draw(g, x, y)
 				}
 			}
 			if (z == 0) {
 				// player
 				for (let entity of this.getAllEntities()) {
-					entity.draw(ctx)
+					entity.draw(g)
 				}
-				player.draw(ctx)
+				player.draw(g)
 			}
 		}
 
 	}
 
-	drawHitboxes(ctx: CanvasRenderingContext2D) {
+	drawHitboxes(g: Graphics) {
 
 		for (let z = this.minZ; z <= this.maxZ; z++) {
 			for (let y = this.minY; y <= this.maxY; y++) {
 				for (let x = this.minX; x <= this.maxX; x++) {
-					this.getBlock(x, y, z)?.drawHitbox(ctx, x, y)
+					this.getBlock(x, y, z)?.drawHitbox(g, x, y)
 				}
 			}
 			if (z == 0) {
 				// player
 				for (let entity of this.getAllEntities()) {
-					entity.drawHitbox(ctx)
+					entity.drawHitbox(g)
 				}
-				player.drawHitbox(ctx)
+				player.drawHitbox(g)
 			}
 		}
 

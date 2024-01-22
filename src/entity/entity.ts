@@ -4,6 +4,7 @@ import Dim3 from "../dim/dim3.js"
 import EntityDef from "../defs/entitydef.js"
 import { blockSize, entitydefs } from "../main.js"
 import World from "../world/world.js"
+import Graphics from "../Graphics.js"
 
 export default class Entity {
 
@@ -57,29 +58,29 @@ export default class Entity {
 		this.position.add(this.motion)
 	}
 
-	draw(ctx: CanvasRenderingContext2D) {
-		ctx.save()
-		ctx.translate(this.x, -this.y)
-		ctx.translate(-this.size.x/2, 1 - this.size.y) // to center
-		ctx.scale(this.size.x, this.size.y)		
+	draw(g: Graphics) {
+		g.save()
+		g.translate(this.x, this.y)
+		g.translate(-this.size.x/2, -1 + this.size.y) // to center
+		g.scale(this.size.x, this.size.y)		
 
-		this.texture?.draw(ctx)
+		this.texture?.draw(g)
 
-		ctx.restore()
+		g.restore()
 	}
 
-	drawHitbox(ctx: CanvasRenderingContext2D) {
-		ctx.save()
-		ctx.translate(this.x, -this.y)
-		ctx.translate(-this.size.x/2, 1 - this.size.y) // to center
-		ctx.scale(this.size.x, this.size.y)		
+	drawHitbox(g: Graphics) {
+		g.save()
+		g.translate(this.x, this.y)
+		g.translate(-this.size.x/2, -1 + this.size.y) // to center
+		g.scale(this.size.x, this.size.y)		
 
 		// hitbox
-		ctx.strokeStyle = "red"
-		ctx.lineWidth = 1 / blockSize
-		ctx.strokeRect(0, 0, 1, 1)
+		g.strokeStyle = "red"
+		g.lineWidth = 1 / blockSize
+		g.strokeRect(0, 0, 1, 1)
 
-		ctx.restore()
+		g.restore()
 	}
 
 }

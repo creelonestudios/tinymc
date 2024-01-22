@@ -14,6 +14,7 @@ import ItemEntity from "./entity/itementity.js"
 import ItemStack from "./itemstack.js"
 import Dim2 from "./dim/dim2.js"
 import { $ } from "./util/util.js"
+import Graphics from "./Graphics.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -23,6 +24,7 @@ const gameOffset = new Dim2(0, -2)
 
 // canvas
 export const game = $<HTMLCanvasElement>("#game")
+const graphics = new Graphics(game)
 
 // assets
 const textures: Map<String, Texture> = new Map()
@@ -69,11 +71,6 @@ export function getTexture(path: string) {
 }
 
 function draw() {
-	game.width  = innerWidth
-	game.height = innerHeight
-	game.style.width  = innerWidth  + "px"
-	game.style.height = innerHeight + "px"
-
 	// tick
 	player.motion.x = (Number(input.pressed("KeyD")) - Number(input.pressed("KeyA"))) * 0.25
 	player.motion.y = (Number(input.pressed("KeyW")) - Number(input.pressed("KeyS"))) * 0.25
@@ -81,42 +78,37 @@ function draw() {
 	world.tick()
 
 	// draw
-	const ctx: CanvasRenderingContext2D = game.getContext("2d")!
-	ctx.fillStyle = "#78A7FF"
-	ctx.fillRect(0, 0, game.width, game.height)
-	ctx.imageSmoothingEnabled = false
+	graphics.reset()
 
-	ctx.translate(game.width/2, game.height/2) // center game
-
-	ctx.save()
-	ctx.scale(blockSize, blockSize) // scale to size of one block
-	ctx.translate(gameOffset.x, -gameOffset.y) // move game by offset
-	ctx.translate(-cam.x, cam.y) // move game into view
+	graphics.save()
+	graphics.scale(blockSize, blockSize) // scale to size of one block
+	graphics.translate(gameOffset.x, gameOffset.y) // move game by offset
+	graphics.translate(-cam.x, -cam.y) // move game into view
 
 	// world
-	world.draw(ctx)
-	if (debug.showHitboxes) world.drawHitboxes(ctx)
+	world.draw(graphics)
+	if (debug.showHitboxes) world.drawHitboxes(graphics)
 
 	// block highlight
 	{
 		let mousePos = getMouseBlock().floor()
 
-		ctx.save()
-		ctx.translate(mousePos.x, -mousePos.y)
+		graphics.save()
+		graphics.translate(mousePos.x, mousePos.y)
 
-		ctx.fillStyle = "transparent"
-		ctx.strokeStyle = "white"
-		ctx.lineWidth = 2 / blockSize
-		ctx.strokeRect(0, 0, 1, 1)
+		graphics.fillStyle = "transparent"
+		graphics.strokeStyle = "white"
+		graphics.lineWidth = 2 / blockSize
+		graphics.strokeRect(0, 0, 1, 1)
 
-		ctx.restore()
+		graphics.restore()
 	}
 
-	ctx.restore()
+	graphics.restore()
 
 	// hotbar
 	{
-		Hotbar.drawHotbar(ctx)
+		Hotbar.drawHotbar(graphics)
 	}
 
 }

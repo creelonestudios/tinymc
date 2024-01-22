@@ -1,3 +1,4 @@
+import Graphics from "../Graphics.js"
 import Subtexture from "./subtexture.js";
 
 export default class Texture {
@@ -32,23 +33,23 @@ export default class Texture {
 		return this.#state == Texture.LOADED
 	}
 
-	draw(ctx: CanvasRenderingContext2D) {
+	draw(g: Graphics) {
 		if (!this.ready) return
-		ctx.save()
-		ctx.drawImage(this.image, 0, 0, 1, 1)
-		ctx.restore()
+		g.save()
+		g.drawImage(this.image, 0, 0, 1, 1)
+		g.restore()
 	}
 
 	getSubtexture(x: number, y: number, w: number, h: number) {
 		return new Subtexture(this, x, y, w, h)
 	}
 
-	drawMap(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
+	drawMap(g: Graphics, x: number, y: number, w: number, h: number) {
 		if (!this.ready) return
 
-		ctx.save()
-		ctx.drawImage(this.image, x, y, w, h, 0, 0, 1, 1)
-		ctx.restore()
+		g.save()
+		g.drawPartialImage(this.image, x, y, w, h, 0, 0, 1, 1)
+		g.restore()
 	}
 
 }
