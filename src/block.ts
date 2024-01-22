@@ -50,9 +50,9 @@ export default class Block {
 	draw(ctx: CanvasRenderingContext2D, x: number, y: number) {
 		if (this.def.id == "tiny:air") return
 		ctx.save()
-		ctx.translate(x, y)
+		ctx.translate(x, -y)
 
-		this.texture?.draw(ctx, true)
+		this.texture?.draw(ctx)
 
 		// hitbox
 		if (debug.showHitboxes) {

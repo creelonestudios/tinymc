@@ -92,10 +92,9 @@ function draw() {
 	ctx.translate(game.width/2, game.height/2) // center game
 
 	ctx.save()
-	ctx.scale(1, -1) // flip y-axis
 	ctx.scale(blockSize, blockSize) // scale to size of one block
-	ctx.translate(gameOffset.x, gameOffset.y) // move game by offset
-	ctx.translate(-cam.x, -cam.y) // move game into view
+	ctx.translate(gameOffset.x, -gameOffset.y) // move game by offset
+	ctx.translate(-cam.x, cam.y) // move game into view
 
 	// world
 	world.draw(ctx)
@@ -105,8 +104,7 @@ function draw() {
 		let mousePos = getMouseBlock().floor()
 
 		ctx.save()
-		ctx.translate(mousePos.x, mousePos.y +1)
-		ctx.scale(1, -1)
+		ctx.translate(mousePos.x, -mousePos.y)
 
 		ctx.fillStyle = "transparent"
 		ctx.strokeStyle = "white"
@@ -128,7 +126,7 @@ function draw() {
 function getMouseBlock() {
 	return new Dim2(
 		 Math.floor((input.mouseX - game.width/2  + cam.x*blockSize) / blockSize) - gameOffset.x,
-		-Math.floor((input.mouseY - game.height/2 - cam.y*blockSize) / blockSize) - gameOffset.y -1
+		-Math.floor((input.mouseY - game.height/2 - cam.y*blockSize) / blockSize) - gameOffset.y
 	)
 }
 

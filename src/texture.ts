@@ -33,13 +33,9 @@ export default class Texture {
 		return this.#state == Texture.LOADED
 	}
 
-	draw(ctx: CanvasRenderingContext2D, flip?: boolean) {
+	draw(ctx: CanvasRenderingContext2D) {
 		if (!this.ready) return
 		ctx.save()
-		if (flip) {
-			ctx.scale(1, -1) // flip y-axis
-			ctx.translate(0, -1)
-		}
 		ctx.drawImage(this.image, 0, 0, 1, 1)
 		ctx.restore()
 	}
@@ -48,14 +44,10 @@ export default class Texture {
 		return new Subtexture(this, x, y, w, h)
 	}
 
-	drawMap(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, flip?: boolean) {
+	drawMap(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
 		if (!this.ready) return
 
 		ctx.save()
-		if (flip) {
-			ctx.scale(1, -1) // flip y-axis
-			ctx.translate(0, -1)
-		}
 		ctx.drawImage(this.image, x, y, w, h, 0, 0, 1, 1)
 		ctx.restore()
 	}

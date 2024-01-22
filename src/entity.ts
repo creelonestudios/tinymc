@@ -49,11 +49,11 @@ export default class Entity {
 
 	draw(ctx: CanvasRenderingContext2D, x: number, y: number) {
 		ctx.save()
-		ctx.translate(x, y)
-		ctx.translate(-this.size.x/2, 0) // to center (x)
+		ctx.translate(x, -y)
+		ctx.translate(-this.size.x/2, 1 - this.size.y) // to center
 		ctx.scale(this.size.x, this.size.y)		
 
-		this.texture?.draw(ctx, true)
+		this.texture?.draw(ctx)
 
 		// hitbox
 		if (debug.showHitboxes) {
