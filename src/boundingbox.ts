@@ -1,5 +1,5 @@
-import Dim2 from "./dim2.js"
-import Dim3 from "./dim3.js"
+import Dim2 from "./dim/dim2.js"
+import Dim3 from "./dim/dim3.js"
 
 export default class BoundingBox {
 

@@ -1,4 +1,4 @@
-import Dim2 from "./dim2.js";
+import Dim2 from "../dim/dim2.js";
 import Texture from "./texture.js";
 
 export default class Subtexture {

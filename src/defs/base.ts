@@ -1,5 +1,5 @@
-import Texture from "./texture.js"
-import { getTexture } from "./main.js"
+import Texture from "../texture/texture.js"
+import { getTexture } from "../main.js"
 
 export default class Base {
 	readonly namespace: string;

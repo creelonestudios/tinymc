@@ -1,5 +1,5 @@
-import Block from "./block.js";
-import { blockdefs } from "./main.js";
+import Block from "../block.js";
+import { blockdefs } from "../main.js";
 import World from "./world.js";
 
 export default class WorldGenerator {

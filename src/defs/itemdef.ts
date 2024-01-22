@@ -1,6 +1,6 @@
 import Base from "./base.js"
 
-export default class BlockDef extends Base {
+export default class ItemDef extends Base {
 
 	readonly maxItemStack: number
 
@@ -10,7 +10,7 @@ export default class BlockDef extends Base {
 	}
 
 	get assetsPath() {
-		return `${this.namespace}/textures/block/${this.idname}.png`
+		return `${this.namespace}/textures/item/${this.idname}.png`
 	}
 
 }

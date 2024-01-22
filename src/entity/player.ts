@@ -1,14 +1,14 @@
-import Block from "./block.js"
-import Dim3 from "./dim3.js"
+import Block from "../block.js"
+import Dim3 from "../dim/dim3.js"
 import Entity from "./entity.js"
-import Inventory from "./inventory.js"
-import Item from "./item.js"
+import Inventory from "../inventory.js"
+import Item from "../item.js"
 import ItemEntity from "./itementity.js"
-import ItemStack from "./itemstack.js"
-import { getTexture, player, world } from "./main.js"
-import PlayerDef from "./playerdef.js"
-import Texture from "./texture.js"
-import World from "./world.js"
+import ItemStack from "../itemstack.js"
+import { getTexture, player, world } from "../main.js"
+import PlayerDef from "../defs/playerdef.js"
+import Texture from "../texture/texture.js"
+import World from "../world/world.js"
 
 export default class Player extends Entity {
 

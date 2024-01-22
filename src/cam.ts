@@ -1,5 +1,5 @@
-import Dim3 from "./dim3.js";
-import Entity from "./entity.js";
+import Dim3 from "./dim/dim3.js";
+import Entity from "./entity/entity.js";
 
 export default class Cam {
 

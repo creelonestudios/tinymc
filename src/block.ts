@@ -1,7 +1,7 @@
-import BlockDef from "./blockdef.js"
+import BlockDef from "./defs/blockdef.js"
 import BoundingBox from "./boundingbox.js"
-import Dim2 from "./dim2.js"
-import Dim3 from "./dim3.js"
+import Dim2 from "./dim/dim2.js"
+import Dim3 from "./dim/dim3.js"
 import { blockdefs, blockSize } from "./main.js"
 
 export default class Block {

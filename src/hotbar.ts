@@ -1,6 +1,6 @@
 import { game, getTexture, player } from "./main.js";
-import Subtexture from "./subtexture.js";
-import Texture from "./texture.js";
+import Subtexture from "./texture/subtexture.js";
+import Texture from "./texture/texture.js";
 
 let widgets: Texture
 let leftSlot: Subtexture

@@ -1,6 +1,6 @@
-import Block from "./block.js"
-import Entity from "./entity.js"
-import { player } from "./main.js"
+import Block from "../block.js"
+import Entity from "../entity/entity.js"
+import { player } from "../main.js"
 
 export default class World {
 

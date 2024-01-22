@@ -1,9 +1,9 @@
-import BoundingBox from "./boundingbox.js"
-import Dim2 from "./dim2.js"
-import Dim3 from "./dim3.js"
-import EntityDef from "./entitydef.js"
-import { blockSize, entitydefs } from "./main.js"
-import World from "./world.js"
+import BoundingBox from "../boundingbox.js"
+import Dim2 from "../dim/dim2.js"
+import Dim3 from "../dim/dim3.js"
+import EntityDef from "../defs/entitydef.js"
+import { blockSize, entitydefs } from "../main.js"
+import World from "../world/world.js"
 
 export default class Entity {
 

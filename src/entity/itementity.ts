@@ -1,9 +1,9 @@
-import Dim3 from "./dim3.js";
+import Dim3 from "../dim/dim3.js";
 import Entity from "./entity.js";
-import EntityDef from "./entitydef.js";
-import ItemStack from "./itemstack.js";
-import { getMousePos, player } from "./main.js";
-import World from "./world.js";
+import EntityDef from "../defs/entitydef.js";
+import ItemStack from "../itemstack.js";
+import { getMousePos, player } from "../main.js";
+import World from "../world/world.js";
 
 export default class ItemEntity extends Entity {
 
