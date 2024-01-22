@@ -23,13 +23,16 @@ export default class Input extends EventEmitter {
 			this.mousePos.y = e.y
 			this.emit("mousemove")
 		})
-		window.addEventListener("click", e => {
+		window.addEventListener("mousedown", e => {
 			this.emit("click", e.button)
 			e.preventDefault()
 		})
 		window.addEventListener("contextmenu", e => {
-			this.emit("click", 1)
+			this.emit("click", 2)
 			e.preventDefault()
+		})
+		window.addEventListener("wheel", e => {
+			//e.preventDefault()
 		})
 	}
 
@@ -39,6 +42,10 @@ export default class Input extends EventEmitter {
 
 	get mouseY() {
 		return this.mousePos.y
+	}
+
+	get mouse() {
+		return this.mousePos.copy()
 	}
 
 	pressed(code: string) {

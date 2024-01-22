@@ -80,6 +80,10 @@ export default class World {
 		this.entities.add(entity)
 	}
 
+	removeEntity(entity: Entity) {
+		this.entities.delete(entity)
+	}
+
 	tick() {
 		for (let entity of this.entities.values()) {
 			entity.tick(this)

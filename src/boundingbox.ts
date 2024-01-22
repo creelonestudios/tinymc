@@ -19,4 +19,8 @@ export default class BoundingBox {
 		return this.pos.x < other.corner.x && other.pos.x < this.corner.x && this.corner.y > other.pos.y && other.corner.y > this.pos.y
 	}
 
+	touch(point: Dim2 | Dim3) {
+		return point.x >= this.pos.x && point.x <= this.corner.x && point.y >= this.pos.y && point.y <= this.corner.y
+	}
+
 }

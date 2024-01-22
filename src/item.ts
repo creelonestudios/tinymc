@@ -39,6 +39,10 @@ export default class Item {
 		return this.def instanceof BlockDef
 	}
 
+	match(item: Item) {
+		return this.id == item.id
+	}
+
 	toYSON() {
 		return {
 			id: this.id

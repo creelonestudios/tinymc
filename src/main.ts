@@ -36,10 +36,12 @@ export const itemdefs   = await loadDefs<ItemDef>("items.yson", ItemDef)
 export const entitydefs = await loadDefs<EntityDef>("entities.yson", EntityDef)
 
 // other
-const world = new World([-20, 20, -20, 20, -1, 1])
+export const world = new World([-20, 20, -20, 20, -1, 1])
+export const blockSize = 80
+export const game: any = $("#game")
 export const player = new Player("jens")
 export const cam = new Cam(player)
-const input = new Input()
+export const input = new Input()
 export let debug = { showHitboxes: false }
 
 Hotbar.loadTexture()
@@ -131,6 +133,13 @@ function getMouseBlock() {
 	)
 }
 
+export function getMousePos() {
+	return new Dim2(
+		 (input.mouseX - game.width/2  + cam.x*blockSize) / blockSize,
+		-(input.mouseY - game.height/2 - cam.y*blockSize) / blockSize +2
+	)
+}
+
 input.on("keydown", (key: string) => {
 	if (key == "Digit1") player.selectedItemSlot = 0
 	if (key == "Digit2") player.selectedItemSlot = 1
@@ -138,16 +147,29 @@ input.on("keydown", (key: string) => {
 	if (key == "Digit4") player.selectedItemSlot = 3
 	if (key == "Digit5") player.selectedItemSlot = 4
 	if (key == "KeyM") debug.showHitboxes = !debug.showHitboxes
-	if (key == "KeyQ") world.spawn(new ItemEntity(new ItemStack(player.selectedItem.item.id), player.position.copy()))
+	if (key == "KeyQ") {
+		let stack = player.selectedItem
+		let index = player.selectedItemSlot
+		if (stack.item.id == "tiny:air") return
+		world.spawn(new ItemEntity(new ItemStack(stack.item.id), player.position.copy()))
+		if (stack.amount > 1) stack.amount--
+		else player.hotbar.set(index, new ItemStack("tiny:air"))
+	}
 })
 
 input.on("click", (button: number) => {
 	let {x, y} = getMouseBlock()
+	//console.log(button)
 	switch (button) {
 		case 0:
 			world.clearBlock(x, y, 0)
 			break
 		case 1:
+			let block = world.getBlock(x, y, 0)
+			if (!block || block.id == "tiny:air") break
+			player.pickBlock(block)
+			break
+		case 2:
 			let stack = player.selectedItem
 			if (world.getBlock(x, y, 0)?.id == "tiny:air" && stack.item.isBlock())
 				world.setBlock(x, y, 0, new Block(stack.item.id))
