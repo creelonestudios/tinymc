@@ -57,8 +57,4 @@ export default class Player extends Entity {
 		super.tick(world)
 	}
 
-	draw(ctx: CanvasRenderingContext2D, x: number, y: number) {
-		super.draw(ctx, x, y)
-	}
-
 }

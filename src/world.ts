@@ -97,9 +97,9 @@ export default class World {
 			if (z == 0) {
 				// player
 				for (let entity of this.getAllEntities()) {
-					entity.draw(ctx, entity.position.x, entity.position.y)
+					entity.draw(ctx)
 				}
-				player.draw(ctx, player.position.x, player.position.y)
+				player.draw(ctx)
 			}
 		}
 
@@ -116,9 +116,9 @@ export default class World {
 			if (z == 0) {
 				// player
 				for (let entity of this.getAllEntities()) {
-					entity.drawHitbox(ctx, entity.position.x, entity.position.y)
+					entity.drawHitbox(ctx)
 				}
-				player.drawHitbox(ctx, player.position.x, player.position.y)
+				player.drawHitbox(ctx)
 			}
 		}
 

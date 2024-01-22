@@ -37,6 +37,14 @@ export default class Entity {
 		return this.def.texture
 	}
 
+	get x() {
+		return this.position.x
+	}
+
+	get y() {
+		return this.position.y
+	}
+
 	getBoundingBox() {
 		let pos = this.position.copy()
 		pos.x -= this.size.x/2
@@ -47,9 +55,9 @@ export default class Entity {
 		this.position.add(this.motion)
 	}
 
-	draw(ctx: CanvasRenderingContext2D, x: number, y: number) {
+	draw(ctx: CanvasRenderingContext2D) {
 		ctx.save()
-		ctx.translate(x, -y)
+		ctx.translate(this.x, -this.y)
 		ctx.translate(-this.size.x/2, 1 - this.size.y) // to center
 		ctx.scale(this.size.x, this.size.y)		
 
@@ -58,9 +66,9 @@ export default class Entity {
 		ctx.restore()
 	}
 
-	drawHitbox(ctx: CanvasRenderingContext2D, x: number, y: number) {
+	drawHitbox(ctx: CanvasRenderingContext2D) {
 		ctx.save()
-		ctx.translate(x, -y)
+		ctx.translate(this.x, -this.y)
 		ctx.translate(-this.size.x/2, 1 - this.size.y) // to center
 		ctx.scale(this.size.x, this.size.y)		
 
