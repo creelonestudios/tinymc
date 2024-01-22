@@ -1,8 +1,8 @@
 export default class Graphics {
 
-	private readonly ctx: CanvasRenderingContext2D
+	readonly ctx: CanvasRenderingContext2D
 
-	constructor(private readonly canvas: HTMLCanvasElement) {
+	constructor(private readonly canvas: HTMLCanvasElement, private readonly blockSize: number) {
 		this.ctx = canvas.getContext("2d")!
 	}
 
@@ -16,7 +16,6 @@ export default class Graphics {
 
 	save() { this.ctx.save() }
 	restore() { this.ctx.restore() }
-	scale(x: number, y: number) { this.ctx.scale(x, y) }
 	
 	reset() {
 		this.canvas.width  = innerWidth
@@ -33,24 +32,28 @@ export default class Graphics {
 	}
 
 
-	translate(x: number, y: number, global: boolean = false) {
-		this.ctx.translate(x, global ? y : -y)
+	translate(x: number, y: number) {
+		this.ctx.translate(x * this.blockSize, -y * this.blockSize)
 	}
 
-	fillRect(x: number, y: number, w: number, h: number) {
-		this.ctx.fillRect(x, y, w, h)
+	strokeRect(w: number = 1, h: number = 1) {
+		this.ctx.strokeRect(0, 0, w * this.blockSize, h * this.blockSize)
 	}
 
-	strokeRect(x: number, y: number, w: number, h: number) {
-		this.ctx.strokeRect(x, y, w, h)
+	drawImage(image: CanvasImageSource, w: number = 1, h: number = 1) {
+		this.ctx.drawImage(image, 0, 0, w * this.blockSize, h * this.blockSize)
 	}
 
-	drawImage(image: CanvasImageSource, dx: number, dy: number, dWidth: number, dHeight: number) {
-		this.ctx.drawImage(image, dx, dy, dWidth, dHeight)
+	drawPartialImage(image: CanvasImageSource, sx: number, sy: number, sWidth: number, sHeight: number, dWidth: number = 1, dHeight: number = 1) {
+		this.ctx.drawImage(image, sx, sy, sWidth, sHeight, 0, 0, dWidth * this.blockSize, dHeight * this.blockSize)
 	}
 
-	drawPartialImage(image: CanvasImageSource, sx: number, sy: number, sWidth: number, sHeight: number, dx: number, dy: number, dWidth: number, dHeight: number) {
-		this.ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+	globalDrawImage(image: CanvasImageSource, w: number = 1, h: number = 1) {
+		this.ctx.drawImage(image, 0, 0, w, h)
+	}
+
+	globalDrawPartialImage(image: CanvasImageSource, sx: number, sy: number, sWidth: number, sHeight: number, dWidth: number = 1, dHeight: number = 1) {
+		this.ctx.drawImage(image, sx, sy, sWidth, sHeight, 0, 0, dWidth, dHeight)
 	}
 
 }

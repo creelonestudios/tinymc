@@ -14,8 +14,8 @@ export default class Subtexture {
 		this.texture = texture
 	}
 
-	draw(g: Graphics): void {
-		this.texture.drawMap(g, this.offset.x, this.offset.y, this.size.x, this.size.y)
+	draw(g: Graphics, w?: number, h?: number, global: boolean = false): void {
+		this.texture.drawMap(g, this.offset.x, this.offset.y, this.size.x, this.size.y, w, h, global)
 	}
 
 }

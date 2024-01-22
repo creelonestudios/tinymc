@@ -10,7 +10,7 @@ let rightSlot: Subtexture
 let selector: Subtexture
 
 const scale = 4
-const itemSize = 48
+const itemSize = scale * 12
 
 export default class Hotbar {
 
@@ -23,36 +23,37 @@ export default class Hotbar {
     }
 
     static drawHotbar(g: Graphics) {
+		const ctx = g.ctx
         let hotbar = player.hotbar
 
-        g.save()
-        g.translate(-204, game.height/2 - 100, true)
+        ctx.save()
+        ctx.translate(-204, game.height/2 - 100)
 
-        g.save()
-        g.scale(scale, scale)
+        ctx.save()
+        ctx.scale(scale, scale)
 
         // first and last are diff b/c black outline
-        g.save()
-        g.scale(21, 22)
+        ctx.save()
+        ctx.scale(21, 22)
         leftSlot.draw(g)
-        g.restore()
+        ctx.restore()
         
-        g.save()
-        g.translate(21, 0)
-        g.scale(20, 22)
+        ctx.save()
+        ctx.translate(21, 0)
+        ctx.scale(20, 22)
         for (let i = 1; i < hotbar.size -1; i++) {
             middleSlot.draw(g)
-            g.translate(1, 0)
+            ctx.translate(1, 0)
         }
-        g.restore()
+        ctx.restore()
 
-        g.save()
-        g.translate(21 + (hotbar.size-2) * 20, 0)
-        g.scale(21, 22)
+        ctx.save()
+        ctx.translate(21 + (hotbar.size-2) * 20, 0)
+        ctx.scale(21, 22)
         rightSlot.draw(g)
-        g.restore()
+        ctx.restore()
 
-        g.restore()
+        ctx.restore()
 
         for (let i = 0; i < hotbar.size; i++) {
             let stack = hotbar.get(i)
@@ -62,23 +63,23 @@ export default class Hotbar {
             let cx = 22/2 * scale - itemSize/2 + i * 20 * scale
             let cy = 22/2 * scale - itemSize/2
 
-            g.save()
-            g.translate(cx, cy, true)
-            g.scale(itemSize, itemSize)
-            stack.item.texture.draw(g)
-            g.restore()
+            ctx.save()
+            ctx.translate(cx, cy)
+            ctx.scale(itemSize, itemSize)
+            stack.item.texture.draw(g, 1, 1, true)
+            ctx.restore()
         }
 
         // selected slot
-        g.save()
-        g.scale(scale, scale)
-        g.translate(-1, -1, true)
-        g.translate(player.selectedItemSlot * 20, 0)
-        g.scale(24, 24)
+        ctx.save()
+        ctx.scale(scale, scale)
+        ctx.translate(-1, -1)
+        ctx.translate(player.selectedItemSlot * 20, 0)
+        ctx.scale(24, 24)
         selector.draw(g)
-        g.restore()
+        ctx.restore()
     
-        g.restore()
+        ctx.restore()
     }
 
 }

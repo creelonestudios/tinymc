@@ -2,7 +2,7 @@ import BlockDef from "./defs/blockdef.js"
 import BoundingBox from "./boundingbox.js"
 import Dim2 from "./dim/dim2.js"
 import Dim3 from "./dim/dim3.js"
-import { blockdefs, blockSize } from "./main.js"
+import { blockdefs } from "./main.js"
 import Graphics from "./Graphics.js"
 
 export default class Block {
@@ -64,8 +64,8 @@ export default class Block {
 		g.translate(x, y)
 
 		g.strokeStyle = "blue"
-		g.lineWidth = 1 / blockSize
-		g.strokeRect(0, 0, 1, 1)
+		g.lineWidth = 1
+		g.strokeRect()
 		
 		g.restore()
 	}

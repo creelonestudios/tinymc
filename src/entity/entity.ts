@@ -2,7 +2,7 @@ import BoundingBox from "../boundingbox.js"
 import Dim2 from "../dim/dim2.js"
 import Dim3 from "../dim/dim3.js"
 import EntityDef from "../defs/entitydef.js"
-import { blockSize, entitydefs } from "../main.js"
+import { entitydefs } from "../main.js"
 import World from "../world/world.js"
 import Graphics from "../Graphics.js"
 
@@ -61,10 +61,9 @@ export default class Entity {
 	draw(g: Graphics) {
 		g.save()
 		g.translate(this.x, this.y)
-		g.translate(-this.size.x/2, -1 + this.size.y) // to center
-		g.scale(this.size.x, this.size.y)		
+		g.translate(-this.size.x/2, -1 + this.size.y) // to center		
 
-		this.texture?.draw(g)
+		this.texture?.draw(g, this.size.x, this.size.y)
 
 		g.restore()
 	}
@@ -73,12 +72,11 @@ export default class Entity {
 		g.save()
 		g.translate(this.x, this.y)
 		g.translate(-this.size.x/2, -1 + this.size.y) // to center
-		g.scale(this.size.x, this.size.y)		
 
 		// hitbox
 		g.strokeStyle = "red"
-		g.lineWidth = 1 / blockSize
-		g.strokeRect(0, 0, 1, 1)
+		g.lineWidth = 1
+		g.strokeRect(this.size.x, this.size.y)
 
 		g.restore()
 	}

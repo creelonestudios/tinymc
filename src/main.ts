@@ -24,7 +24,7 @@ const gameOffset = new Dim2(0, -2)
 
 // canvas
 export const game = $<HTMLCanvasElement>("#game")
-const graphics = new Graphics(game)
+const graphics = new Graphics(game, blockSize)
 
 // assets
 const textures: Map<String, Texture> = new Map()
@@ -81,13 +81,16 @@ function draw() {
 	graphics.reset()
 
 	graphics.save()
-	graphics.scale(blockSize, blockSize) // scale to size of one block
 	graphics.translate(gameOffset.x, gameOffset.y) // move game by offset
 	graphics.translate(-cam.x, -cam.y) // move game into view
 
 	// world
 	world.draw(graphics)
-	if (debug.showHitboxes) world.drawHitboxes(graphics)
+
+	// hitboxes
+	if (debug.showHitboxes) {
+		world.drawHitboxes(graphics)
+	}
 
 	// block highlight
 	{
@@ -98,8 +101,8 @@ function draw() {
 
 		graphics.fillStyle = "transparent"
 		graphics.strokeStyle = "white"
-		graphics.lineWidth = 2 / blockSize
-		graphics.strokeRect(0, 0, 1, 1)
+		graphics.lineWidth = 2
+		graphics.strokeRect(1, 1)
 
 		graphics.restore()
 	}

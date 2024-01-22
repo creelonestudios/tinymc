@@ -33,23 +33,20 @@ export default class Texture {
 		return this.#state == Texture.LOADED
 	}
 
-	draw(g: Graphics) {
+	draw(g: Graphics, w?: number, h?: number, global: boolean = false) {
 		if (!this.ready) return
-		g.save()
-		g.drawImage(this.image, 0, 0, 1, 1)
-		g.restore()
+		if (global) g.globalDrawImage(this.image, w, h)
+		else g.drawImage(this.image, w, h)
 	}
 
 	getSubtexture(x: number, y: number, w: number, h: number) {
 		return new Subtexture(this, x, y, w, h)
 	}
 
-	drawMap(g: Graphics, x: number, y: number, w: number, h: number) {
+	drawMap(g: Graphics, x: number, y: number, w: number, h: number, dw?: number, dh?: number, global: boolean = false) {
 		if (!this.ready) return
-
-		g.save()
-		g.drawPartialImage(this.image, x, y, w, h, 0, 0, 1, 1)
-		g.restore()
+		if (global) g.drawPartialImage(this.image, x, y, w, h, dw, dh)
+		else g.globalDrawPartialImage(this.image, x, y, w, h, dw, dh)
 	}
 
 }
