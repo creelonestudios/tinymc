@@ -2,7 +2,7 @@ import BlockDef from "./blockdef.js"
 import BoundingBox from "./boundingbox.js"
 import Dim2 from "./dim2.js"
 import Dim3 from "./dim3.js"
-import { blockdefs, blockSize, cam, debug, game } from "./main.js"
+import { blockdefs, blockSize } from "./main.js"
 
 export default class Block {
 
@@ -54,12 +54,18 @@ export default class Block {
 
 		this.texture?.draw(ctx)
 
-		// hitbox
-		if (debug.showHitboxes) {
-			ctx.strokeStyle = "blue"
-			ctx.lineWidth = 1 / blockSize
-			ctx.strokeRect(0, 0, 1, 1)
-		}
+		ctx.restore()
+	}
+
+	drawHitbox(ctx: CanvasRenderingContext2D, x: number, y: number) {
+		if (this.def.id == "tiny:air") return
+		ctx.save()
+		ctx.translate(x, -y)
+
+		ctx.strokeStyle = "blue"
+		ctx.lineWidth = 1 / blockSize
+		ctx.strokeRect(0, 0, 1, 1)
+		
 		ctx.restore()
 	}
 

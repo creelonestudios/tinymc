@@ -105,6 +105,25 @@ export default class World {
 
 	}
 
+	drawHitboxes(ctx: CanvasRenderingContext2D) {
+
+		for (let z = this.minZ; z <= this.maxZ; z++) {
+			for (let y = this.minY; y <= this.maxY; y++) {
+				for (let x = this.minX; x <= this.maxX; x++) {
+					this.getBlock(x, y, z)?.drawHitbox(ctx, x, y)
+				}
+			}
+			if (z == 0) {
+				// player
+				for (let entity of this.getAllEntities()) {
+					entity.drawHitbox(ctx, entity.position.x, entity.position.y)
+				}
+				player.drawHitbox(ctx, player.position.x, player.position.y)
+			}
+		}
+
+	}
+
 	toYSON() {
 		return {
 			dims: [this.minX, this.maxX, this.minY, this.maxY, this.minY, this.maxZ],

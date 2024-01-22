@@ -98,6 +98,7 @@ function draw() {
 
 	// world
 	world.draw(ctx)
+	if (debug.showHitboxes) world.drawHitboxes(ctx)
 
 	// block highlight
 	{

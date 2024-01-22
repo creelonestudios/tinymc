@@ -2,8 +2,7 @@ import BoundingBox from "./boundingbox.js"
 import Dim2 from "./dim2.js"
 import Dim3 from "./dim3.js"
 import EntityDef from "./entitydef.js"
-import { blockSize, cam, debug, entitydefs, game } from "./main.js"
-import Texture from "./texture.js"
+import { blockSize, entitydefs } from "./main.js"
 import World from "./world.js"
 
 export default class Entity {
@@ -43,6 +42,7 @@ export default class Entity {
 		pos.x -= this.size.x/2
 		return new BoundingBox(pos, this.size)
 	}
+
 	tick(world: World) {
 		this.position.add(this.motion)
 	}
@@ -55,12 +55,20 @@ export default class Entity {
 
 		this.texture?.draw(ctx)
 
+		ctx.restore()
+	}
+
+	drawHitbox(ctx: CanvasRenderingContext2D, x: number, y: number) {
+		ctx.save()
+		ctx.translate(x, -y)
+		ctx.translate(-this.size.x/2, 1 - this.size.y) // to center
+		ctx.scale(this.size.x, this.size.y)		
+
 		// hitbox
-		if (debug.showHitboxes) {
-			ctx.strokeStyle = "red"
-			ctx.lineWidth = 1 / blockSize
-			ctx.strokeRect(0, 0, 1, 1)
-		}
+		ctx.strokeStyle = "red"
+		ctx.lineWidth = 1 / blockSize
+		ctx.strokeRect(0, 0, 1, 1)
+
 		ctx.restore()
 	}
 
