@@ -43,7 +43,14 @@ export default class Dim3 implements Dim {
 		return this
 	}
 
-	copy() {
+	floor(): Dim3 {
+		this.x = Math.floor(this.x)
+		this.y = Math.floor(this.y)
+		this.z = Math.floor(this.z)
+		return this
+	}
+
+	copy(): Dim3 {
 		return new Dim3(this.x, this.y, this.z)
 	}
 

@@ -34,8 +34,4 @@ export default class ItemEntity extends Entity {
 		}
 	}
 
-	draw(ctx: CanvasRenderingContext2D, x: number, y: number, blockSize: number) {
-		super.draw(ctx, x, y, blockSize)
-	}
-
 }
