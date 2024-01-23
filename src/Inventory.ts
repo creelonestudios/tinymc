@@ -1,5 +1,5 @@
-import Item from "./item.js"
-import ItemStack from "./itemstack.js"
+import Item from "./Item.js"
+import ItemStack from "./ItemStack.js"
 
 export default class Inventory {
 

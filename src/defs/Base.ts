@@ -1,4 +1,4 @@
-import Texture from "../texture/texture.js"
+import Texture from "../texture/Texture.js"
 import { getTexture } from "../main.js"
 
 export default class Base {

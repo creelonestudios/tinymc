@@ -1,6 +1,6 @@
 import Graphics from "../Graphics.js"
-import Dim2 from "../dim/dim2.js";
-import Texture from "./texture.js";
+import Dim2 from "../dim/Dim2.js";
+import Texture from "./Texture.js";
 
 export default class Subtexture {
 

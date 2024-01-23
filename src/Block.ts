@@ -1,7 +1,7 @@
-import BlockDef from "./defs/blockdef.js"
-import BoundingBox from "./boundingbox.js"
-import Dim2 from "./dim/dim2.js"
-import Dim3 from "./dim/dim3.js"
+import BlockDef from "./defs/BlockDef.js"
+import BoundingBox from "./BoundingBox.js"
+import Dim2 from "./dim/Dim2.js"
+import Dim3 from "./dim/Dim3.js"
 import { blockdefs } from "./main.js"
 import Graphics from "./Graphics.js"
 

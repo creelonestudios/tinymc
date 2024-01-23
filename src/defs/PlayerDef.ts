@@ -1,4 +1,4 @@
-import EntityDef from "./entitydef.js"
+import EntityDef from "./EntityDef.js"
 
 export default class PlayerDef extends EntityDef {
 

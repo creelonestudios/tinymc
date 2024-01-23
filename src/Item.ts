@@ -1,5 +1,5 @@
-import ItemDef from "./defs/itemdef.js"
-import BlockDef from "./defs/blockdef.js"
+import ItemDef from "./defs/ItemDef.js"
+import BlockDef from "./defs/BlockDef.js"
 import { itemdefs, blockdefs } from "./main.js"
 
 export default class Item {

@@ -1,4 +1,4 @@
-import Dim from "./dim.js"
+import Dim from "./Dim.js"
 
 export default class Dim3 implements Dim {
 	

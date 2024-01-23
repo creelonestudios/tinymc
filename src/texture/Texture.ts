@@ -1,5 +1,5 @@
 import Graphics from "../Graphics.js"
-import Subtexture from "./subtexture.js";
+import Subtexture from "./Subtexture.js";
 
 export default class Texture {
 

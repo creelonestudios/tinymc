@@ -1,6 +1,6 @@
-import Block from "../block.js";
+import Block from "../Block.js";
 import { blockdefs } from "../main.js";
-import World from "./world.js";
+import World from "./World.js";
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 
 export default class WorldGenerator {

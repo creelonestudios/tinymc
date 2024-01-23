@@ -1,4 +1,4 @@
-import Dim from "./dim"
+import Dim from "./Dim"
 
 export default class Dim2 implements Dim {
 	

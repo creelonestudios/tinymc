@@ -1,4 +1,4 @@
-import Dim2 from "./dim/dim2.js"
+import Dim2 from "./dim/Dim2.js"
 import EventEmitter from "./util/EventEmitter.js"
 
 export default class Input extends EventEmitter {

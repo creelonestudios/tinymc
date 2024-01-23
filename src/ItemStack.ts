@@ -1,4 +1,4 @@
-import Item from "./item.js"
+import Item from "./Item.js"
 
 export default class ItemStack {
 

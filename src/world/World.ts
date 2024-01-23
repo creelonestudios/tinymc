@@ -1,6 +1,6 @@
 import Graphics from "../Graphics.js"
-import Block from "../block.js"
-import Entity from "../entity/entity.js"
+import Block from "../Block.js"
+import Entity from "../entity/Entity.js"
 import { player } from "../main.js"
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 
