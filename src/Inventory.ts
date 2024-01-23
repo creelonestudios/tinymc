@@ -81,7 +81,12 @@ export default class Inventory {
 	}
 
 	getData() {
-		return this.slots.map(slot => slot.getData())
+		const arr: (ReturnType<ItemStack["getData"]> & {slot: number})[] = []
+		this.slots.forEach((slot, index) => {
+			if (slot.item.id == "tiny:air") return
+			arr.push({...slot.getData(), slot: index})
+		})
+		return arr
 	}
 
 }
