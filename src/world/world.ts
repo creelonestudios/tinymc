@@ -31,8 +31,6 @@ export default class World {
 		const blockIds = save.substring(0, semi).split(",")
 		const blocks = Array.from(save.substring(semi + 1)).map(v => v.charCodeAt(0))
 
-		//console.log("!", Array.from(save.substring(semi + 1)), save.substring(semi + 1))
-
 		const world = new World(dims)
 		world.entities = new Set(entities)
 		
@@ -40,7 +38,6 @@ export default class World {
 		for (let z = world.minZ; z <= world.maxZ; z++) {
 			for (let y = world.minY; y <= world.maxY; y++) {
 				for (let x = world.minX; x <= world.maxX; x++) {
-					//console.log(x, y, z, "#", blocks[i], blockIds[blocks[i]])
 					world.setBlock(x, y, z, new Block(blockIds[blocks[i]] || "tiny:air")) // TODO: if blockID unknown, insert placeholder block
 					i++
 				}
@@ -106,8 +103,6 @@ export default class World {
 
 	spawn(entity: Entity) {
 		this.entities.add(entity)
-		let entityData = entity.getData()
-		console.log(entityData, YSON.stringify(entityData))
 	}
 
 	removeEntity(entity: Entity) {
@@ -174,7 +169,6 @@ export default class World {
 						continue
 					}
 					const idIndex = blockIds.indexOf(block.id)
-					//if (block.id != "tiny:air") console.log(block, idIndex)
 					if (idIndex >= 0) {
 						blocks[i] = idIndex
 					} else {

@@ -41,9 +41,6 @@ export const cam = new Cam(player)
 export const input = new Input()
 export let debug = { showHitboxes: false }
 
-let playerData = player.getData()
-console.log(playerData, YSON.stringify(playerData))
-
 Hotbar.loadTexture()
 WorldGenerator.flat(world)
 setInterval(() => requestAnimationFrame(draw), 100)
@@ -152,7 +149,6 @@ input.on("keydown", (key: string) => {
 
 input.on("click", (button: number) => {
 	let {x, y} = getMouseBlock()
-	//console.log(button)
 	switch (button) {
 		case 0:
 			world.clearBlock(x, y, 0)
