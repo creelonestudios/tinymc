@@ -1,9 +1,9 @@
-import BlockDef from "./defs/BlockDef.js"
-import BoundingBox from "./BoundingBox.js"
-import Dim2 from "./dim/Dim2.js"
-import Dim3 from "./dim/Dim3.js"
-import { blockdefs } from "./main.js"
-import Graphics from "./Graphics.js"
+import BlockDef from "../defs/BlockDef.js"
+import BoundingBox from "../util/BoundingBox.js"
+import Dim2 from "../dim/Dim2.js"
+import Dim3 from "../dim/Dim3.js"
+import { blockdefs } from "../main.js"
+import Graphics from "../Graphics.js"
 
 export default class Block {
 
@@ -12,7 +12,7 @@ export default class Block {
 		return new Block(data.id)
 	}
 
-	private readonly def: BlockDef
+	protected readonly def: BlockDef
 
 	constructor(def: BlockDef | string) {
 		if (def instanceof BlockDef) this.def = def
@@ -36,6 +36,10 @@ export default class Block {
 
 	get maxItemStack() {
 		return this.def.maxItemStack
+	}
+
+	hasInventory() {
+		return this.def.hasInventory()
 	}
 
 	getBoundingBox(x: number, y: number) {

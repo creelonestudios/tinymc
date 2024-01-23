@@ -1,4 +1,4 @@
-import BoundingBox from "../BoundingBox.js"
+import BoundingBox from "../util/BoundingBox.js"
 import Dim2 from "../dim/Dim2.js"
 import Dim3 from "../dim/Dim3.js"
 import EntityDef from "../defs/EntityDef.js"

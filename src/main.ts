@@ -1,11 +1,11 @@
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
-import Block from "./Block.js"
+import Block from "./block/Block.js"
 import BlockDef from "./defs/BlockDef.js"
 import Texture from "./texture/Texture.js"
 import World from "./world/World.js"
 import Player from "./entity/Player.js"
 import ItemDef from "./defs/ItemDef.js"
-import Hotbar from "./Hotbar.js"
+import Hotbar from "./util/Hotbar.js"
 import WorldGenerator from "./world/WorldGenerator.js"
 import Cam from "./Cam.js"
 import Input from "./Input.js"
@@ -15,6 +15,8 @@ import ItemStack from "./ItemStack.js"
 import Dim2 from "./dim/Dim2.js"
 import { $ } from "./util/util.js"
 import Graphics from "./Graphics.js"
+import Container from "./util/Container.js"
+import ContainerBlock from "./block/ContainerBlock.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -42,6 +44,7 @@ export const input = new Input()
 export let debug = { showHitboxes: false }
 
 Hotbar.loadTexture()
+Container.loadTexture()
 WorldGenerator.flat(world)
 world.spawn(player)
 setInterval(() => requestAnimationFrame(draw), 100)
@@ -114,6 +117,11 @@ function draw() {
 		Hotbar.drawHotbar(graphics)
 	}
 
+	// container
+	{
+		Container.drawContainer(graphics)
+	}
+
 }
 
 function getMouseBlock() {
@@ -146,10 +154,17 @@ input.on("keydown", (key: string) => {
 		if (stack.amount > 1) stack.amount--
 		else player.hotbar.set(index, new ItemStack("tiny:air"))
 	}
+	inv: if (key == "KeyE") { // open inventory under mouse
+		if (Container.showingInventory()) {
+			Container.setInventory()
+			break inv
+		}
+		openInventory()
+	}
 })
 
 input.on("click", (button: number) => {
-	let {x, y} = getMouseBlock()
+	const {x, y} = getMouseBlock()
 	switch (button) {
 		case 0:
 			world.clearBlock(x, y, input.pressed("ShiftLeft") ? -1 : 0)
@@ -161,9 +176,21 @@ input.on("click", (button: number) => {
 			player.pickBlock(block)
 			break
 		case 2:
-			let stack = player.selectedItem
-			if (world.getBlock(x, y, input.pressed("ShiftLeft") ? -1 : 0)?.id == "tiny:air" && stack.item.isBlock())
-				world.setBlock(x, y, input.pressed("ShiftLeft") ? -1 : 0, new Block(stack.item.id))
+			const stack = player.selectedItem
+			const currentBlock = world.getBlock(x, y, input.pressed("ShiftLeft") ? -1 : 0)
+			if (currentBlock && currentBlock.id == "tiny:air" && stack.item.isBlock()) {
+				if (blockdefs.get(stack.item.id)?.hasInventory()) world.setBlock(x, y, input.pressed("ShiftLeft") ? -1 : 0, new ContainerBlock(stack.item.id))
+				else world.setBlock(x, y, input.pressed("ShiftLeft") ? -1 : 0, new Block(stack.item.id))
+			} else {
+				openInventory()
+			}
 			break
 	}
 })
+
+function openInventory() {
+	const {x, y} = getMouseBlock()
+	const block = world.getBlock(x, y, 0)
+	if (!block?.hasInventory()) return
+	Container.setInventory((block as ContainerBlock).inventory)
+}

@@ -1,4 +1,4 @@
-import Block from "../Block.js"
+import Block from "../block/Block.js"
 import Dim3 from "../dim/Dim3.js"
 import Entity from "./Entity.js"
 import Inventory from "../Inventory.js"

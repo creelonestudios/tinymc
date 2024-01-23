@@ -1,4 +1,4 @@
-import Block from "../Block.js";
+import Block from "../block/Block.js";
 import { blockdefs } from "../main.js";
 import World from "./World.js";
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"

@@ -1,5 +1,5 @@
 import Graphics from "../Graphics.js"
-import Block from "../Block.js"
+import Block from "../block/Block.js"
 import Entity from "../entity/Entity.js"
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 

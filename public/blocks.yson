@@ -5,6 +5,6 @@
 		stone: {},
 		water: {},
 		grass_block: {},
-		chest: { inventorySize: 9 }
+		chest: { inventorySlots: 9 }
 	}
 }

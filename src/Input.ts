@@ -28,7 +28,6 @@ export default class Input extends EventEmitter {
 			e.preventDefault()
 		})
 		window.addEventListener("contextmenu", e => {
-			this.emit("click", 2)
 			e.preventDefault()
 		})
 		window.addEventListener("wheel", e => {
