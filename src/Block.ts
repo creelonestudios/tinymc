@@ -53,6 +53,7 @@ export default class Block {
 		g.save()
 		g.translate(x, y)
 
+		if (this.id == "tiny:water") g.globalAlpha = 0.35
 		this.texture?.draw(g)
 
 		g.restore()

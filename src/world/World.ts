@@ -117,14 +117,14 @@ export default class World {
 	draw(g: Graphics) {
 
 		for (let z = this.minZ; z <= this.maxZ; z++) {
+			if (z == 0) { // draw entities behind blocks (e.g. water)
+				for (let entity of this.getAllEntities()) {
+					entity.draw(g)
+				}
+			}
 			for (let y = this.minY; y <= this.maxY; y++) {
 				for (let x = this.minX; x <= this.maxX; x++) {
 					this.getBlock(x, y, z)?.draw(g, x, y)
-				}
-			}
-			if (z == 0) {
-				for (let entity of this.getAllEntities()) {
-					entity.draw(g)
 				}
 			}
 		}

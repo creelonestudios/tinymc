@@ -9,10 +9,12 @@ export default class Graphics {
 	get fillStyle()   { return this.ctx.fillStyle }
 	get strokeStyle() { return this.ctx.strokeStyle }
 	get lineWidth()   { return this.ctx.lineWidth }
+	get globalAlpha() { return this.ctx.globalAlpha }
 
 	set fillStyle(x)   { this.ctx.fillStyle = x }
 	set strokeStyle(x) { this.ctx.strokeStyle = x }
 	set lineWidth(x)   { this.ctx.lineWidth = x }
+	set globalAlpha(x) { this.ctx.globalAlpha = x }
 
 	save() { this.ctx.save() }
 	restore() { this.ctx.restore() }
