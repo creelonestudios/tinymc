@@ -131,6 +131,7 @@ export function getMousePos() {
 }
 
 input.on("keydown", (key: string) => {
+	//console.log(key)
 	if (key == "Digit1") player.selectedItemSlot = 0
 	if (key == "Digit2") player.selectedItemSlot = 1
 	if (key == "Digit3") player.selectedItemSlot = 2
@@ -151,17 +152,18 @@ input.on("click", (button: number) => {
 	let {x, y} = getMouseBlock()
 	switch (button) {
 		case 0:
-			world.clearBlock(x, y, 0)
+			world.clearBlock(x, y, input.pressed("ShiftLeft") ? -1 : 0)
 			break
 		case 1:
 			let block = world.getBlock(x, y, 0)
+			if (!block || block.id == "tiny:air") block = world.getBlock(x, y, -1)
 			if (!block || block.id == "tiny:air") break
 			player.pickBlock(block)
 			break
 		case 2:
 			let stack = player.selectedItem
-			if (world.getBlock(x, y, 0)?.id == "tiny:air" && stack.item.isBlock())
-				world.setBlock(x, y, 0, new Block(stack.item.id))
+			if (world.getBlock(x, y, input.pressed("ShiftLeft") ? -1 : 0)?.id == "tiny:air" && stack.item.isBlock())
+				world.setBlock(x, y, input.pressed("ShiftLeft") ? -1 : 0, new Block(stack.item.id))
 			break
 	}
 })
