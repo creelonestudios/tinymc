@@ -4,6 +4,7 @@
 		dirt: {},
 		stone: {},
 		water: {},
-		grass_block: {}
+		grass_block: {},
+		chest: { inventorySize: 9 }
 	}
 }
