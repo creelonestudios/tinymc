@@ -18,9 +18,9 @@ export default class Player extends Entity {
 	#selectedItemSlot: number
 	readonly hotbar: Inventory
 	
-	constructor(skin: string) {
+	constructor(skin: string, name: string) {
 		super(new PlayerDef(), new Dim3(0, 1, 0))
-		this.name = "tinypersson" // temp
+		this.name = name
 		this.hotbar = new Inventory(5)
 		this.skin = skin
 		this.#texture = getTexture((this.def as PlayerDef).skinAssetsPath(skin))
@@ -77,6 +77,16 @@ export default class Player extends Entity {
 
 	tick(world: World) {
 		super.tick(world)
+	}
+
+	getData() {
+		return {
+			...super.getData(),
+			selectedItem: this.selectedItem.getData(),
+			selectedItemSlot: this.selectedItemSlot,
+			playerName: this.name,
+			hotbar: this.hotbar.getData()
+		}
 	}
 
 }

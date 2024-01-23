@@ -70,9 +70,10 @@ export default class Block {
 		g.restore()
 	}
 
-	toYSON() {
+	getData(x: number, y: number, z: number) {
 		return {
-			id: this.id
+			id: this.id,
+			x, y, z
 		}
 	}
 

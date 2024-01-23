@@ -25,4 +25,11 @@ export default class ItemStack {
 		return this.item.match(item)
 	}
 
+	getData() {
+		return {
+			item: this.item.getData(),
+			amount: this.amount
+		}
+	}
+
 }

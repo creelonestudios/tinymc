@@ -80,4 +80,8 @@ export default class Inventory {
 		return -1
 	}
 
+	getData() {
+		return this.slots.map(slot => slot.getData())
+	}
+
 }

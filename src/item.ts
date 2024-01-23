@@ -43,7 +43,7 @@ export default class Item {
 		return this.id == item.id
 	}
 
-	toYSON() {
+	getData() {
 		return {
 			id: this.id
 		}

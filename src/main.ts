@@ -36,10 +36,13 @@ export const entitydefs = await loadDefs<EntityDef>("entities.yson", EntityDef)
 
 // other
 export const world = new World([-20, 20, -20, 20, -1, 1])
-export const player = new Player("jens")
+export const player = new Player("jens", "TinyJens")
 export const cam = new Cam(player)
 export const input = new Input()
 export let debug = { showHitboxes: false }
+
+let playerData = player.getData()
+console.log(playerData, YSON.stringify(playerData))
 
 Hotbar.loadTexture()
 WorldGenerator.flat(world)

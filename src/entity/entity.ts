@@ -81,4 +81,14 @@ export default class Entity {
 		g.restore()
 	}
 
+	getData() {
+		return {
+			id: this.id,
+			motion: this.motion.asArray(),
+			position: this.position.asArray(), // TODO: "pos" alias for compatibility
+			rotation: this.rotation.asArray(),
+			spawnTime: this.spawnTime
+		}
+	}
+
 }
