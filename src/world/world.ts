@@ -23,7 +23,33 @@ export default class World {
 		return world
 	}
 
-	private blocks: Map<string, Block>
+	static load(save: string, dims: number[], entities: Entity[]) {
+		const semi = save.indexOf(";")
+		if (!semi) return // invalid save
+
+		const blockIds = save.substring(0, semi).split(",")
+		const blocks = Array.from(save.substring(semi + 1)).map(v => v.charCodeAt(0))
+
+		//console.log("!", Array.from(save.substring(semi + 1)), save.substring(semi + 1))
+
+		const world = new World(dims)
+		world.entities = new Set(entities)
+		
+		let i = 0
+		for (let z = world.minZ; z <= world.maxZ; z++) {
+			for (let y = world.minY; y <= world.maxY; y++) {
+				for (let x = world.minX; x <= world.maxX; x++) {
+					//console.log(x, y, z, "#", blocks[i], blockIds[blocks[i]])
+					world.setBlock(x, y, z, new Block(blockIds[blocks[i]] || "tiny:air")) // TODO: if blockID unknown, insert placeholder block
+					i++
+				}
+			}
+		}
+
+		return world
+	}
+
+	private blocks: Map<`${number},${number},${number}`, Block>
 	private entities: Set<Entity>
 	readonly minX: number
 	readonly maxX: number
@@ -129,9 +155,46 @@ export default class World {
 
 	}
 
+	save() {
+		const blockCount = (this.maxX - this.minX +1) * (this.maxY - this.minY +1) * (this.maxZ - this.minZ +1)
+		const blocks = new Uint16Array(blockCount)
+		const blockIds = ["tiny:air"]
+
+		let i = 0
+		for (let z = this.minZ; z <= this.maxZ; z++) {
+			for (let y = this.minY; y <= this.maxY; y++) {
+				for (let x = this.minX; x <= this.maxX; x++) {
+					const block = this.getBlock(x, y, z)
+					if (!block) {
+						blocks[i] = 0
+						i++
+						continue
+					}
+					const idIndex = blockIds.indexOf(block.id)
+					//if (block.id != "tiny:air") console.log(block, idIndex)
+					if (idIndex >= 0) {
+						blocks[i] = idIndex
+					} else {
+						blockIds.push(block.id)
+						blocks[i] = blockIds.length -1
+					}
+					i++
+				}
+			}
+		}
+
+		return {
+			blockIds,
+			blocks,
+			stringSave: blockIds.join(",") + ";" + String.fromCharCode(...Array.from(blocks)),
+			dims: [this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ],
+			entites: this.entities
+		}
+	}
+
 	toYSON() {
 		return {
-			dims: [this.minX, this.maxX, this.minY, this.maxY, this.minY, this.maxZ],
+			dims: [this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ],
 			blocks: this.blocks,
 			entites: this.entities
 		}
