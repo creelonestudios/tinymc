@@ -43,6 +43,7 @@ export let debug = { showHitboxes: false }
 
 Hotbar.loadTexture()
 WorldGenerator.flat(world)
+world.spawn(player)
 setInterval(() => requestAnimationFrame(draw), 100)
 
 async function loadDefs<T>(path: string, cls: any): Promise<Map<String, T>> {
@@ -74,7 +75,6 @@ function draw() {
 	// tick
 	player.motion.x = (Number(input.pressed("KeyD")) - Number(input.pressed("KeyA"))) * 0.25
 	player.motion.y = (Number(input.pressed("KeyW")) - Number(input.pressed("KeyS"))) * 0.25
-	player.tick(world)
 	world.tick()
 
 	// draw

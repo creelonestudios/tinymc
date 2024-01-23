@@ -1,7 +1,6 @@
 import Graphics from "../Graphics.js"
 import Block from "../Block.js"
 import Entity from "../entity/Entity.js"
-import { player } from "../main.js"
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 
 export default class World {
@@ -124,11 +123,9 @@ export default class World {
 				}
 			}
 			if (z == 0) {
-				// player
 				for (let entity of this.getAllEntities()) {
 					entity.draw(g)
 				}
-				player.draw(g)
 			}
 		}
 
@@ -143,11 +140,9 @@ export default class World {
 				}
 			}
 			if (z == 0) {
-				// player
 				for (let entity of this.getAllEntities()) {
 					entity.drawHitbox(g)
 				}
-				player.drawHitbox(g)
 			}
 		}
 
