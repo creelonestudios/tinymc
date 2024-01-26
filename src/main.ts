@@ -18,6 +18,7 @@ import Graphics from "./Graphics.js"
 import Container from "./util/Container.js"
 import ContainerBlock from "./block/ContainerBlock.js"
 import DebugScreen from "./util/DebugScreen.js"
+import CreativeInventory from "./CreativeInventory.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -186,6 +187,13 @@ input.on("keydown", (key: string) => {
 			break inv
 		}
 		openInventory()
+	}
+
+	if (key == "KeyC") { // temp creative inv
+		const items = Array.from(blockdefs.values())
+		items.pop()
+		const inv = new CreativeInventory(items)
+		Container.setInventory(inv)
 	}
 
 	if (key == "F3") {

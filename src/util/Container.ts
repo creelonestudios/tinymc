@@ -1,3 +1,4 @@
+import CreativeInventory from "../CreativeInventory.js"
 import Graphics from "../Graphics.js"
 import Inventory from "../Inventory.js"
 import { getTexture } from "../main.js"
@@ -31,32 +32,45 @@ export default class Container {
 		ctx.save()
 		ctx.translate(-(inventory.columns * slotSize)/2, -(Math.ceil(inventory.size / inventory.columns) * slotSize)/2)
 
-		let column = 0
-		for (let i = 0; i < inventory.size; i++) {
-			// slot
+		// slot
+		drawSlots(g, inventory, () => {
 			slot.draw(g, slotSize, slotSize, true)
+		})
 
-			// item
-			const stack = inventory.get(i)
+		// item
+		drawSlots(g, inventory, (inv, i) => {
+			const stack = inv.get(i)
 			if (stack.item.id != "tiny:air") {
 				ctx.save()
 				ctx.translate(inset, inset)
-				stack.draw(g, itemSize)
+				stack.draw(g, itemSize, inv instanceof CreativeInventory)
 				ctx.restore()
 			}
-
-			// translate
-			column++
-			if (column < inventory.columns) {
-				ctx.translate(slotSize, 0)
-			} else {
-				ctx.translate(-(inventory.columns - 1) * slotSize, slotSize)
-				column = 0
-			}
-			
-		}
+		})
 
 		ctx.restore()
 	}
 
+}
+
+function drawSlots(g: Graphics, inventory: Inventory, cb: (inv: Inventory, i: number) => void) {
+	const ctx = g.ctx
+	ctx.save()
+
+	let column = 0
+	for (let i = 0; i < inventory.size; i++) {
+		cb(inventory, i)
+
+		// translate
+		column++
+		if (column < inventory.columns) {
+			ctx.translate(slotSize, 0)
+		} else {
+			ctx.translate(-(inventory.columns - 1) * slotSize, slotSize)
+			column = 0
+		}
+		
+	}
+
+	ctx.restore()
 }

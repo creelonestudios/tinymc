@@ -26,16 +26,18 @@ export default class ItemStack {
 		return this.item.match(item)
 	}
 
-	draw(g: Graphics, size: number) {
+	draw(g: Graphics, size: number, hideAmount: boolean = false) {
 		if (this.item.id == "tiny:air") return
 		this.item.texture?.draw(g, size, size, true)
 
-		g.save()
-		g.ctx.translate(size * 0.95, size * 0.95)
-		g.ctx.textAlign = "center"
-		g.ctx.textBaseline = "middle"
-		g.drawText(this.amount + "", { color: "white", font: { size: 24 } })
-		g.restore()
+		if (this.amount != 1 && !hideAmount) {
+			g.save()
+			g.ctx.translate(size * 0.95, size * 0.95)
+			g.ctx.textAlign = "center"
+			g.ctx.textBaseline = "middle"
+			g.drawText(this.amount + "", { color: "white", font: { size: size/2 } })
+			g.restore()
+		}
 	}
 
 	getData() {
