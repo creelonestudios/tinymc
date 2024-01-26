@@ -17,6 +17,9 @@ import { $ } from "./util/util.js"
 import Graphics from "./Graphics.js"
 import Container from "./util/Container.js"
 import ContainerBlock from "./block/ContainerBlock.js"
+import MenuState from "./enums/MenuState.js"
+import GameMenu from "./Menu.js"
+import { Button } from "./util/Button.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -30,6 +33,7 @@ const graphics = new Graphics(game, blockSize)
 
 // assets
 const textures: Map<String, Texture> = new Map()
+const widgetsTexture = getTexture("tiny/textures/gui/widgets.png");
 
 // defs
 export const blockdefs  = await loadDefs<BlockDef>("blocks.yson", BlockDef)
@@ -42,7 +46,10 @@ export const player = new Player("jens", "TinyJens")
 export const cam = new Cam(player)
 export const input = new Input()
 export let debug = { showHitboxes: false }
+export let menuState: MenuState = MenuState.MENU;
 
+GameMenu.loadTexture()
+Button.loadTexture()
 Hotbar.loadTexture()
 Container.loadTexture()
 WorldGenerator.flat(world)
@@ -75,6 +82,26 @@ export function getTexture(path: string) {
 }
 
 function draw() {
+	if(menuState == MenuState.MENU) drawMenu()
+	else if(menuState == MenuState.INGAME) drawInGame()
+	// TODO: explode
+}
+
+function drawMenu() {
+	// game.width  = innerWidth
+	// game.height = innerHeight
+	// game.style.width  = innerWidth  + "px"
+	// game.style.height = innerHeight + "px"
+	// graphics.fillStyle = "#78A7FF"
+	// graphics.ctx.fillRect(0, 0, game.width, game.height)
+	// graphics.ctx.imageSmoothingEnabled = false
+	graphics.reset()
+	graphics.ctx.translate(0, -game.height/2)
+	GameMenu.drawLogo(graphics)
+	GameMenu.drawMenu(graphics)
+}
+
+function drawInGame() {
 	// tick
 	player.motion.x = (Number(input.pressed("KeyD")) - Number(input.pressed("KeyA"))) * 0.25
 	player.motion.y = (Number(input.pressed("KeyW")) - Number(input.pressed("KeyS"))) * 0.25
