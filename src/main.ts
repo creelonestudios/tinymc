@@ -133,8 +133,8 @@ function getMouseBlock() {
 
 export function getMousePos() {
 	return new Dim2(
-		 (input.mouseX - game.width/2  + cam.x*blockSize) / blockSize,
-		-(input.mouseY - game.height/2 - cam.y*blockSize) / blockSize +2
+		 (input.mouseX - game.width/2  + cam.x*blockSize) / blockSize - gameOffset.x,
+		-(input.mouseY - game.height/2 - cam.y*blockSize) / blockSize - gameOffset.y
 	)
 }
 

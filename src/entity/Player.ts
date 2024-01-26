@@ -19,7 +19,7 @@ export default class Player extends Entity {
 	readonly hotbar: Inventory
 	
 	constructor(skin: string, name: string) {
-		super(new PlayerDef(), new Dim3(0, 1, 0))
+		super(new PlayerDef(), new Dim3(0, 0, 0))
 		this.name = name
 		this.hotbar = new Inventory(5)
 		this.skin = skin

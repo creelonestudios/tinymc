@@ -61,7 +61,7 @@ export default class Entity {
 	draw(g: Graphics) {
 		g.save()
 		g.translate(this.x, this.y)
-		g.translate(-this.size.x/2, -1 + this.size.y) // to center		
+		g.translate(-this.size.x/2, this.size.y) // to center		
 
 		this.texture?.draw(g, this.size.x, this.size.y)
 
@@ -71,7 +71,7 @@ export default class Entity {
 	drawHitbox(g: Graphics) {
 		g.save()
 		g.translate(this.x, this.y)
-		g.translate(-this.size.x/2, -1 + this.size.y) // to center
+		g.translate(-this.size.x/2, this.size.y) // to center
 
 		// hitbox
 		g.strokeStyle = "red"

@@ -23,12 +23,11 @@ export default class ItemEntity extends Entity {
 
 	tick(world: World) {
 		super.tick(world)
-		let pickupDelay = this.spawnTime + ItemEntity.PICKUP_TIME - Date.now()
-		if (this.getBoundingBox().touch(getMousePos())) {
-			player.addItems(this.itemstack)
-			world.removeEntity(this)
-		}
-		if (this.getBoundingBox().intersect(player.getBoundingBox()) && pickupDelay <= 0) {
+		const pickupDelay = this.spawnTime + ItemEntity.PICKUP_TIME - Date.now()
+		const touchingPlayer = this.getBoundingBox().intersect(player.getBoundingBox())
+		const touchingMouse = this.getBoundingBox().touch(getMousePos())
+
+		if (touchingMouse || (touchingPlayer && pickupDelay <= 0)) {
 			player.addItems(this.itemstack)
 			world.removeEntity(this)
 		}
