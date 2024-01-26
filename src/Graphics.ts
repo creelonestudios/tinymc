@@ -59,8 +59,8 @@ export default class Graphics {
 		const textWidth = ctx.measureText(text).width
 
 		if (drawBg) {
-			ctx.textAlign = "center" // required or bg is off
-			ctx.textBaseline = "middle" // required or bg is off
+			ctx.textAlign = "left" // required or bg is off
+			ctx.textBaseline = "top" // required or bg is off
 			ctx.fillStyle = "black"
 			ctx.globalAlpha = opacity * bgOpacity
 			ctx.fillRect(0, 0, textWidth + 2 * padding, font.size + 2 * padding)
