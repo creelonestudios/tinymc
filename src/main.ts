@@ -181,19 +181,21 @@ input.on("keydown", (key: string) => {
 input.on("click", (button: number) => {
 	const {x, y} = getMouseBlock()
 	let z = input.pressed("ShiftLeft") ? -1 : 0
+	const {block: frontBlock, z: frontZ} = getFirstBlock(world, x, y)
+
 	switch (button) {
 		case 0:
+			if (z < frontZ) break // inaccessible
 			world.clearBlock(x, y, z)
 			break
 		case 1:
-			let block = world.getBlock(x, y, 0)
-			if (!block || block.id == "tiny:air") block = world.getBlock(x, y, -1)
-			if (!block || block.id == "tiny:air") break
-			player.pickBlock(block)
+			if (!frontBlock || frontBlock.id == "tiny:air") break
+			player.pickBlock(frontBlock)
 			break
 		case 2:
 			const stack = player.selectedItem
 			if (z != 0 && stack.item.getBlock().mainLayerOnly()) z = 0
+			if (z < frontZ) break // inaccessible
 
 			const currentBlock = world.getBlock(x, y, z)
 			if (currentBlock && !currentBlock.isSolid() && stack.item.isBlock()) {
@@ -211,4 +213,14 @@ function openInventory() {
 	const block = world.getBlock(x, y, 0)
 	if (!block?.hasInventory()) return
 	Container.setInventory((block as ContainerBlock).inventory)
+}
+
+function getFirstBlock(world: World, x: number, y: number, startZ: number = world.maxZ) {
+	startZ = Math.min(startZ, world.maxZ)
+	for (let z = startZ; z >= world.minZ; z--) {
+		const block = world.getBlock(x, y, z)
+		if (!block || !block.isSolid()) continue
+		return { block, z }
+	}
+	return { block: new Block("tiny:air"), z: world.minZ }
 }
