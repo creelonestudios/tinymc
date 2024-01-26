@@ -124,7 +124,7 @@ export default class World {
 			}
 			for (let y = this.minY; y <= this.maxY; y++) {
 				for (let x = this.minX; x <= this.maxX; x++) {
-					this.getBlock(x, y, z)?.draw(g, x, y)
+					this.getBlock(x, y, z)?.draw(g, x, y, z)
 				}
 			}
 		}

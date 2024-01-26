@@ -16,6 +16,10 @@ export default class Graphics {
 	set lineWidth(x)   { this.ctx.lineWidth = x }
 	set globalAlpha(x) { this.ctx.globalAlpha = x }
 
+	brightness(x: number)  {
+		this.ctx.filter = `brightness(${x})`
+	}
+
 	save() { this.ctx.save() }
 	restore() { this.ctx.restore() }
 	

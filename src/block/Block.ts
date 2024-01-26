@@ -64,12 +64,13 @@ export default class Block {
 
 	}
 
-	draw(g: Graphics, x: number, y: number) {
+	draw(g: Graphics, x: number, y: number, z: number) {
 		if (this.def.id == "tiny:air") return
 		g.save()
 		g.translate(x, y)
 
-		if (this.id == "tiny:water") g.globalAlpha = 0.35
+		if (this.type == "fluid") g.globalAlpha = 0.35
+		if (z < 0) g.brightness(0.75)
 		this.texture?.draw(g)
 
 		g.restore()
