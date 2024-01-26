@@ -1,10 +1,9 @@
 {
 	tiny: {
-		air: {},
 		dirt: {},
 		stone: {},
-		water: {},
+		water: { type: "fluid" },
 		grass_block: {},
-		chest: { inventorySlots: 9 }
+		chest: { type: "container", inventorySlots: 9 }
 	}
 }

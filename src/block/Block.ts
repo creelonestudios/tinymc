@@ -34,12 +34,24 @@ export default class Block {
 		return this.def.texture
 	}
 
+	get type() {
+		return this.def.type
+	}
+
 	get maxItemStack() {
 		return this.def.maxItemStack
 	}
 
 	hasInventory() {
 		return this.def.hasInventory()
+	}
+
+	isSolid() {
+		return this.def.isSolid()
+	}
+
+	mainLayerOnly() {
+		return this.def.mainLayerOnly()
 	}
 
 	getBoundingBox(x: number, y: number) {

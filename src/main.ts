@@ -35,6 +35,7 @@ const textures: Map<String, Texture> = new Map()
 export const blockdefs  = await loadDefs<BlockDef>("blocks.yson", BlockDef)
 export const itemdefs   = await loadDefs<ItemDef>("items.yson", ItemDef)
 export const entitydefs = await loadDefs<EntityDef>("entities.yson", EntityDef)
+blockdefs.set("tiny:air", new BlockDef("tiny", "air", {}))
 
 // other
 export const world = new World([-20, 20, -20, 20, -1, 1])
@@ -179,9 +180,10 @@ input.on("keydown", (key: string) => {
 
 input.on("click", (button: number) => {
 	const {x, y} = getMouseBlock()
+	let z = input.pressed("ShiftLeft") ? -1 : 0
 	switch (button) {
 		case 0:
-			world.clearBlock(x, y, input.pressed("ShiftLeft") ? -1 : 0)
+			world.clearBlock(x, y, z)
 			break
 		case 1:
 			let block = world.getBlock(x, y, 0)
@@ -191,10 +193,12 @@ input.on("click", (button: number) => {
 			break
 		case 2:
 			const stack = player.selectedItem
-			const currentBlock = world.getBlock(x, y, input.pressed("ShiftLeft") ? -1 : 0)
-			if (currentBlock && currentBlock.id == "tiny:air" && stack.item.isBlock()) {
-				if (blockdefs.get(stack.item.id)?.hasInventory()) world.setBlock(x, y, input.pressed("ShiftLeft") ? -1 : 0, new ContainerBlock(stack.item.id))
-				else world.setBlock(x, y, input.pressed("ShiftLeft") ? -1 : 0, new Block(stack.item.id))
+			if (z != 0 && stack.item.getBlock().mainLayerOnly()) z = 0
+
+			const currentBlock = world.getBlock(x, y, z)
+			if (currentBlock && !currentBlock.isSolid() && stack.item.isBlock()) {
+				if (blockdefs.get(stack.item.id)?.type == "container") world.setBlock(x, y, z, new ContainerBlock(stack.item.id))
+				else world.setBlock(x, y, z, new Block(stack.item.id))
 			} else {
 				openInventory()
 			}

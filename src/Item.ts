@@ -1,6 +1,7 @@
 import ItemDef from "./defs/ItemDef.js"
 import BlockDef from "./defs/BlockDef.js"
 import { itemdefs, blockdefs } from "./main.js"
+import Block from "./block/Block.js"
 
 export default class Item {
 
@@ -41,6 +42,11 @@ export default class Item {
 
 	match(item: Item) {
 		return this.id == item.id
+	}
+
+	getBlock() {
+		if (!(this.def instanceof BlockDef)) throw new Error("Item is not a Block!")
+		return new Block(this.def)
 	}
 
 	getData() {
