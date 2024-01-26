@@ -65,8 +65,7 @@ export default class Hotbar {
 
             ctx.save()
             ctx.translate(cx, cy)
-            ctx.scale(itemSize, itemSize)
-            stack.item.texture.draw(g, 1, 1, true)
+            stack.draw(g, itemSize)
             ctx.restore()
         }
 

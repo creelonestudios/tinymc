@@ -15,6 +15,8 @@ export default class DebugScreen {
 		ctx.translate(-game.width/2, -game.height/2) // uncenter
 		ctx.translate(2, 2)
 		ctx.fillStyle = "lime"
+		ctx.textAlign = "left"
+		ctx.textBaseline = "top"
 
 		const lines = []
 

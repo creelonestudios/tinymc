@@ -38,10 +38,13 @@ export default class Container {
 			slot.draw(g, slotSize, slotSize, true)
 
 			// item
-			ctx.save()
-			ctx.translate(inset, inset)
-			inventory.get(i).item.texture?.draw(g, itemSize, itemSize, true)
-			ctx.restore()
+			const stack = inventory.get(i)
+			if (stack.item.id != "tiny:air") {
+				ctx.save()
+				ctx.translate(inset, inset)
+				stack.draw(g, itemSize)
+				ctx.restore()
+			}
 
 			// translate
 			ctx.translate(slotSize, 0)

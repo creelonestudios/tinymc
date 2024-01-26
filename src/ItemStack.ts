@@ -1,3 +1,4 @@
+import Graphics from "./Graphics.js"
 import Item from "./Item.js"
 
 export default class ItemStack {
@@ -23,6 +24,18 @@ export default class ItemStack {
 	match(item: Item | ItemStack) {
 		item = item instanceof Item ? item : item.item
 		return this.item.match(item)
+	}
+
+	draw(g: Graphics, size: number) {
+		if (this.item.id == "tiny:air") return
+		this.item.texture?.draw(g, size, size, true)
+
+		g.save()
+		g.ctx.translate(size * 0.95, size * 0.95)
+		g.ctx.textAlign = "center"
+		g.ctx.textBaseline = "middle"
+		g.drawText(this.amount + "", { color: "white", font: { size: 24 } })
+		g.restore()
 	}
 
 	getData() {
