@@ -29,10 +29,9 @@ export default class Container {
 		if (!slot.ready || !inventory) return
 		const ctx = g.ctx
 		ctx.save()
-		ctx.translate(-(inventory.size * slotSize)/2, -slotSize/2)
+		ctx.translate(-(inventory.columns * slotSize)/2, -(Math.ceil(inventory.size / inventory.columns) * slotSize)/2)
 
-		ctx.strokeRect(0, 0, inventory.size * slotSize, slotSize)
-
+		let column = 0
 		for (let i = 0; i < inventory.size; i++) {
 			// slot
 			slot.draw(g, slotSize, slotSize, true)
@@ -47,7 +46,14 @@ export default class Container {
 			}
 
 			// translate
-			ctx.translate(slotSize, 0)
+			column++
+			if (column < inventory.columns) {
+				ctx.translate(slotSize, 0)
+			} else {
+				ctx.translate(-(inventory.columns - 1) * slotSize, slotSize)
+				column = 0
+			}
+			
 		}
 
 		ctx.restore()

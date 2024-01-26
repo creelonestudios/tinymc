@@ -4,10 +4,12 @@ import ItemStack from "./ItemStack.js"
 export default class Inventory {
 
 	readonly size: number
+	readonly columns: number
 	private slots: ItemStack[]
 
-	constructor(size: number) {
+	constructor(size: number, columns: number = 9) {
 		this.size = size
+		this.columns = columns
 		this.slots = []
 		for (let i = 0; i < this.size; i++) {
 			this.slots[i] = new ItemStack(new Item("tiny:air"), 1)

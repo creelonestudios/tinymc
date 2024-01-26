@@ -9,7 +9,7 @@ export default class ContainerBlock extends Block implements HasInventory {
 
 	constructor(def: BlockDef | string) {
 		super(def)
-		this.inventory = new Inventory(this.def.inventorySlots || 27)
+		this.inventory = new Inventory(this.def.inventorySlots || 27, this.def.inventoryColumns || 9)
 	}
 
 	update() {

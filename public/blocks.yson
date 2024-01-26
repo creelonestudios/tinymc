@@ -4,6 +4,6 @@
 		stone: {},
 		water: { type: "fluid" },
 		grass_block: {},
-		chest: { type: "container", inventorySlots: 9 }
+		chest: { type: "container" }
 	}
 }

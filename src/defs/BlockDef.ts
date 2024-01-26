@@ -6,6 +6,7 @@ export default class BlockDef extends Base {
 	readonly type: "block" | "fluid" | "container"
 	readonly maxItemStack: number
 	readonly inventorySlots: number | null
+	readonly inventoryColumns: number | null
 
 	constructor(namespace: string, idname: string, data: any) {
 		super(namespace, idname)
@@ -14,8 +15,10 @@ export default class BlockDef extends Base {
 		this.type = data.type
 		this.maxItemStack = data.maxItemStack
 
-		if (data.type == "container") this.inventorySlots = data.inventorySlots
-		else this.inventorySlots = null
+		if (data.type == "container") {
+			this.inventorySlots = data.inventorySlots
+			this.inventoryColumns = data.inventoryColumns
+		} else this.inventorySlots = this.inventoryColumns = null
 	}
 
 	get assetsPath() {
@@ -43,6 +46,7 @@ type BlockDefData = {
 } | {
 	type: "container",
 	inventorySlots: number
+	inventoryColumns: number
 })
 
 function validate(data: any): data is BlockDefData {
@@ -65,6 +69,11 @@ function validate(data: any): data is BlockDefData {
 			if (!isInteger(data.inventorySlots) || data.inventorySlots <= 0) return false
 		} else {
 			data.inventorySlots = 27 // default
+		}
+		if ("inventoryColumns" in data) {
+			if (!isInteger(data.inventoryColumns) || data.inventoryColumns <= 0) return false
+		} else {
+			data.inventoryColumns = 9 // default
 		}
 	}
 
