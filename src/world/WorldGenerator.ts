@@ -8,9 +8,15 @@ export default class WorldGenerator {
     static flat(world: World) {
         for (let y = world.minY; y <= world.maxY && y <= 0; y++) {
             for (let x = world.minX; x <= world.maxX; x++) {
-                if (y <= -3) world.setBlock(x, y, 0, new Block("tiny:stone"))
-                else if(y < 0) world.setBlock(x, y, 0, new Block("tiny:dirt"))
-                else if(y == 0) world.setBlock(x, y, 0, new Block("tiny:grass_block"))
+				let block: Block
+                if (y <= -3) block = new Block("tiny:stone")
+                else if(y < 0) block = new Block("tiny:dirt")
+                else if(y == 0) block = new Block("tiny:grass_block")
+				else continue
+
+				for (let z = world.minZ; z <= 0; z++) {
+					world.setBlock(x, y, z, block)
+				}
             }
         }
 
