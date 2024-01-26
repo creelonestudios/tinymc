@@ -17,6 +17,7 @@ import { $ } from "./util/util.js"
 import Graphics from "./Graphics.js"
 import Container from "./util/Container.js"
 import ContainerBlock from "./block/ContainerBlock.js"
+import DebugScreen from "./util/DebugScreen.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -42,7 +43,7 @@ export const world = new World([-20, 20, -20, 20, -1, 1])
 export const player = new Player("jens", "TinyJens")
 export const cam = new Cam(player)
 export const input = new Input()
-export let debug = { showHitboxes: false, showOrigin: false }
+export let debug = { showHitboxes: false, showOrigin: false, showDebugScreen: false }
 
 Hotbar.loadTexture()
 Container.loadTexture()
@@ -134,9 +135,14 @@ function draw() {
 		Container.drawContainer(graphics)
 	}
 
+	// debug screen
+	if (debug.showDebugScreen) {
+		DebugScreen.draw(graphics, world, player)
+	}
+
 }
 
-function getMouseBlock() {
+export function getMouseBlock() {
 	return getMousePos().floor()
 }
 
@@ -175,6 +181,10 @@ input.on("keydown", (key: string) => {
 			break inv
 		}
 		openInventory()
+	}
+
+	if (key == "F3") {
+		debug.showDebugScreen = !debug.showDebugScreen
 	}
 })
 
@@ -215,11 +225,21 @@ function openInventory() {
 	Container.setInventory((block as ContainerBlock).inventory)
 }
 
-function getFirstBlock(world: World, x: number, y: number, startZ: number = world.maxZ) {
+export function getFirstBlock(world: World, x: number, y: number, startZ: number = world.maxZ) {
 	startZ = Math.min(startZ, world.maxZ)
 	for (let z = startZ; z >= world.minZ; z--) {
 		const block = world.getBlock(x, y, z)
 		if (!block || !block.isSolid()) continue
+		return { block, z }
+	}
+	return { block: new Block("tiny:air"), z: world.minZ }
+}
+
+export function getFirstFluid(world: World, x: number, y: number, startZ: number = world.maxZ) {
+	startZ = Math.min(startZ, world.maxZ)
+	for (let z = startZ; z >= world.minZ; z--) {
+		const block = world.getBlock(x, y, z)
+		if (!block || block.id == "tiny:air") continue
 		return { block, z }
 	}
 	return { block: new Block("tiny:air"), z: world.minZ }

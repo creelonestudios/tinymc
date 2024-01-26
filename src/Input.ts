@@ -11,12 +11,19 @@ export default class Input extends EventEmitter {
 		this.keys = new Map()
 		this.mousePos = new Dim2()
 		window.addEventListener("keydown", e => {
+			if (e.code == "F5") {
+				// TODO: save game beforehand!
+				return // default (reload) not prevented
+			}
+
 			this.keys.set(e.code, true)
 			this.emit("keydown", e.code)
+			e.preventDefault()
 		})
 		window.addEventListener("keyup", e => {
 			this.keys.set(e.code, false)
 			this.emit("keyup", e.code)
+			e.preventDefault()
 		})
 		window.addEventListener("mousemove", e => {
 			this.mousePos.x = e.x

@@ -46,6 +46,34 @@ export default class Graphics {
 		this.ctx.strokeRect(0, 0, w * this.blockSize, -h * this.blockSize)
 	}
 
+	drawText(text: string, options?: { color?: string, opacity?: number, bgOpacity?: number, font?: { family?: string, size?: number }, padding?: number, drawBg?: boolean }) { // TODO: replace with game font
+		const ctx = this.ctx
+		const { color = ctx.fillStyle || "white", opacity = 1, bgOpacity = 0.35, font = {}, padding = 1, drawBg = false } = options || {}
+		font.family = font.family || "sans-serif"
+		font.size   = font.size   || 16
+		if (text.trim() == "") return font.size + 2 * padding
+
+		ctx.save()
+		ctx.font = `${font.size}px ${font.family}`
+		ctx.textAlign = "left"
+		ctx.textBaseline = "top"
+		const textWidth = ctx.measureText(text).width
+
+		if (drawBg) {
+			ctx.fillStyle = "black"
+			ctx.globalAlpha = opacity * bgOpacity
+			ctx.fillRect(0, 0, textWidth + 2 * padding, font.size + 2 * padding)
+		}
+
+		ctx.fillStyle = color
+		ctx.globalAlpha = opacity
+		ctx.fillText(text, padding, padding)
+
+		ctx.restore()
+
+		return font.size + 2 * padding
+	}
+
 	drawImage(image: CanvasImageSource, w: number = 1, h: number = 1) {
 		this.ctx.drawImage(image, 0, 0, w * this.blockSize, -h * this.blockSize)
 	}
