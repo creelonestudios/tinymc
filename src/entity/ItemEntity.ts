@@ -24,8 +24,9 @@ export default class ItemEntity extends Entity {
 	tick(world: World) {
 		super.tick(world)
 		const pickupDelay = this.spawnTime + ItemEntity.PICKUP_TIME - Date.now()
-		const touchingPlayer = this.getBoundingBox().intersect(player.getBoundingBox())
-		const touchingMouse = this.getBoundingBox().touch(getMousePos())
+		const boundingBox = this.getBoundingBox()
+		const touchingPlayer = boundingBox.intersect(player.getBoundingBox())
+		const touchingMouse  = boundingBox.touch(getMousePos())
 
 		if (touchingMouse || (touchingPlayer && pickupDelay <= 0)) {
 			player.addItems(this.itemstack)

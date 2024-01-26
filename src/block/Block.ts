@@ -63,18 +63,6 @@ export default class Block {
 		g.restore()
 	}
 
-	drawHitbox(g: Graphics, x: number, y: number) {
-		if (this.def.id == "tiny:air") return
-		g.save()
-		g.translate(x, y)
-
-		g.strokeStyle = "blue"
-		g.lineWidth = 1
-		g.strokeRect()
-		
-		g.restore()
-	}
-
 	getData(x: number, y: number, z: number) {
 		return {
 			id: this.id,

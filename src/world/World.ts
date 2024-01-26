@@ -131,17 +131,19 @@ export default class World {
 
 	}
 
-	drawHitboxes(g: Graphics) {
+	drawBoundingBoxes(g: Graphics) {
 
 		for (let z = this.minZ; z <= this.maxZ; z++) {
 			for (let y = this.minY; y <= this.maxY; y++) {
 				for (let x = this.minX; x <= this.maxX; x++) {
-					this.getBlock(x, y, z)?.drawHitbox(g, x, y)
+					const block = this.getBlock(x, y, z)
+					if (!block || block.id == "tiny:air") continue
+					block.getBoundingBox(x, y).draw(g, "blue")
 				}
 			}
 			if (z == 0) {
 				for (let entity of this.getAllEntities()) {
-					entity.drawHitbox(g)
+					entity.getBoundingBox().draw(g, "red")
 				}
 			}
 		}

@@ -39,15 +39,15 @@ export default class Graphics {
 	}
 
 	strokeRect(w: number = 1, h: number = 1) {
-		this.ctx.strokeRect(0, 0, w * this.blockSize, h * this.blockSize)
+		this.ctx.strokeRect(0, 0, w * this.blockSize, -h * this.blockSize)
 	}
 
 	drawImage(image: CanvasImageSource, w: number = 1, h: number = 1) {
-		this.ctx.drawImage(image, 0, 0, w * this.blockSize, h * this.blockSize)
+		this.ctx.drawImage(image, 0, 0, w * this.blockSize, -h * this.blockSize)
 	}
 
 	drawPartialImage(image: CanvasImageSource, sx: number, sy: number, sWidth: number, sHeight: number, dWidth: number = 1, dHeight: number = 1) {
-		this.ctx.drawImage(image, sx, sy, sWidth, sHeight, 0, 0, dWidth * this.blockSize, dHeight * this.blockSize)
+		this.ctx.drawImage(image, sx, sy, sWidth, sHeight, 0, 0, dWidth * this.blockSize, -dHeight * this.blockSize)
 	}
 
 	globalDrawImage(image: CanvasImageSource, w: number = 1, h: number = 1) {

@@ -61,22 +61,9 @@ export default class Entity {
 	draw(g: Graphics) {
 		g.save()
 		g.translate(this.x, this.y)
-		g.translate(-this.size.x/2, this.size.y) // to center		
+		g.translate(-this.size.x/2, 0) // to center (x)
 
 		this.texture?.draw(g, this.size.x, this.size.y)
-
-		g.restore()
-	}
-
-	drawHitbox(g: Graphics) {
-		g.save()
-		g.translate(this.x, this.y)
-		g.translate(-this.size.x/2, this.size.y) // to center
-
-		// hitbox
-		g.strokeStyle = "red"
-		g.lineWidth = 1
-		g.strokeRect(this.size.x, this.size.y)
 
 		g.restore()
 	}

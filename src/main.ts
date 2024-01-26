@@ -41,7 +41,7 @@ export const world = new World([-20, 20, -20, 20, -1, 1])
 export const player = new Player("jens", "TinyJens")
 export const cam = new Cam(player)
 export const input = new Input()
-export let debug = { showHitboxes: false }
+export let debug = { showHitboxes: false, showOrigin: false }
 
 Hotbar.loadTexture()
 Container.loadTexture()
@@ -92,7 +92,18 @@ function draw() {
 
 	// hitboxes
 	if (debug.showHitboxes) {
-		world.drawHitboxes(graphics)
+		world.drawBoundingBoxes(graphics)
+	}
+
+	// origin / axis
+	if (debug.showOrigin) {
+		graphics.ctx.strokeStyle = "lime"
+		graphics.ctx.beginPath()
+		graphics.ctx.moveTo(0, -100)
+		graphics.ctx.lineTo(0, 100)
+		graphics.ctx.moveTo(-100, 0)
+		graphics.ctx.lineTo(100, 0)
+		graphics.ctx.stroke()
 	}
 
 	// block highlight
@@ -125,10 +136,7 @@ function draw() {
 }
 
 function getMouseBlock() {
-	return new Dim2(
-		 Math.floor((input.mouseX - game.width/2  + cam.x*blockSize) / blockSize) - gameOffset.x,
-		-Math.floor((input.mouseY - game.height/2 - cam.y*blockSize) / blockSize) - gameOffset.y
-	)
+	return getMousePos().floor()
 }
 
 export function getMousePos() {
@@ -145,7 +153,13 @@ input.on("keydown", (key: string) => {
 	if (key == "Digit3") player.selectedItemSlot = 2
 	if (key == "Digit4") player.selectedItemSlot = 3
 	if (key == "Digit5") player.selectedItemSlot = 4
-	if (key == "KeyM") debug.showHitboxes = !debug.showHitboxes
+	if (key == "KeyM") {
+		debug.showHitboxes = !debug.showHitboxes
+
+		// also show origin if shift is pressed
+		if (!debug.showHitboxes) debug.showOrigin = false
+		else if (input.pressed("ShiftLeft")) debug.showOrigin = true
+	}
 	if (key == "KeyQ") {
 		let stack = player.selectedItem
 		let index = player.selectedItemSlot
