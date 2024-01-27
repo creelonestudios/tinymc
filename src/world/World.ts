@@ -2,6 +2,7 @@ import Graphics from "../Graphics.js"
 import Block from "../block/Block.js"
 import Entity from "../entity/Entity.js"
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
+import { getFirstBlock } from "../main.js"
 
 export default class World {
 
@@ -124,7 +125,8 @@ export default class World {
 			}
 			for (let y = this.minY; y <= this.maxY; y++) {
 				for (let x = this.minX; x <= this.maxX; x++) {
-					this.getBlock(x, y, z)?.draw(g, x, y, z)
+					const frontBlock = getFirstBlock(this, x, y)
+					if (z >= frontBlock.z) this.getBlock(x, y, z)?.draw(g, x, y, z)
 				}
 			}
 		}
