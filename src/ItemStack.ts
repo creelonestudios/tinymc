@@ -1,5 +1,5 @@
 import Graphics from "./Graphics.js"
-import Item from "./Item.js"
+import Item, { type ItemData } from "./Item.js"
 
 export default class ItemStack {
 
@@ -40,11 +40,16 @@ export default class ItemStack {
 		}
 	}
 
-	getData() {
+	getData(): ItemStackData {
 		return {
 			item: this.item.getData(),
 			amount: this.amount
 		}
 	}
 
+}
+
+export type ItemStackData = {
+	item: ItemData,
+	amount: number
 }

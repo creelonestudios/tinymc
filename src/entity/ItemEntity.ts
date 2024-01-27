@@ -1,5 +1,4 @@
-import Dim3 from "../dim/Dim3.js";
-import Entity from "./Entity.js";
+import Entity, { type EntityData } from "./Entity.js";
 import EntityDef from "../defs/EntityDef.js";
 import ItemStack from "../ItemStack.js";
 import { getMousePos, player } from "../main.js";
@@ -11,8 +10,8 @@ export default class ItemEntity extends Entity {
 
 	readonly itemstack: ItemStack
 
-	constructor(itemstack: ItemStack, position: Dim3) {
-		super(new EntityDef("tiny", "item", {}), position)
+	constructor(itemstack: ItemStack, data?: Partial<EntityData>) {
+		super(new EntityDef("tiny", "item", {}), data)
 		this.itemstack = itemstack
 		this.size.set(0.5, 0.5)
 	}

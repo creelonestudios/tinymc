@@ -1,10 +1,9 @@
 import Block from "../block/Block.js"
-import Dim3 from "../dim/Dim3.js"
-import Entity from "./Entity.js"
-import Inventory from "../Inventory.js"
+import Entity, { EntityData } from "./Entity.js"
+import Inventory, { InventoryData } from "../Inventory.js"
 import Item from "../Item.js"
 import ItemEntity from "./ItemEntity.js"
-import ItemStack from "../ItemStack.js"
+import ItemStack, { ItemStackData } from "../ItemStack.js"
 import { getTexture, player, world } from "../main.js"
 import PlayerDef from "../defs/PlayerDef.js"
 import Texture from "../texture/Texture.js"
@@ -18,13 +17,13 @@ export default class Player extends Entity {
 	#selectedItemSlot: number
 	readonly hotbar: Inventory
 	
-	constructor(skin: string, name: string) {
-		super(new PlayerDef(), new Dim3(0, 1, 0))
+	constructor(skin: string, name: string, data: Partial<PlayerData> = {}) {
+		super(new PlayerDef(), { ...data, position: [0, 1, 0] })
 		this.name = name
-		this.hotbar = new Inventory(5)
+		this.hotbar = data.hotbar ? new Inventory(5, 5, data.hotbar) : new Inventory(5)
 		this.skin = skin
 		this.#texture = getTexture((this.def as PlayerDef).skinAssetsPath(skin))
-		this.#selectedItemSlot = 0
+		this.#selectedItemSlot = data.selectedItemSlot || 0
 		this.size.set(1.5, 1.5)
 
 		// for testing, temp
@@ -55,7 +54,7 @@ export default class Player extends Entity {
 
 	addItems(stack: ItemStack) {
 		let leftover = this.hotbar.addItems(stack)
-		if (leftover) world.spawn(new ItemEntity(new ItemStack(player.selectedItem.item.id), player.position.copy()))
+		if (leftover) world.spawn(new ItemEntity(new ItemStack(player.selectedItem.item.id), { position: player.position.asArray() }))
 	}
 
 	pickBlock(block: Block) {
@@ -79,7 +78,7 @@ export default class Player extends Entity {
 		super.tick(world)
 	}
 
-	getData() {
+	getData(): PlayerData {
 		return {
 			...super.getData(),
 			selectedItem: this.selectedItem.getData(),
@@ -89,4 +88,11 @@ export default class Player extends Entity {
 		}
 	}
 
+}
+
+type PlayerData = EntityData & {
+	selectedItem: ItemStackData,
+	selectedItemSlot: number,
+	playerName: string,
+	hotbar: InventoryData
 }

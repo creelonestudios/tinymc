@@ -2,6 +2,7 @@ import ItemDef from "./defs/ItemDef.js"
 import BlockDef from "./defs/BlockDef.js"
 import { itemdefs, blockdefs } from "./main.js"
 import Block from "./block/Block.js"
+import { type BaseData } from "./util/interfaces.js"
 
 export default class Item {
 
@@ -49,10 +50,12 @@ export default class Item {
 		return new Block(this.def)
 	}
 
-	getData() {
+	getData(): ItemData {
 		return {
 			id: this.id
 		}
 	}
 
 }
+
+export type ItemData = BaseData

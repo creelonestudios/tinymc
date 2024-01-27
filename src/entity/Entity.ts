@@ -15,7 +15,9 @@ export default class Entity {
 	protected readonly size: Dim2
 	readonly spawnTime: number
 
-	constructor(def: EntityDef | string, position: Dim3) {
+	noGravity: boolean
+
+	constructor(def: EntityDef | string, data: Partial<EntityData> = {}) {
 		if (def instanceof EntityDef) this.def = def
 		else {
 			let entitydef = entitydefs.get(def)
@@ -25,11 +27,12 @@ export default class Entity {
 				throw "Block definition not found: " + def
 			}
 		}
-		this.position = position
-		this.rotation = new Dim3()
-		this.motion   = new Dim3()
+		this.position = new Dim3(...(data.position || [0, 0, 0]))
+		this.rotation = new Dim3(...(data.rotation || [0, 0, 0]))
+		this.motion   = new Dim3(...(data.motion   || [0, 0, 0]))
 		this.size     = new Dim2()
-		this.spawnTime = Date.now() // TODO: ticks since world creation
+		this.spawnTime = data.spawnTime || Date.now() // TODO: ticks since world creation
+		this.noGravity = typeof data.noGravity == "undefined" ? false : data.noGravity
 	}
 
 	get id() {
@@ -68,14 +71,26 @@ export default class Entity {
 		g.restore()
 	}
 
-	getData() {
+	getData(): EntityData {
 		return {
 			id: this.id,
 			motion: this.motion.asArray(),
 			position: this.position.asArray(), // TODO: "pos" alias for compatibility
 			rotation: this.rotation.asArray(),
+			noGravity: this.noGravity,
+			onGround: false,
 			spawnTime: this.spawnTime
 		}
 	}
 
+}
+
+export type EntityData = {
+	id: string,
+	motion: number[],
+	position: number[],
+	rotation: number[],
+	noGravity: boolean,
+	onGround: boolean,
+	spawnTime: number
 }
