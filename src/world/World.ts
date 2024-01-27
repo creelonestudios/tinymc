@@ -1,8 +1,10 @@
 import Graphics from "../Graphics.js"
-import Block from "../block/Block.js"
-import Entity from "../entity/Entity.js"
+import Block, { BlockData } from "../block/Block.js"
+import Entity, { EntityData } from "../entity/Entity.js"
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 import { getFirstBlock } from "../main.js"
+import Player, { type PlayerData } from "../entity/Player.js"
+import { createBlock, createEntity } from "../main.js"
 
 export default class World {
 
@@ -24,21 +26,25 @@ export default class World {
 		return world
 	}
 
-	static load(save: string, dims: number[], entities: Entity[]) {
-		const semi = save.indexOf(";")
+	static load(stringBlocks: string, blockData: BlockData[], dims: number[], entities: EntityData[]) {
+		const semi = stringBlocks.indexOf(";")
 		if (!semi) return // invalid save
 
-		const blockIds = save.substring(0, semi).split(",")
-		const blocks = Array.from(save.substring(semi + 1)).map(v => v.charCodeAt(0))
+		const blockIds = stringBlocks.substring(0, semi).split(",")
+		const blocks = Array.from(stringBlocks.substring(semi + 1)).map(v => v.charCodeAt(0))
+
+		const blockDataMap: Map<`${number},${number},${number}`, BlockData> = new Map()
+		blockData.forEach(data => blockDataMap.set(`${data.x},${data.y},${data.z}`, data))
 
 		const world = new World(dims)
-		world.entities = new Set(entities)
+		world.entities = new Set(entities.map(data => createEntity(data.id, data)))
 		
 		let i = 0
 		for (let z = world.minZ; z <= world.maxZ; z++) {
 			for (let y = world.minY; y <= world.maxY; y++) {
 				for (let x = world.minX; x <= world.maxX; x++) {
-					world.setBlock(x, y, z, new Block(blockIds[blocks[i]] || "tiny:air")) // TODO: if blockID unknown, insert placeholder block
+					const data = blockDataMap.get(`${x},${y},${z}`)
+					world.setBlock(x, y, z, createBlock(blockIds[blocks[i]] || "tiny:air", data)) // TODO: if blockID unknown, insert placeholder block
 					i++
 				}
 			}
@@ -81,10 +87,15 @@ export default class World {
 		return Array.from(this.blocks.values())
 	}
 
-	setBlock(x: number, y: number, z: number, block: Block) {
+	setBlock(x: number, y: number, z: number, block: Block | string, data?: Partial<BlockData>) {
 		x = Math.floor(x)
 		y = Math.floor(y)
 		z = Math.floor(z)
+
+		if (typeof block == "string") {
+			block = createBlock(block, data)
+		}	
+
 		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) throw new Error(`Tried to set block outside the world: ${x},${y},${z}; ${block.id}`)
 		this.blocks.set(`${x},${y},${z}`, block)
 	}
@@ -101,8 +112,12 @@ export default class World {
 		return Array.from(this.entities.values())
 	}
 
-	spawn(entity: Entity) {
-		this.entities.add(entity)
+	spawn(entity: Entity | string, data?: Partial<EntityData>) {
+		if (typeof entity == "string") {
+			this.entities.add(new Entity(entity, data))
+		} else {
+			this.entities.add(entity)
+		}		
 	}
 
 	removeEntity(entity: Entity) {
@@ -156,6 +171,7 @@ export default class World {
 		const blockCount = (this.maxX - this.minX +1) * (this.maxY - this.minY +1) * (this.maxZ - this.minZ +1)
 		const blocks = new Uint16Array(blockCount)
 		const blockIds = ["tiny:air"]
+		const blockData: BlockData[] = []
 
 		let i = 0
 		for (let z = this.minZ; z <= this.maxZ; z++) {
@@ -167,6 +183,7 @@ export default class World {
 						i++
 						continue
 					}
+					if (block.type == "container") blockData.push(block.getData(x, y, z))
 					const idIndex = blockIds.indexOf(block.id)
 					if (idIndex >= 0) {
 						blocks[i] = idIndex
@@ -179,12 +196,25 @@ export default class World {
 			}
 		}
 
+		const entities: EntityData[] = []
+		const players:  PlayerData[] = []
+
+		Array.from(this.entities).forEach(entity =>{
+			if (entity instanceof Player) {
+				players.push(entity.getData())
+			} else {
+				entities.push(entity.getData())
+			}
+		})
+
 		return {
 			blockIds,
 			blocks,
-			stringSave: blockIds.join(",") + ";" + String.fromCharCode(...Array.from(blocks)),
+			stringBlocks: blockIds.join(",") + ";" + String.fromCharCode(...Array.from(blocks)),
+			blockData,
 			dims: [this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ],
-			entites: this.entities
+			entities,
+			players
 		}
 	}
 

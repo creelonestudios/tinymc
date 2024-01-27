@@ -24,14 +24,14 @@ export default class WorldGenerator {
 		/*(async () => {
 			let ysonSave = YSON.stringify(world.toYSON().blocks)
 			let save = world.save()
-			let saveLength = save.stringSave.length
+			let saveLength = save.stringBlocks.length
 			
 			console.log("blocks:", world.toYSON().blocks)
 			console.log("save:", save)
 			console.log("space effi:", saveLength - ysonSave.length, ysonSave.length / saveLength + "x")
 			console.log(saveLength, "new vs. old", ysonSave.length)
 
-			let worldCopy = World.load(save.stringSave, save.dims, Array.from(save.entites))
+			let worldCopy = World.load(save.stringBlocks, save.blockData, save.dims, save.entities)
 			if (!worldCopy) {
 				console.error("oh no")
 				return

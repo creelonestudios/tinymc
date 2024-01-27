@@ -1,6 +1,6 @@
 import Entity, { type EntityData } from "./Entity.js";
 import EntityDef from "../defs/EntityDef.js";
-import ItemStack from "../ItemStack.js";
+import ItemStack, { type ItemStackData } from "../ItemStack.js";
 import { getMousePos, player } from "../main.js";
 import World from "../world/World.js";
 
@@ -10,9 +10,9 @@ export default class ItemEntity extends Entity {
 
 	readonly itemstack: ItemStack
 
-	constructor(itemstack: ItemStack, data?: Partial<EntityData>) {
+	constructor(itemstack: ItemStack | null, data: Partial<ItemEntityData> = {}) {
 		super(new EntityDef("tiny", "item", {}), data)
-		this.itemstack = itemstack
+		this.itemstack = data.item ? new ItemStack(data.item.item.id, data.item.amount) : (itemstack || new ItemStack("tiny:air"))
 		this.size.set(0.5, 0.5)
 	}
 
@@ -33,4 +33,21 @@ export default class ItemEntity extends Entity {
 		}
 	}
 
+	getData() {
+		return {
+			...super.getData(),
+			item: this.itemstack.getData(),
+			pickupDelay: Math.floor((this.spawnTime + ItemEntity.PICKUP_TIME - Date.now()) * 20 / 1000) // should be in ticks
+		}
+	}
+
+}
+
+export type ItemEntityData = EntityData & {
+	item: ItemStackData,
+	pickupDelay: number
+}
+
+export function isItemEntityData(data: Partial<EntityData>, id: string = data.id || ""): data is ItemEntityData {
+	return id == "tiny:item"
 }

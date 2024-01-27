@@ -90,7 +90,7 @@ export default class Player extends Entity {
 
 }
 
-type PlayerData = EntityData & {
+export type PlayerData = EntityData & {
 	selectedItem: ItemStackData,
 	selectedItemSlot: number,
 	playerName: string,

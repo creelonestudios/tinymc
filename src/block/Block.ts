@@ -4,6 +4,7 @@ import Dim2 from "../dim/Dim2.js"
 import Dim3 from "../dim/Dim3.js"
 import { blockdefs } from "../main.js"
 import Graphics from "../Graphics.js"
+import { type BaseData } from "../util/interfaces.js"
 
 export default class Block {
 
@@ -76,11 +77,17 @@ export default class Block {
 		g.restore()
 	}
 
-	getData(x: number, y: number, z: number) {
+	getData(x: number, y: number, z: number): BlockData {
 		return {
 			id: this.id,
 			x, y, z
 		}
 	}
 
+}
+
+export type BlockData = BaseData & {
+	x: number,
+	y: number,
+	z: number
 }

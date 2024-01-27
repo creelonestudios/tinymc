@@ -1,5 +1,5 @@
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
-import Block from "./block/Block.js"
+import Block, { type BlockData } from "./block/Block.js"
 import BlockDef from "./defs/BlockDef.js"
 import Texture from "./texture/Texture.js"
 import World from "./world/World.js"
@@ -10,7 +10,7 @@ import WorldGenerator from "./world/WorldGenerator.js"
 import Cam from "./Cam.js"
 import Input from "./Input.js"
 import EntityDef from "./defs/EntityDef.js"
-import ItemEntity from "./entity/ItemEntity.js"
+import ItemEntity, { isItemEntityData } from "./entity/ItemEntity.js"
 import ItemStack from "./ItemStack.js"
 import Dim2 from "./dim/Dim2.js"
 import { $ } from "./util/util.js"
@@ -19,6 +19,7 @@ import Container from "./util/Container.js"
 import ContainerBlock from "./block/ContainerBlock.js"
 import DebugScreen from "./util/DebugScreen.js"
 import CreativeInventory from "./CreativeInventory.js"
+import Entity, { type EntityData } from "./entity/Entity.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -199,6 +200,15 @@ input.on("keydown", (key: string) => {
 	if (key == "F3") {
 		debug.showDebugScreen = !debug.showDebugScreen
 	}
+
+	/*if (key == "KeyZ") {
+		const worldSave = world.save()
+		console.log("entities:", worldSave.entities)
+		console.log("players:", worldSave.players)
+		console.log("blockData:", worldSave.blockData)
+		world = World.load(worldSave.stringBlocks, worldSave.blockData, worldSave.dims, worldSave.entities) as World
+		world.spawn(player)
+	}*/
 })
 
 input.on("click", (button: number) => {
@@ -256,4 +266,21 @@ export function getFirstFluid(world: World, x: number, y: number, startZ: number
 		return { block, z }
 	}
 	return { block: new Block("tiny:air"), z: world.minZ }
+}
+
+export function createBlock(id: string, data: Partial<BlockData> = {}) {
+	const blockdef = blockdefs.get(id)
+	if (!blockdef) {
+		console.trace()
+		throw "Block definition not found: " + id
+	}
+
+	if (blockdef.type == "container") return new ContainerBlock(blockdef, data)
+	else return new Block(blockdef)
+}
+
+export function createEntity(id: string, data: Partial<EntityData> = {}) {
+	data.id = id
+	if (isItemEntityData(data, id)) return new ItemEntity(null, data)
+	else return new Entity(id, data)
 }

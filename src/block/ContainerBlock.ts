@@ -1,15 +1,15 @@
-import Inventory from "../Inventory.js"
+import Inventory, { type InventoryData } from "../Inventory.js"
 import BlockDef from "../defs/BlockDef.js"
-import { HasInventory } from "../util/interfaces.js"
-import Block from "./Block.js"
+import { type HasInventory } from "../util/interfaces.js"
+import Block, { type BlockData } from "./Block.js"
 
 export default class ContainerBlock extends Block implements HasInventory {
 
 	readonly inventory: Inventory
 
-	constructor(def: BlockDef | string) {
+	constructor(def: BlockDef | string, data: Partial<ContainerBlockData> = {}) {
 		super(def)
-		this.inventory = new Inventory(this.def.inventorySlots || 27, this.def.inventoryColumns || 9)
+		this.inventory = new Inventory(this.def.inventorySlots || 27, this.def.inventoryColumns || 9, data.items)
 	}
 
 	update() {
@@ -23,4 +23,8 @@ export default class ContainerBlock extends Block implements HasInventory {
 		}
 	}
 
+}
+
+export type ContainerBlockData = BlockData & {
+	items: InventoryData
 }
