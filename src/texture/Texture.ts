@@ -45,8 +45,8 @@ export default class Texture {
 
 	drawMap(g: Graphics, x: number, y: number, w: number, h: number, dw?: number, dh?: number, global: boolean = false) {
 		if (!this.ready) return
-		if (global) g.drawPartialImage(this.image, x, y, w, h, dw, dh)
-		else g.globalDrawPartialImage(this.image, x, y, w, h, dw, dh)
+		if (global) g.globalDrawPartialImage(this.image, x, y, w, h, dw, dh)
+		else g.drawPartialImage(this.image, x, y, w, h, dw, dh)
 	}
 
 }
