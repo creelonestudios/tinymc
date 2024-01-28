@@ -8,6 +8,14 @@ import Graphics from "../Graphics.js"
 
 export default class Entity {
 
+	static readonly TERMINAL_VELOCITY = 4
+	static readonly GRAVITY = 0.15
+
+	static applyGravity(motion: Dim3) {
+		motion.y -= Entity.GRAVITY
+		if (motion.y < -Entity.TERMINAL_VELOCITY) motion.y = -Entity.TERMINAL_VELOCITY
+	}
+
 	readonly def: EntityDef
 	readonly position: Dim3
 	readonly rotation: Dim3
@@ -16,6 +24,7 @@ export default class Entity {
 	readonly spawnTime: number
 
 	noGravity: boolean
+	onGround: boolean
 
 	constructor(def: EntityDef | string, data: Partial<EntityData> = {}) {
 		if (def instanceof EntityDef) this.def = def
@@ -24,7 +33,7 @@ export default class Entity {
 			if (entitydef) this.def = entitydef
 			else {
 				console.trace()
-				throw "Block definition not found: " + def
+				throw "Entity definition not found: " + def
 			}
 		}
 		this.position = new Dim3(...(data.position || [0, 0, 0]))
@@ -33,6 +42,7 @@ export default class Entity {
 		this.size     = new Dim2()
 		this.spawnTime = data.spawnTime || Date.now() // TODO: ticks since world creation
 		this.noGravity = typeof data.noGravity == "undefined" ? false : data.noGravity
+		this.onGround  = typeof data.onGround == "undefined" ? false : data.onGround
 	}
 
 	get id() {
@@ -58,6 +68,37 @@ export default class Entity {
 	}
 
 	tick(world: World) {
+		const {x: pX, y: pY, z: pZ} = this.position // p -> present
+		const box = this.getBoundingBox()
+		let motion = this.motion.copy()
+		Entity.applyGravity(motion)
+		const fY = pY + motion.y // f -> future
+		let onGround = false
+
+		// check ground collision (but not walls or ceiling)
+		loop: for (let y = Math.floor(pY) -1; y >= Math.floor(fY); y--) {
+			for (let x = Math.floor(box.pos.x); x <= Math.ceil(box.corner.x); x++) {
+				box.pos.y = y
+				const blockBelow = world.getBlock(x, y, pZ)
+				if (blockBelow && blockBelow.isSolid()) {
+					if (box.intersect(blockBelow?.getBoundingBox(x, y))) {
+						onGround = true
+						this.motion.y = 0
+						this.position.y = y + 1
+						break loop
+					}
+				}
+			}
+		}
+		this.onGround = onGround
+
+		if (onGround && this.motion.y < 0) this.motion.y = 0
+
+		// apply gravity
+		if (!onGround && !this.noGravity) {
+			Entity.applyGravity(this.motion)
+		}
+
 		this.position.add(this.motion)
 	}
 
@@ -78,7 +119,7 @@ export default class Entity {
 			position: this.position.asArray(), // TODO: "pos" alias for compatibility
 			rotation: this.rotation.asArray(),
 			noGravity: this.noGravity,
-			onGround: false,
+			onGround: this.onGround,
 			spawnTime: this.spawnTime
 		}
 	}

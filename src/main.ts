@@ -81,7 +81,7 @@ export function getTexture(path: string) {
 function draw() {
 	// tick
 	player.motion.x = (Number(input.pressed("KeyD")) - Number(input.pressed("KeyA"))) * 0.25
-	player.motion.y = (Number(input.pressed("KeyW")) - Number(input.pressed("KeyS"))) * 0.25
+	//player.motion.y = (Number(input.pressed("KeyW")) - Number(input.pressed("KeyS"))) * 0.25
 	world.tick()
 
 	// draw
@@ -199,6 +199,11 @@ input.on("keydown", (key: string) => {
 
 	if (key == "F3") {
 		debug.showDebugScreen = !debug.showDebugScreen
+	}
+
+	if (key == "Space") {
+		console.log("outer space!")
+		if (player.onGround) player.motion.y = 0.8
 	}
 
 	/*if (key == "KeyZ") {
