@@ -241,6 +241,18 @@ input.on("click", (button: number) => {
 	}
 })
 
+input.on("mousemove", () => {
+	const mouse = getMousePos()
+	const items = world.getAllEntities<ItemEntity>("tiny:item")
+	for (let item of items) {
+		if (item.getBoundingBox().touch(mouse)) {
+			player.addItems(item.itemstack)
+			world.removeEntity(item)
+			return
+		}
+	}
+})
+
 function openInventory() {
 	const {x, y} = getMouseBlock()
 	const block = world.getBlock(x, y, 0)

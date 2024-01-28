@@ -108,8 +108,11 @@ export default class World {
 		this.blocks.set(`${x},${y},${z}`, new Block("tiny:air"))
 	}
 
-	getAllEntities() {
-		return Array.from(this.entities.values())
+	getAllEntities<E extends Entity = Entity>(filter?: string | ((entity: Entity, index: number) => boolean)): E[] {
+		let entities = Array.from(this.entities.values())
+		if      (typeof filter == "string")   entities = entities.filter(entity => entity.id == filter)
+		else if (typeof filter == "function") entities = entities.filter(filter)
+		return entities as E[]
 	}
 
 	spawn(entity: Entity | string, data?: Partial<EntityData>) {
