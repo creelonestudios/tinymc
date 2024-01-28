@@ -115,9 +115,9 @@ export default class World {
 		return entities as E[]
 	}
 
-	spawn(entity: Entity | string, data?: Partial<EntityData>) {
+	spawn<T extends EntityData = EntityData>(entity: Entity | string, data?: Partial<T>) {
 		if (typeof entity == "string") {
-			this.entities.add(new Entity(entity, data))
+			this.entities.add(createEntity(entity, data))
 		} else {
 			this.entities.add(entity)
 		}		

@@ -10,7 +10,7 @@ import WorldGenerator from "./world/WorldGenerator.js"
 import Cam from "./Cam.js"
 import Input from "./Input.js"
 import EntityDef from "./defs/EntityDef.js"
-import ItemEntity, { isItemEntityData } from "./entity/ItemEntity.js"
+import ItemEntity, { type ItemEntityData, isItemEntityData } from "./entity/ItemEntity.js"
 import ItemStack from "./ItemStack.js"
 import Dim2 from "./dim/Dim2.js"
 import { $ } from "./util/util.js"
@@ -246,9 +246,9 @@ input.on("mousemove", () => {
 	const items = world.getAllEntities<ItemEntity>("tiny:item")
 	for (let item of items) {
 		if (item.getBoundingBox().touch(mouse)) {
-			player.addItems(item.itemstack)
+			const leftover = player.hotbar.addItems(item.itemstack)
 			world.removeEntity(item)
-			return
+			if (leftover) world.spawn<ItemEntityData>("tiny:item", { item: leftover.getData(), position: player.position.asArray() })
 		}
 	}
 })
@@ -280,7 +280,7 @@ export function getFirstFluid(world: World, x: number, y: number, startZ: number
 	return { block: new Block("tiny:air"), z: world.minZ }
 }
 
-export function createBlock(id: string, data: Partial<BlockData> = {}) {
+export function createBlock<T extends BlockData = BlockData>(id: string, data: Partial<T> = {}) {
 	const blockdef = blockdefs.get(id)
 	if (!blockdef) {
 		console.trace()
@@ -291,7 +291,7 @@ export function createBlock(id: string, data: Partial<BlockData> = {}) {
 	else return new Block(blockdef)
 }
 
-export function createEntity(id: string, data: Partial<EntityData> = {}) {
+export function createEntity<T extends EntityData = EntityData>(id: string, data: Partial<T> = {}) {
 	data.id = id
 	if (isItemEntityData(data, id)) return new ItemEntity(null, data)
 	else return new Entity(id, data)

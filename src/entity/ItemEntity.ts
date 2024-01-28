@@ -31,19 +31,24 @@ export default class ItemEntity extends Entity {
 			const players = world.getAllEntities<Player>("tiny:player")
 			for (let p of players) {
 				if (boundingBox.intersect(p.getBoundingBox())) {
-					p.addItems(this.itemstack)
-					world.removeEntity(this)
-					return
+					const leftover = p.hotbar.addItems(this.itemstack)
+					if (leftover) this.itemstack.amount = leftover.amount
+					else {
+						world.removeEntity(this)
+						return
+					}
 				}
 			}
 		}
 
 		// combine item entities
-		const items = world.getAllEntities<ItemEntity>("tiny:item")
+		const items = world.getAllEntities<ItemEntity>(entity => {
+			return entity.id == "tiny:item" && (entity as ItemEntity).itemstack.match(this.itemstack)
+		})
 		for (let item of items) {
 			if (item == this) continue
 			const stack = item.itemstack
-			if (stack.item.id == this.itemstack.item.id && boundingBox.intersect(item.getBoundingBox())) {
+			if (boundingBox.intersect(item.getBoundingBox())) {
 				if (stack.amount + this.itemstack.amount < this.itemstack.item.maxItemStack) {
 					stack.amount += this.itemstack.amount
 					world.removeEntity(this)
