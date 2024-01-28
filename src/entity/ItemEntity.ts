@@ -11,7 +11,7 @@ export default class ItemEntity extends Entity {
 	readonly itemstack: ItemStack
 
 	constructor(itemstack: ItemStack | null, data: Partial<ItemEntityData> = {}) {
-		super(new EntityDef("tiny", "item", {}), data)
+		super(new EntityDef("tiny", "item", { hasFriction: true }), data)
 		this.itemstack = data.item ? new ItemStack(data.item.item.id, data.item.amount) : (itemstack || new ItemStack("tiny:air"))
 		this.size.set(0.5, 0.5)
 	}

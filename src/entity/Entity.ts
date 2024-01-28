@@ -99,6 +99,12 @@ export default class Entity {
 			Entity.applyGravity(this.motion)
 		}
 
+		// ground friction
+		if (onGround && this.def.hasFriction) {
+			this.motion.x *= 0.5
+			if (Math.abs(this.motion.x) <= 0.5 ** 5) this.motion.x = 0
+		}
+
 		this.position.add(this.motion)
 
 		if (this.position.y < world.minY - 50) this.die(world)

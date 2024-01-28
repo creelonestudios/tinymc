@@ -169,19 +169,29 @@ input.on("keydown", (key: string) => {
 		if (!debug.showHitboxes) debug.showOrigin = false
 		else if (input.pressed("ShiftLeft")) debug.showOrigin = true
 	}
+
 	if (key == "KeyQ") {
-		let stack = player.selectedItem
-		let index = player.selectedItemSlot
+		const stack = player.selectedItem
+		const index = player.selectedItemSlot
 		if (stack.item.id == "tiny:air") return
-		if (input.pressed("ControlLeft")) { // drop whole stack
-			world.spawn(new ItemEntity(stack, { position: player.position.asArray() }))
-			player.hotbar.set(index, new ItemStack("tiny:air"))
-		} else { // drop single item
-			world.spawn(new ItemEntity(new ItemStack(stack.item.id), { position: player.position.asArray() }))
-			if (stack.amount > 1) stack.amount--
-			else player.hotbar.set(index, new ItemStack("tiny:air"))
+
+		const entityData = {
+			position: player.position.asArray(),
+			motion: getMousePos().sub(player.position).normalize().asArray()
 		}
+		let dropStack = stack
+
+		if (!input.pressed("ControlLeft")) {
+			dropStack = new ItemStack(stack.item.id)
+		}
+
+		if (input.pressed("ControlLeft") || stack.amount == 0) {
+			player.hotbar.set(index, new ItemStack("tiny:air"))
+		} else stack.amount--
+
+		world.spawn(new ItemEntity(dropStack, entityData))
 	}
+
 	inv: if (key == "KeyE") { // open inventory under mouse
 		if (Container.showingInventory()) {
 			Container.setInventory()

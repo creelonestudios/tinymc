@@ -1,4 +1,5 @@
 import Dim from "./Dim.js"
+import Dim2 from "./Dim2.js"
 
 export default class Dim3 implements Dim {
 	
@@ -12,10 +13,17 @@ export default class Dim3 implements Dim {
 		this.z = z
 	}
 
-	add(dim: Dim3): Dim3 {
+	add(dim: Dim2 | Dim3): Dim3 {
 		this.x += dim.x
 		this.y += dim.y
-		this.z += dim.z
+		if (dim instanceof Dim3) this.z += dim.z
+		return this
+	}
+	
+	sub(dim: Dim2 | Dim3): Dim3 {
+		this.x += dim.x
+		this.y += dim.y
+		if (dim instanceof Dim3) this.z += dim.z
 		return this
 	}
 
@@ -23,11 +31,11 @@ export default class Dim3 implements Dim {
 		return this
 	}
 
-	set(dim: Dim3 | number, y?: number, z?: number): Dim3 {
-		if (dim instanceof Dim3) {
+	set(dim: Dim2 | Dim3 | number, y?: number, z?: number): Dim3 {
+		if (dim instanceof Dim2 || dim instanceof Dim3) {
 			this.x = dim.x
 			this.y = dim.y
-			this.z = dim.z
+			if (dim instanceof Dim3) this.z = dim.z
 		} else {
 			this.x = dim
 			this.y = y || 0
@@ -41,6 +49,19 @@ export default class Dim3 implements Dim {
 		this.y *= x
 		this.z *= x
 		return this
+	}
+
+	sqMag(): number {
+		return this.x ** 2 + this.y ** 2 + this.z ** 2
+	}
+
+	mag(): number {
+		return Math.sqrt(this.sqMag())
+	}
+
+	normalize(): Dim2 {
+		const mag = this.mag()
+		return this.scale(1/mag)
 	}
 
 	floor(): Dim3 {
