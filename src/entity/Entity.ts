@@ -100,6 +100,8 @@ export default class Entity {
 		}
 
 		this.position.add(this.motion)
+
+		if (this.position.y < world.minY - 50) this.die(world)
 	}
 
 	draw(g: Graphics) {
@@ -110,6 +112,10 @@ export default class Entity {
 		this.texture?.draw(g, this.size.x, this.size.y)
 
 		g.restore()
+	}
+
+	die(world: World) {
+		world.removeEntity(this)
 	}
 
 	getData(): EntityData {
