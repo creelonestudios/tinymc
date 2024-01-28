@@ -213,8 +213,7 @@ input.on("keydown", (key: string) => {
 	}
 
 	if (key == "Space") {
-		console.log("outer space!")
-		if (player.onGround) player.motion.y = 0.8
+		if (!player.inFluid && player.onGround) player.motion.y = 0.8
 	}
 
 	/*if (key == "KeyZ") {
