@@ -21,7 +21,9 @@ export default class ItemEntity extends Entity {
 	}
 
 	tick(world: World) {
+		if (this.inFluid) this.motion.y = Entity.TERMINAL_FLUID_VELOCITY
 		super.tick(world)
+
 		const pickupDelay = this.spawnTime + ItemEntity.PICKUP_TIME - Date.now()
 		const boundingBox = this.getBoundingBox()
 		const touchingPlayer = boundingBox.intersect(player.getBoundingBox())

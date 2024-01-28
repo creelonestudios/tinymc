@@ -82,6 +82,7 @@ function draw() {
 	// tick
 	player.motion.x = (Number(input.pressed("KeyD")) - Number(input.pressed("KeyA"))) * 0.25
 	//player.motion.y = (Number(input.pressed("KeyW")) - Number(input.pressed("KeyS"))) * 0.25
+	if (player.inFluid && input.pressed("Space")) player.motion.y = Entity.TERMINAL_FLUID_VELOCITY
 	world.tick()
 
 	// draw
@@ -185,7 +186,7 @@ input.on("keydown", (key: string) => {
 			dropStack = new ItemStack(stack.item.id)
 		}
 
-		if (input.pressed("ControlLeft") || stack.amount == 0) {
+		if (input.pressed("ControlLeft") || stack.amount <= 1) {
 			player.hotbar.set(index, new ItemStack("tiny:air"))
 		} else stack.amount--
 

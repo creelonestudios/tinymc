@@ -9,11 +9,17 @@ import Graphics from "../Graphics.js"
 export default class Entity {
 
 	static readonly TERMINAL_VELOCITY = 4
+	static readonly TERMINAL_FLUID_VELOCITY = 0.25
 	static readonly GRAVITY = 0.15
 
-	static applyGravity(motion: Dim3) {
-		motion.y -= Entity.GRAVITY
-		if (motion.y < -Entity.TERMINAL_VELOCITY) motion.y = -Entity.TERMINAL_VELOCITY
+	static applyGravity(motion: Dim3, inFluid: boolean) {
+		if (inFluid) {
+			motion.y -= Entity.GRAVITY * 0.5
+			if (motion.y < -Entity.TERMINAL_FLUID_VELOCITY) motion.y = -Entity.TERMINAL_FLUID_VELOCITY
+		} else {
+			motion.y -= Entity.GRAVITY
+			if (motion.y < -Entity.TERMINAL_VELOCITY) motion.y = -Entity.TERMINAL_VELOCITY
+		}
 	}
 
 	readonly def: EntityDef
@@ -25,6 +31,7 @@ export default class Entity {
 
 	noGravity: boolean
 	onGround: boolean
+	inFluid: boolean
 
 	constructor(def: EntityDef | string, data: Partial<EntityData> = {}) {
 		if (def instanceof EntityDef) this.def = def
@@ -43,6 +50,7 @@ export default class Entity {
 		this.spawnTime = data.spawnTime || Date.now() // TODO: ticks since world creation
 		this.noGravity = typeof data.noGravity == "undefined" ? false : data.noGravity
 		this.onGround  = typeof data.onGround == "undefined" ? false : data.onGround
+		this.inFluid   = false
 	}
 
 	get id() {
@@ -70,10 +78,26 @@ export default class Entity {
 	tick(world: World) {
 		const {x: pX, y: pY, z: pZ} = this.position // p -> present
 		const box = this.getBoundingBox()
-		let motion = this.motion.copy()
-		Entity.applyGravity(motion)
-		const fY = pY + motion.y // f -> future
 		let onGround = false
+		let inFluid = false
+
+		// check fluid collision
+		loop: for (let y = Math.floor(box.pos.y); y <= Math.ceil(box.corner.y); y++) {
+			for (let x = Math.floor(box.pos.x); x <= Math.ceil(box.corner.x); x++) {
+				const block = world.getBlock(x, y, pZ)
+				if (block && block.type == "fluid") {
+					if (box.intersect(block?.getBoundingBox(x, y))) {
+						inFluid = true
+						break loop
+					}
+				}
+			}
+		}
+		//console.log("inFluid:", inFluid)
+
+		const motion = this.motion.copy()
+		Entity.applyGravity(motion, inFluid)
+		const fY = pY + motion.y // f -> future
 
 		// check ground collision (but not walls or ceiling)
 		loop: for (let y = Math.floor(pY) -1; y >= Math.floor(fY); y--) {
@@ -90,20 +114,22 @@ export default class Entity {
 				}
 			}
 		}
-		this.onGround = onGround
 
 		if (onGround && this.motion.y < 0) this.motion.y = 0
 
 		// apply gravity
 		if (!onGround && !this.noGravity) {
-			Entity.applyGravity(this.motion)
+			Entity.applyGravity(this.motion, inFluid)
 		}
 
 		// ground friction
-		if (onGround && this.def.hasFriction) {
+		if ((onGround || inFluid) && this.def.hasFriction) {
 			this.motion.x *= 0.5
 			if (Math.abs(this.motion.x) <= 0.5 ** 5) this.motion.x = 0
 		}
+
+		this.onGround = onGround
+		this.inFluid  = inFluid
 
 		this.position.add(this.motion)
 
