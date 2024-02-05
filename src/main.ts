@@ -23,6 +23,11 @@ import Entity, { type EntityData } from "./entity/Entity.js"
 
 console.log("Never Gonna Give You Up")
 
+// game info
+export const GAME_NAME = "TinyMC"
+export const GAME_VERSION = ""
+export const GAME_VERSION_BRANCH = "main" // TODO: determine from git
+
 // constants
 export const blockSize = 80
 const gameOffset = new Dim2(0, -2)
@@ -56,8 +61,8 @@ export const perf = {
 	tick: 0,
 	draw: 0
 }
-const tickTarget = 20
-const drawTarget = 10
+export const tickTarget = 20
+export const drawTarget = 5
 const perfTick = perfRun("tick", tick, 1000/tickTarget)
 const perfDraw = perfRun("draw", draw, 1000/drawTarget)
 setInterval(perfTick, 1000/tickTarget)
