@@ -157,19 +157,23 @@ function updateBlockLight(world: World, x: number, y: number, z: number, blockLi
 	const derivLight = []
 	let blockLight: number = blockLightBefore
 
-	derivLight.push(deriveBlockLight(world, x-1, y, z))
-	derivLight.push(deriveBlockLight(world, x+1, y, z))
-	derivLight.push(deriveBlockLight(world, x, y-1, z))
-	derivLight.push(deriveBlockLight(world, x, y+1, z))
+	if (z == 0) {
+		derivLight.push(deriveBlockLight(world, x-1, y, z))
+		derivLight.push(deriveBlockLight(world, x+1, y, z))
+		derivLight.push(deriveBlockLight(world, x, y-1, z))
+		derivLight.push(deriveBlockLight(world, x, y+1, z))
+	}
 	derivLight.push(deriveBlockLight(world, x, y, z-1))
 	derivLight.push(deriveBlockLight(world, x, y, z+1))
 
 	blockLight = Math.floor(Math.max(...derivLight, 0))
 	if (blockLight != blockLightBefore) {
-		world.scheduleBlockUpdate(x-1, y, z)
-		world.scheduleBlockUpdate(x+1, y, z)
-		world.scheduleBlockUpdate(x, y-1, z)
-		world.scheduleBlockUpdate(x, y+1, z)
+		if (z == 0) {
+			world.scheduleBlockUpdate(x-1, y, z)
+			world.scheduleBlockUpdate(x+1, y, z)
+			world.scheduleBlockUpdate(x, y-1, z)
+			world.scheduleBlockUpdate(x, y+1, z)
+		}
 		world.scheduleBlockUpdate(x, y, z-1)
 		world.scheduleBlockUpdate(x, y, z+1)
 	}
