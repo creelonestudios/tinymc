@@ -183,11 +183,16 @@ export function getMousePos() {
 
 input.on("keydown", (key: string) => {
 	//console.log(key)
+	if (Container.showingInventory()) {
+		if (Container.onKey(key)) return
+	}
+
 	if (key == "Digit1") player.selectedItemSlot = 0
 	if (key == "Digit2") player.selectedItemSlot = 1
 	if (key == "Digit3") player.selectedItemSlot = 2
 	if (key == "Digit4") player.selectedItemSlot = 3
 	if (key == "Digit5") player.selectedItemSlot = 4
+
 	if (key == "KeyM") {
 		debug.showHitboxes = !debug.showHitboxes
 
@@ -246,6 +251,10 @@ input.on("keydown", (key: string) => {
 })
 
 input.on("click", (button: number) => {
+	if (Container.showingInventory()) {
+		if (Container.onClick(button)) return
+	}
+
 	const {x, y} = getMouseBlock()
 	let z = input.pressed("ShiftLeft") ? -1 : 0
 	const {block: frontBlock, z: frontZ} = getFirstBlock(world, x, y)
