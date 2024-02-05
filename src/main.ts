@@ -212,7 +212,7 @@ input.on("keydown", (key: string) => {
 
 		const entityData = {
 			position: player.position.asArray(),
-			motion: getMousePos().sub(player.position).normalize().asArray()
+			motion: getMousePos().sub(player.position).normalize().scale(0.6).asArray()
 		}
 		let dropStack = stack
 
@@ -247,8 +247,9 @@ input.on("keydown", (key: string) => {
 	}
 
 	if (key == "Space") {
-		if (!player.inFluid && player.onGround) player.motion.y = 0.8
-  }
+		if (!player.inFluid && player.onGround) player.motion.y = 0.35
+		console.log(player.motion.y)
+	}
 
 	if (key == "F11" || key == "F1") {
 		if (document.fullscreenElement) document.exitFullscreen()

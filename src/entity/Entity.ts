@@ -8,9 +8,9 @@ import Graphics from "../Graphics.js"
 
 export default class Entity {
 
-	static readonly TERMINAL_VELOCITY = 4
-	static readonly TERMINAL_FLUID_VELOCITY = 0.25
-	static readonly GRAVITY = 0.15
+	static readonly TERMINAL_VELOCITY = 3
+	static readonly TERMINAL_FLUID_VELOCITY = 0.15
+	static readonly GRAVITY = 0.045
 
 	static applyGravity(motion: Dim3, inFluid: boolean) {
 		if (inFluid) {
@@ -124,7 +124,7 @@ export default class Entity {
 
 		// ground friction
 		if ((onGround || inFluid) && this.def.hasFriction) {
-			this.motion.x *= 0.5
+			this.motion.x *= 0.75
 			if (Math.abs(this.motion.x) <= 0.5 ** 5) this.motion.x = 0
 		}
 
