@@ -53,6 +53,7 @@ export default class ItemEntity extends Entity {
 			if (boundingBox.intersect(item.getBoundingBox())) {
 				if (stack.amount + this.itemstack.amount < this.itemstack.item.maxItemStack) {
 					stack.amount += this.itemstack.amount
+					item.motion.add(this.motion)
 					world.removeEntity(this)
 					return
 				}
