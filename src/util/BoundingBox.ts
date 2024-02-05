@@ -22,7 +22,7 @@ export default class BoundingBox {
 
 	touch(point: Dim2 | Dim3) {
 		const t = point.x >= this.pos.x && point.x <= this.corner.x && point.y >= this.pos.y && point.y <= this.corner.y
-		if (t) console.log(this, point, point.x >= this.pos.x, point.x <= this.corner.x, point.y >= this.pos.y, point.y <= this.corner.y)
+		// if (t) console.log(this, point, point.x >= this.pos.x, point.x <= this.corner.x, point.y >= this.pos.y, point.y <= this.corner.y)
 		return t
 	}
 

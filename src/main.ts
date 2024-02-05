@@ -45,7 +45,7 @@ export const world = new World([-20, 20, -20, 20, -1, 1])
 export const player = new Player("jens", "TinyJens")
 export const cam = new Cam(player)
 export const input = new Input()
-export let debug = { showHitboxes: false, showOrigin: false, showDebugScreen: false }
+export let debug = { showHitboxes: false, showOrigin: false, showDebugScreen: false, showAirLightLevel: false }
 
 Hotbar.loadTexture()
 Container.loadTexture()
@@ -168,6 +168,9 @@ input.on("keydown", (key: string) => {
 		// also show origin if shift is pressed
 		if (!debug.showHitboxes) debug.showOrigin = false
 		else if (input.pressed("ShiftLeft")) debug.showOrigin = true
+
+		// temp
+		debug.showAirLightLevel = debug.showOrigin
 	}
 	if (key == "KeyQ") {
 		let stack = player.selectedItem
@@ -267,7 +270,7 @@ export function getFirstBlock(world: World, x: number, y: number, startZ: number
 		if (!block || !block.isSolid()) continue
 		return { block, z }
 	}
-	return { block: new Block("tiny:air"), z: world.minZ }
+	return { block: world.getBlock(x, y, world.minZ), z: world.minZ }
 }
 
 export function getFirstFluid(world: World, x: number, y: number, startZ: number = world.maxZ) {
@@ -277,7 +280,7 @@ export function getFirstFluid(world: World, x: number, y: number, startZ: number
 		if (!block || block.id == "tiny:air") continue
 		return { block, z }
 	}
-	return { block: new Block("tiny:air"), z: world.minZ }
+	return { block: undefined, z: world.minZ }
 }
 
 export function createBlock<T extends BlockData = BlockData>(id: string, data: Partial<T> = {}) {

@@ -62,6 +62,8 @@ export default class World {
 	readonly minZ: number
 	readonly maxZ: number
 
+	private updateQueue: ({ x: number, y: number, z: number })[]
+
 	constructor(dimensions: number[]) {
 		[this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ] = dimensions
 		this.blocks = new Map()
@@ -74,6 +76,8 @@ export default class World {
 				}
 			}
 		}
+
+		this.updateQueue = []
 	}
 
 	getBlock(x: number, y: number, z: number) {
@@ -98,6 +102,8 @@ export default class World {
 
 		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) throw new Error(`Tried to set block outside the world: ${x},${y},${z}; ${block.id}`)
 		this.blocks.set(`${x},${y},${z}`, block)
+
+		this.scheduleBlockUpdate(x, y, z)
 	}
 
 	clearBlock(x: number, y: number, z: number) {
@@ -105,7 +111,14 @@ export default class World {
 		y = Math.floor(y)
 		z = Math.floor(z)
 		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) return
-		this.blocks.set(`${x},${y},${z}`, new Block("tiny:air"))
+
+		const oldBlock = this.getBlock(x, y, z)
+		if (oldBlock?.id == "tiny:air") return
+
+		const block = new Block("tiny:air")
+		this.blocks.set(`${x},${y},${z}`, block)
+
+		this.scheduleBlockUpdate(x, y, z)
 	}
 
 	getAllEntities<E extends Entity = Entity>(filter?: string | ((entity: Entity, index: number) => boolean)): E[] {
@@ -120,7 +133,7 @@ export default class World {
 			this.entities.add(createEntity(entity, data))
 		} else {
 			this.entities.add(entity)
-		}		
+		}
 	}
 
 	removeEntity(entity: Entity) {
@@ -131,6 +144,17 @@ export default class World {
 		for (let entity of this.entities.values()) {
 			entity.tick(this)
 		}
+
+		// block updates
+		let entry: {x: number, y: number, z: number} | undefined
+		if (this.updateQueue.length == 0) return
+		while (entry = this.updateQueue.shift()) {
+			const {x, y, z} = entry
+			const block = this.getBlock(x, y, z)
+			block?.update(this, x, y, z)
+			console.groupEnd()
+		}
+		console.groupEnd()
 	}
 
 	draw(g: Graphics) {
@@ -168,6 +192,11 @@ export default class World {
 			}
 		}
 
+	}
+
+	scheduleBlockUpdate(x: number, y: number, z: number) {
+		if (this.updateQueue.find(e => e.x == x && e.y == y && e.z == z)) return
+		this.updateQueue.push({x, y, z})
 	}
 
 	save() {

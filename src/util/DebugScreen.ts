@@ -9,6 +9,7 @@ export default class DebugScreen {
 		const ctx = g.ctx
 		const mouseBlock = getMouseBlock()
 		const lookingAt = getFirstBlock(world, mouseBlock.x, mouseBlock.y)
+		lookingAt.block = lookingAt.block
 		const lookingAtFluid = getFirstFluid(world, mouseBlock.x, mouseBlock.y)
 
 		ctx.save()
@@ -26,8 +27,16 @@ export default class DebugScreen {
 		lines.push(`shift: ${input.pressed("ShiftLeft")}`)
 		lines.push(`mouse: (${mouseBlock.x},${mouseBlock.y})`)
 
-		lines.push(`looking at: ${lookingAt.block.id}`)
-		if (lookingAtFluid.block.type == "fluid") lines.push(`looking at fluid: ${lookingAtFluid.block.id}`)
+		if (lookingAt.block) {
+			//console.log(mouseBlock, lookingAt.block.light)
+			lines.push(`looking at: ${lookingAt.block.id}`)
+			lines.push(`  light: ${lookingAt.block.lightLevel} (${lookingAt.block.skyLight} ${lookingAt.block.blockLight})`)
+		}
+
+		if (lookingAtFluid.block && lookingAtFluid.block.type == "fluid") {
+			lines.push(`looking at fluid: ${lookingAtFluid.block.id}`)
+			lines.push(`  light: ${lookingAtFluid.block.lightLevel} (${lookingAtFluid.block.skyLight} ${lookingAtFluid.block.blockLight})`)
+		}
 
 		const offset = g.drawText(lines[0], { drawBg: true })
 		for (let i = 1; i < lines.length; i++) {
