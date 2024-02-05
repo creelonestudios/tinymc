@@ -80,10 +80,18 @@ export default class World {
 		this.updateQueue = []
 	}
 
-	getBlock(x: number, y: number, z: number) {
+	validBlockPosition(x: number, y: number, z: number) {
 		x = Math.floor(x)
 		y = Math.floor(y)
 		z = Math.floor(z)
+		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) return null
+		return [x, y, z]
+	}
+
+	getBlock(x: number, y: number, z: number) {
+		const pos = this.validBlockPosition(x, y, z)
+		if (!pos) return
+		[x, y, z] = pos
 		return this.blocks.get(`${x},${y},${z}`)
 	}
 
@@ -92,9 +100,9 @@ export default class World {
 	}
 
 	setBlock(x: number, y: number, z: number, block: Block | string, data?: Partial<BlockData>) {
-		x = Math.floor(x)
-		y = Math.floor(y)
-		z = Math.floor(z)
+		const pos = this.validBlockPosition(x, y, z)
+		if (!pos) return
+		[x, y, z] = pos
 
 		if (typeof block == "string") {
 			block = createBlock(block, data)
@@ -104,13 +112,18 @@ export default class World {
 		this.blocks.set(`${x},${y},${z}`, block)
 
 		this.scheduleBlockUpdate(x, y, z)
+		this.scheduleBlockUpdate(x-1, y, z)
+		this.scheduleBlockUpdate(x+1, y, z)
+		this.scheduleBlockUpdate(x, y-1, z)
+		this.scheduleBlockUpdate(x, y+1, z)
+		this.scheduleBlockUpdate(x, y, z-1)
+		this.scheduleBlockUpdate(x, y, z+1)
 	}
 
 	clearBlock(x: number, y: number, z: number) {
-		x = Math.floor(x)
-		y = Math.floor(y)
-		z = Math.floor(z)
-		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) return
+		const pos = this.validBlockPosition(x, y, z)
+		if (!pos) return
+		[x, y, z] = pos
 
 		const oldBlock = this.getBlock(x, y, z)
 		if (oldBlock?.id == "tiny:air") return
@@ -119,6 +132,12 @@ export default class World {
 		this.blocks.set(`${x},${y},${z}`, block)
 
 		this.scheduleBlockUpdate(x, y, z)
+		this.scheduleBlockUpdate(x-1, y, z)
+		this.scheduleBlockUpdate(x+1, y, z)
+		this.scheduleBlockUpdate(x, y-1, z)
+		this.scheduleBlockUpdate(x, y+1, z)
+		this.scheduleBlockUpdate(x, y, z-1)
+		this.scheduleBlockUpdate(x, y, z+1)
 	}
 
 	getAllEntities<E extends Entity = Entity>(filter?: string | ((entity: Entity, index: number) => boolean)): E[] {
@@ -152,9 +171,7 @@ export default class World {
 			const {x, y, z} = entry
 			const block = this.getBlock(x, y, z)
 			block?.update(this, x, y, z)
-			console.groupEnd()
 		}
-		console.groupEnd()
 	}
 
 	draw(g: Graphics) {
@@ -167,7 +184,7 @@ export default class World {
 			}
 			for (let y = this.minY; y <= this.maxY; y++) {
 				for (let x = this.minX; x <= this.maxX; x++) {
-					const frontBlock = getFirstBlock(this, x, y)
+					const frontBlock = getFirstBlock(this, x, y, undefined, block => block.full)
 					if (z >= frontBlock.z) this.getBlock(x, y, z)?.draw(g, x, y, z)
 				}
 			}
@@ -195,6 +212,9 @@ export default class World {
 	}
 
 	scheduleBlockUpdate(x: number, y: number, z: number) {
+		const pos = this.validBlockPosition(x, y, z)
+		if (!pos) return
+		[x, y, z] = pos
 		if (this.updateQueue.find(e => e.x == x && e.y == y && e.z == z)) return
 		this.updateQueue.push({x, y, z})
 	}

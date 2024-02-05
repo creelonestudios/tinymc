@@ -252,7 +252,7 @@ input.on("click", (button: number) => {
 
 	switch (button) {
 		case 0:
-			if (z < frontZ) break // inaccessible
+			if (z < frontZ && frontBlock?.full) break // inaccessible
 			world.clearBlock(x, y, z)
 			break
 		case 1:
@@ -262,7 +262,7 @@ input.on("click", (button: number) => {
 		case 2:
 			const stack = player.selectedItem
 			if (z != 0 && stack.item.getBlock().mainLayerOnly()) z = 0
-			if (z < frontZ) break // inaccessible
+			if (z < frontZ && frontBlock?.full) break // inaccessible
 
 			const currentBlock = world.getBlock(x, y, z)
 			if (currentBlock && !currentBlock.isSolid() && stack.item.isBlock()) {
@@ -294,11 +294,12 @@ function openInventory() {
 	Container.setInventory((block as ContainerBlock).inventory)
 }
 
-export function getFirstBlock(world: World, x: number, y: number, startZ: number = world.maxZ) {
+export function getFirstBlock(world: World, x: number, y: number, startZ: number = world.maxZ, predicate?: (block: Block) => boolean) {
 	startZ = Math.min(startZ, world.maxZ)
 	for (let z = startZ; z >= world.minZ; z--) {
 		const block = world.getBlock(x, y, z)
 		if (!block || !block.isSolid()) continue
+		if (predicate && !predicate(block)) continue
 		return { block, z }
 	}
 	return { block: world.getBlock(x, y, world.minZ), z: world.minZ }

@@ -48,16 +48,20 @@ export default class Block {
 		return this.def.maxItemStack
 	}
 
+	get full() {
+		return this.def.full
+	}
+
 	get skyLight() {
 		return this.light.sky
 	}
 
 	get blockLight() {
-		return this.light.block
+		return Math.max(this.light.block, this.def.lightLevel)
 	}
 
 	get lightLevel() {
-		return Math.max(this.light.sky, this.light.block)
+		return Math.max(this.skyLight, this.blockLight)
 	}
 
 	hasInventory() {
@@ -80,6 +84,7 @@ export default class Block {
 
 	update(world: World, x: number, y: number, z: number) {
 		this.light.sky = updateSkyLight(world, x, y, z, this.light.sky)
+		this.light.block = updateBlockLight(world, x, y, z, this.light.block)
 	}
 
 	draw(g: Graphics, x: number, y: number, z: number) {
@@ -125,9 +130,11 @@ function updateSkyLight(world: World, x: number, y: number, z: number, skyLightB
 	let skyLight: number = skyLightBefore
 
 	// from above
-	if (!world.getBlock(x-1, y, z)?.isSolid()) derivLight.push(deriveSkyLight(world, x-1, y+1, z))
+	const leftBlock = world.getBlock(x-1, y, z)
+	const rightBlock = world.getBlock(x+1, y, z)
+	if (!leftBlock?.isSolid() || !leftBlock.full) derivLight.push(deriveSkyLight(world, x-1, y+1, z))
 	derivLight.push(deriveSkyLight(world, x, y+1, z))
-	if (!world.getBlock(x+1, y, z)?.isSolid()) derivLight.push(deriveSkyLight(world, x+1, y+1, z))
+	if (!rightBlock?.isSolid() || !rightBlock.full) derivLight.push(deriveSkyLight(world, x+1, y+1, z))
 	// from right/left
 	derivLight.push(deriveSkyLight(world, x-1, y, z)/2)
 	derivLight.push(deriveSkyLight(world, x+1, y, z)/2)
@@ -146,16 +153,49 @@ function updateSkyLight(world: World, x: number, y: number, z: number, skyLightB
 	return skyLight
 }
 
+function updateBlockLight(world: World, x: number, y: number, z: number, blockLightBefore: number) {
+	const derivLight = []
+	let blockLight: number = blockLightBefore
+
+	derivLight.push(deriveBlockLight(world, x-1, y, z))
+	derivLight.push(deriveBlockLight(world, x+1, y, z))
+	derivLight.push(deriveBlockLight(world, x, y-1, z))
+	derivLight.push(deriveBlockLight(world, x, y+1, z))
+	derivLight.push(deriveBlockLight(world, x, y, z-1))
+	derivLight.push(deriveBlockLight(world, x, y, z+1))
+
+	blockLight = Math.floor(Math.max(...derivLight, 0))
+	if (blockLight != blockLightBefore) {
+		world.scheduleBlockUpdate(x-1, y, z)
+		world.scheduleBlockUpdate(x+1, y, z)
+		world.scheduleBlockUpdate(x, y-1, z)
+		world.scheduleBlockUpdate(x, y+1, z)
+		world.scheduleBlockUpdate(x, y, z-1)
+		world.scheduleBlockUpdate(x, y, z+1)
+	}
+
+	return blockLight
+}
+
 function deriveSkyLight(world: World, x: number, y: number, z: number) {
 	const other = world.getBlock(x, y, z)
 	if (!other) {
 		return 15
-	} else if (other.id == "tiny:air") {
+	} else if (other.id == "tiny:air" || !other.full) {
 		return other.skyLight
 	} else if (other.isSolid()) {
 		return 0 // Math.floor(other.skyLight * 0.5)
 	} else {
 		return other.skyLight - 1
+	}
+}
+
+function deriveBlockLight(world: World, x: number, y: number, z: number) {
+	const other = world.getBlock(x, y, z)
+	if (!other || (other.isSolid() && other.full)) {
+		return 0
+	} else {
+		return other.blockLight - 1
 	}
 }
 
