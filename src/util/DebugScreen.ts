@@ -54,10 +54,10 @@ function gameInfo(g: Graphics, world: World, player: Player) {
 		lines.push(`  light: ${lookingAtFluid.block.lightLevel} (${lookingAtFluid.block.skyLight} sky, ${lookingAtFluid.block.blockLight} block)`)
 	}
 
-	const offset = g.drawText(lines[0], { drawBg: true })
+	const offset = g.drawText(lines[0], { drawBg: true, padding: 3 })
 	for (let i = 1; i < lines.length; i++) {
 		ctx.translate(0, offset)
-		g.drawText(lines[i], { drawBg: true })
+		g.drawText(lines[i], { drawBg: true, padding: 3 })
 	}
 
 	ctx.restore()
@@ -95,10 +95,10 @@ function envInfo(g: Graphics) { // some of this might break
 
 	lines.push(`Display: ${game.width}x${game.height}`)
 
-	const offset = g.drawText(lines[0], { drawBg: false })
+	const offset = g.drawText(lines[0], { drawBg: true, padding: 3 })
 	for (let i = 1; i < lines.length; i++) {
 		ctx.translate(0, offset)
-		g.drawText(lines[i], { drawBg: false })
+		g.drawText(lines[i], { drawBg: true, padding: 3 })
 	}
 
 	ctx.restore()
