@@ -62,7 +62,7 @@ export const perf = {
 	draw: 0
 }
 export const tickTarget = 20
-export const drawTarget = 5
+export const drawTarget = 10
 const perfTick = perfRun("tick", tick, 1000/tickTarget)
 const perfDraw = perfRun("draw", draw, 1000/drawTarget)
 setInterval(perfTick, 1000/tickTarget)
@@ -228,6 +228,11 @@ input.on("keydown", (key: string) => {
 
 	if (key == "F3") {
 		debug.showDebugScreen = !debug.showDebugScreen
+	}
+
+	if (key == "F11" || key == "F1") {
+		if (document.fullscreenElement) document.exitFullscreen()
+		else game.requestFullscreen()
 	}
 
 	/*if (key == "KeyZ") {
