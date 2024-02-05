@@ -51,7 +51,28 @@ Hotbar.loadTexture()
 Container.loadTexture()
 WorldGenerator.flat(world)
 world.spawn(player)
-setInterval(() => requestAnimationFrame(draw), 100)
+
+export const perf = {
+	tick: 0,
+	draw: 0
+}
+const tickTarget = 20
+const drawTarget = 10
+const perfTick = perfRun("tick", tick, 1000/tickTarget)
+const perfDraw = perfRun("draw", draw, 1000/drawTarget)
+setInterval(perfTick, 1000/tickTarget)
+setInterval(() => requestAnimationFrame(perfDraw), 1000/drawTarget)
+
+function perfRun(name: keyof typeof perf, fn: Function, target: number) {
+	return () => {
+		const before = performance.now()
+		fn()
+		const timeElapsed = performance.now() - before
+		if (timeElapsed >= 1000) console.warn(`game lagging: last ${name} took ${timeElapsed}ms`)
+		else if (timeElapsed >= target) console.debug(`%cgame lagging: last ${name} took ${timeElapsed}ms`, "color: skyblue")
+		perf[name] = timeElapsed
+	}
+}
 
 async function loadDefs<T>(path: string, cls: any): Promise<Map<String, T>> {
 	let data = await YSON.load(path)
@@ -78,13 +99,13 @@ export function getTexture(path: string) {
 	return texture
 }
 
-function draw() {
-	// tick
+function tick() {
 	player.motion.x = (Number(input.pressed("KeyD")) - Number(input.pressed("KeyA"))) * 0.25
 	player.motion.y = (Number(input.pressed("KeyW")) - Number(input.pressed("KeyS"))) * 0.25
 	world.tick()
+}
 
-	// draw
+function draw() {
 	graphics.reset()
 
 	graphics.save()
