@@ -8,17 +8,23 @@ export default class WorldGenerator {
     static flat(world: World) {
         for (let y = world.minY; y <= world.maxY && y <= 0; y++) {
             for (let x = world.minX; x <= world.maxX; x++) {
-				let block: Block
-                if (y <= -3) block = new Block("tiny:stone")
-                else if(y < 0) block = new Block("tiny:dirt")
-                else if(y == 0) block = new Block("tiny:grass_block")
+				let blockId: string
+                if (y <= -3) blockId = "tiny:stone"
+                else if(y < 0) blockId = "tiny:dirt"
+                else if(y == 0) blockId = "tiny:grass_block"
 				else continue
 
 				for (let z = world.minZ; z <= 0; z++) {
-					world.setBlock(x, y, z, block)
+					world.setBlock(x, y, z, new Block(blockId))
 				}
             }
         }
+
+		for (let x = world.minX; x <= world.maxX; x++) {
+			for (let z = world.minZ; z <= world.maxZ; z++) {
+				world.scheduleBlockUpdate(x, world.maxY, z)
+			}
+		}
 
 		// for testing of world.save() and World.load()
 		/*(async () => {

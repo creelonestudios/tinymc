@@ -1,7 +1,9 @@
 import CreativeInventory from "../CreativeInventory.js"
 import Graphics from "../Graphics.js"
 import Inventory from "../Inventory.js"
-import { getTexture } from "../main.js"
+import ItemStack from "../ItemStack.js"
+import Dim2 from "../dim/Dim2.js"
+import { createBlock, game, getTexture, input, player } from "../main.js"
 import Texture from "../texture/Texture.js"
 
 let slot: Texture
@@ -30,7 +32,8 @@ export default class Container {
 		if (!slot.ready || !inventory) return
 		const ctx = g.ctx
 		ctx.save()
-		ctx.translate(-(inventory.columns * slotSize)/2, -(Math.ceil(inventory.size / inventory.columns) * slotSize)/2)
+		const offset = new Dim2((inventory.columns * slotSize)/2, (Math.ceil(inventory.size / inventory.columns) * slotSize)/2)
+		ctx.translate(-offset.x, -offset.y)
 
 		// slot
 		drawSlots(g, inventory, () => {
@@ -48,7 +51,74 @@ export default class Container {
 			}
 		})
 
+		// hover
+		const mouseSlot = this.getMouseSlot()
+		if (mouseSlot) {
+			const { slotPos } = mouseSlot
+			ctx.save()
+			ctx.fillStyle = "white"
+			ctx.globalAlpha = 0.3
+			ctx.translate(slotPos.x * slotSize, slotPos.y * slotSize)
+			ctx.fillRect(0, 0, slotSize, slotSize)
+			ctx.restore()
+		}
+
 		ctx.restore()
+	}
+
+	static getMouseSlot() {
+		if (!slot.ready || !inventory) return
+		const offset = new Dim2((inventory.columns * slotSize)/2, (Math.ceil(inventory.size / inventory.columns) * slotSize)/2)
+		const mouse = input.mouse
+		mouse.add(new Dim2(-game.width/2, -game.height/2))
+		mouse.add(offset)
+		const slotPos = new Dim2(mouse.x / slotSize, mouse.y / slotSize).floor()
+		if (slotPos.y < 0) return null
+		const slotIndex = slotPos.y * inventory.columns + slotPos.x
+
+		if (slotIndex >= 0 && slotIndex < inventory.size) {
+			return { slotPos, slotIndex }
+		}
+		return null
+	}
+	
+	static onClick(button: number): boolean { // true -> an action was performed
+		if (!inventory) return false
+		const mouseSlot = this.getMouseSlot()
+		if (!mouseSlot) return false
+
+		if (button == 0) {
+			if (input.pressed("ShiftLeft")) {
+				const stack = inventory.get(mouseSlot.slotIndex)
+				if (stack.item.id == "tiny:air") return false
+				const leftOver = player.hotbar.addItems(stack)
+				if (leftOver) {
+					stack.amount = leftOver.amount
+				} else {
+					inventory.set(mouseSlot.slotIndex, new ItemStack("tiny:air"))
+				}
+			}
+		}
+
+		return true
+	}
+
+	static onKey(key: string): boolean { // true -> an action was performed
+		if (!inventory) return false
+		const mouseSlot = this.getMouseSlot()
+		if (!mouseSlot) return false
+
+		if (!key.startsWith("Digit")) return false
+		const hotbarIndex = +key.substring(5)
+		if (!hotbarIndex || hotbarIndex < 1 || hotbarIndex > player.hotbar.size) return false
+
+		// swap item stacks
+		const invStack    = inventory.get(mouseSlot.slotIndex)
+		const hotbarStack = player.hotbar.get(hotbarIndex-1)
+		inventory.set(mouseSlot.slotIndex, hotbarStack)
+		player.hotbar.set(hotbarIndex-1, invStack)
+
+		return true
 	}
 
 }

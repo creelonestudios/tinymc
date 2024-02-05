@@ -62,6 +62,8 @@ export default class World {
 	readonly minZ: number
 	readonly maxZ: number
 
+	private updateQueue: ({ x: number, y: number, z: number })[]
+
 	constructor(dimensions: number[]) {
 		[this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ] = dimensions
 		this.blocks = new Map()
@@ -74,12 +76,22 @@ export default class World {
 				}
 			}
 		}
+
+		this.updateQueue = []
 	}
 
-	getBlock(x: number, y: number, z: number) {
+	validBlockPosition(x: number, y: number, z: number) {
 		x = Math.floor(x)
 		y = Math.floor(y)
 		z = Math.floor(z)
+		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) return null
+		return [x, y, z]
+	}
+
+	getBlock(x: number, y: number, z: number) {
+		const pos = this.validBlockPosition(x, y, z)
+		if (!pos) return
+		[x, y, z] = pos
 		return this.blocks.get(`${x},${y},${z}`)
 	}
 
@@ -88,9 +100,9 @@ export default class World {
 	}
 
 	setBlock(x: number, y: number, z: number, block: Block | string, data?: Partial<BlockData>) {
-		x = Math.floor(x)
-		y = Math.floor(y)
-		z = Math.floor(z)
+		const pos = this.validBlockPosition(x, y, z)
+		if (!pos) return
+		[x, y, z] = pos
 
 		if (typeof block == "string") {
 			block = createBlock(block, data)
@@ -98,26 +110,49 @@ export default class World {
 
 		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) throw new Error(`Tried to set block outside the world: ${x},${y},${z}; ${block.id}`)
 		this.blocks.set(`${x},${y},${z}`, block)
+
+		this.scheduleBlockUpdate(x, y, z)
+		this.scheduleBlockUpdate(x-1, y, z)
+		this.scheduleBlockUpdate(x+1, y, z)
+		this.scheduleBlockUpdate(x, y-1, z)
+		this.scheduleBlockUpdate(x, y+1, z)
+		this.scheduleBlockUpdate(x, y, z-1)
+		this.scheduleBlockUpdate(x, y, z+1)
 	}
 
 	clearBlock(x: number, y: number, z: number) {
-		x = Math.floor(x)
-		y = Math.floor(y)
-		z = Math.floor(z)
-		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) return
-		this.blocks.set(`${x},${y},${z}`, new Block("tiny:air"))
+		const pos = this.validBlockPosition(x, y, z)
+		if (!pos) return
+		[x, y, z] = pos
+
+		const oldBlock = this.getBlock(x, y, z)
+		if (oldBlock?.id == "tiny:air") return
+
+		const block = new Block("tiny:air")
+		this.blocks.set(`${x},${y},${z}`, block)
+
+		this.scheduleBlockUpdate(x, y, z)
+		this.scheduleBlockUpdate(x-1, y, z)
+		this.scheduleBlockUpdate(x+1, y, z)
+		this.scheduleBlockUpdate(x, y-1, z)
+		this.scheduleBlockUpdate(x, y+1, z)
+		this.scheduleBlockUpdate(x, y, z-1)
+		this.scheduleBlockUpdate(x, y, z+1)
 	}
 
-	getAllEntities() {
-		return Array.from(this.entities.values())
+	getAllEntities<E extends Entity = Entity>(filter?: string | ((entity: Entity, index: number) => boolean)): E[] {
+		let entities = Array.from(this.entities.values())
+		if      (typeof filter == "string")   entities = entities.filter(entity => entity.id == filter)
+		else if (typeof filter == "function") entities = entities.filter(filter)
+		return entities as E[]
 	}
 
-	spawn(entity: Entity | string, data?: Partial<EntityData>) {
+	spawn<T extends EntityData = EntityData>(entity: Entity | string, data?: Partial<T>) {
 		if (typeof entity == "string") {
-			this.entities.add(new Entity(entity, data))
+			this.entities.add(createEntity(entity, data))
 		} else {
 			this.entities.add(entity)
-		}		
+		}
 	}
 
 	removeEntity(entity: Entity) {
@@ -127,6 +162,15 @@ export default class World {
 	tick() {
 		for (let entity of this.entities.values()) {
 			entity.tick(this)
+		}
+
+		// block updates
+		let entry: {x: number, y: number, z: number} | undefined
+		if (this.updateQueue.length == 0) return
+		while (entry = this.updateQueue.shift()) {
+			const {x, y, z} = entry
+			const block = this.getBlock(x, y, z)
+			block?.update(this, x, y, z)
 		}
 	}
 
@@ -140,7 +184,7 @@ export default class World {
 			}
 			for (let y = this.minY; y <= this.maxY; y++) {
 				for (let x = this.minX; x <= this.maxX; x++) {
-					const frontBlock = getFirstBlock(this, x, y)
+					const frontBlock = getFirstBlock(this, x, y, undefined, block => block.full)
 					if (z >= frontBlock.z) this.getBlock(x, y, z)?.draw(g, x, y, z)
 				}
 			}
@@ -165,6 +209,14 @@ export default class World {
 			}
 		}
 
+	}
+
+	scheduleBlockUpdate(x: number, y: number, z: number) {
+		const pos = this.validBlockPosition(x, y, z)
+		if (!pos) return
+		[x, y, z] = pos
+		if (this.updateQueue.find(e => e.x == x && e.y == y && e.z == z)) return
+		this.updateQueue.push({x, y, z})
 	}
 
 	save() {

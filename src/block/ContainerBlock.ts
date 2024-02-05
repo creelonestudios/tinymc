@@ -12,10 +12,6 @@ export default class ContainerBlock extends Block implements HasInventory {
 		this.inventory = new Inventory(this.def.inventorySlots || 27, this.def.inventoryColumns || 9, data.items)
 	}
 
-	update() {
-
-	}
-
 	getData(x: number, y: number, z: number) {
 		return {
 			...super.getData(x, y, z),

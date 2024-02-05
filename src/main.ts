@@ -10,7 +10,7 @@ import WorldGenerator from "./world/WorldGenerator.js"
 import Cam from "./Cam.js"
 import Input from "./Input.js"
 import EntityDef from "./defs/EntityDef.js"
-import ItemEntity, { isItemEntityData } from "./entity/ItemEntity.js"
+import ItemEntity, { type ItemEntityData, isItemEntityData } from "./entity/ItemEntity.js"
 import ItemStack from "./ItemStack.js"
 import Dim2 from "./dim/Dim2.js"
 import { $ } from "./util/util.js"
@@ -22,6 +22,11 @@ import CreativeInventory from "./CreativeInventory.js"
 import Entity, { type EntityData } from "./entity/Entity.js"
 
 console.log("Never Gonna Give You Up")
+
+// game info
+export const GAME_NAME = "TinyMC"
+export const GAME_VERSION = ""
+export const GAME_VERSION_BRANCH = "main" // TODO: determine from git
 
 // constants
 export const blockSize = 80
@@ -45,13 +50,34 @@ export const world = new World([-20, 20, -20, 20, -1, 1])
 export const player = new Player("jens", "TinyJens")
 export const cam = new Cam(player)
 export const input = new Input()
-export let debug = { showHitboxes: false, showOrigin: false, showDebugScreen: false }
+export let debug = { showHitboxes: false, showOrigin: false, showDebugScreen: false, showAirLightLevel: false }
 
 Hotbar.loadTexture()
 Container.loadTexture()
 WorldGenerator.flat(world)
 world.spawn(player)
-setInterval(() => requestAnimationFrame(draw), 100)
+
+export const perf = {
+	tick: 0,
+	draw: 0
+}
+export const tickTarget = 20
+export const drawTarget = 10
+const perfTick = perfRun("tick", tick, 1000/tickTarget)
+const perfDraw = perfRun("draw", draw, 1000/drawTarget)
+setInterval(perfTick, 1000/tickTarget)
+setInterval(() => requestAnimationFrame(perfDraw), 1000/drawTarget)
+
+function perfRun(name: keyof typeof perf, fn: Function, target: number) {
+	return () => {
+		const before = performance.now()
+		fn()
+		const timeElapsed = performance.now() - before
+		if (timeElapsed >= 1000) console.warn(`game lagging: last ${name} took ${timeElapsed}ms`)
+		else if (timeElapsed >= target) console.debug(`%cgame lagging: last ${name} took ${timeElapsed}ms`, "color: skyblue")
+		perf[name] = timeElapsed
+	}
+}
 
 async function loadDefs<T>(path: string, cls: any): Promise<Map<String, T>> {
 	let data = await YSON.load(path)
@@ -78,14 +104,14 @@ export function getTexture(path: string) {
 	return texture
 }
 
-function draw() {
-	// tick
+function tick() {
 	player.motion.x = (Number(input.pressed("KeyD")) - Number(input.pressed("KeyA"))) * 0.25
 	//player.motion.y = (Number(input.pressed("KeyW")) - Number(input.pressed("KeyS"))) * 0.25
 	if (player.inFluid && input.pressed("Space")) player.motion.y = Entity.TERMINAL_FLUID_VELOCITY
 	world.tick()
+}
 
-	// draw
+function draw() {
 	graphics.reset()
 
 	graphics.save()
@@ -158,17 +184,25 @@ export function getMousePos() {
 
 input.on("keydown", (key: string) => {
 	//console.log(key)
+	if (Container.showingInventory()) {
+		if (Container.onKey(key)) return
+	}
+
 	if (key == "Digit1") player.selectedItemSlot = 0
 	if (key == "Digit2") player.selectedItemSlot = 1
 	if (key == "Digit3") player.selectedItemSlot = 2
 	if (key == "Digit4") player.selectedItemSlot = 3
 	if (key == "Digit5") player.selectedItemSlot = 4
+
 	if (key == "KeyM") {
 		debug.showHitboxes = !debug.showHitboxes
 
 		// also show origin if shift is pressed
 		if (!debug.showHitboxes) debug.showOrigin = false
 		else if (input.pressed("ShiftLeft")) debug.showOrigin = true
+
+		// temp
+		debug.showAirLightLevel = debug.showOrigin
 	}
 
 	if (key == "KeyQ") {
@@ -214,6 +248,11 @@ input.on("keydown", (key: string) => {
 
 	if (key == "Space") {
 		if (!player.inFluid && player.onGround) player.motion.y = 0.8
+  }
+
+	if (key == "F11" || key == "F1") {
+		if (document.fullscreenElement) document.exitFullscreen()
+		else game.requestFullscreen()
 	}
 
 	/*if (key == "KeyZ") {
@@ -227,13 +266,17 @@ input.on("keydown", (key: string) => {
 })
 
 input.on("click", (button: number) => {
+	if (Container.showingInventory()) {
+		if (Container.onClick(button)) return
+	}
+
 	const {x, y} = getMouseBlock()
 	let z = input.pressed("ShiftLeft") ? -1 : 0
 	const {block: frontBlock, z: frontZ} = getFirstBlock(world, x, y)
 
 	switch (button) {
 		case 0:
-			if (z < frontZ) break // inaccessible
+			if (z < frontZ && frontBlock?.full) break // inaccessible
 			world.clearBlock(x, y, z)
 			break
 		case 1:
@@ -243,7 +286,7 @@ input.on("click", (button: number) => {
 		case 2:
 			const stack = player.selectedItem
 			if (z != 0 && stack.item.getBlock().mainLayerOnly()) z = 0
-			if (z < frontZ) break // inaccessible
+			if (z < frontZ && frontBlock?.full) break // inaccessible
 
 			const currentBlock = world.getBlock(x, y, z)
 			if (currentBlock && !currentBlock.isSolid() && stack.item.isBlock()) {
@@ -256,6 +299,18 @@ input.on("click", (button: number) => {
 	}
 })
 
+input.on("mousemove", () => {
+	const mouse = getMousePos()
+	const items = world.getAllEntities<ItemEntity>("tiny:item")
+	for (let item of items) {
+		if (item.getBoundingBox().touch(mouse)) {
+			const leftover = player.hotbar.addItems(item.itemstack)
+			world.removeEntity(item)
+			if (leftover) world.spawn<ItemEntityData>("tiny:item", { item: leftover.getData(), position: player.position.asArray() })
+		}
+	}
+})
+
 function openInventory() {
 	const {x, y} = getMouseBlock()
 	const block = world.getBlock(x, y, 0)
@@ -263,14 +318,15 @@ function openInventory() {
 	Container.setInventory((block as ContainerBlock).inventory)
 }
 
-export function getFirstBlock(world: World, x: number, y: number, startZ: number = world.maxZ) {
+export function getFirstBlock(world: World, x: number, y: number, startZ: number = world.maxZ, predicate?: (block: Block) => boolean) {
 	startZ = Math.min(startZ, world.maxZ)
 	for (let z = startZ; z >= world.minZ; z--) {
 		const block = world.getBlock(x, y, z)
 		if (!block || !block.isSolid()) continue
+		if (predicate && !predicate(block)) continue
 		return { block, z }
 	}
-	return { block: new Block("tiny:air"), z: world.minZ }
+	return { block: world.getBlock(x, y, world.minZ), z: world.minZ }
 }
 
 export function getFirstFluid(world: World, x: number, y: number, startZ: number = world.maxZ) {
@@ -280,10 +336,10 @@ export function getFirstFluid(world: World, x: number, y: number, startZ: number
 		if (!block || block.id == "tiny:air") continue
 		return { block, z }
 	}
-	return { block: new Block("tiny:air"), z: world.minZ }
+	return { block: undefined, z: world.minZ }
 }
 
-export function createBlock(id: string, data: Partial<BlockData> = {}) {
+export function createBlock<T extends BlockData = BlockData>(id: string, data: Partial<T> = {}) {
 	const blockdef = blockdefs.get(id)
 	if (!blockdef) {
 		console.trace()
@@ -294,7 +350,7 @@ export function createBlock(id: string, data: Partial<BlockData> = {}) {
 	else return new Block(blockdef)
 }
 
-export function createEntity(id: string, data: Partial<EntityData> = {}) {
+export function createEntity<T extends EntityData = EntityData>(id: string, data: Partial<T> = {}) {
 	data.id = id
 	if (isItemEntityData(data, id)) return new ItemEntity(null, data)
 	else return new Entity(id, data)

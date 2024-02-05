@@ -4,6 +4,7 @@
 		stone: {},
 		water: { type: "fluid" },
 		grass_block: {},
-		chest: { type: "container" }
+		chest: { type: "container" },
+		torch: { full: false, lightLevel: 15 }
 	}
 }

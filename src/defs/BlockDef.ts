@@ -5,6 +5,8 @@ export default class BlockDef extends Base {
 
 	readonly type: "block" | "fluid" | "container"
 	readonly maxItemStack: number
+	readonly full: boolean
+	readonly lightLevel: number
 	readonly inventorySlots: number | null
 	readonly inventoryColumns: number | null
 
@@ -15,10 +17,18 @@ export default class BlockDef extends Base {
 		this.type = data.type
 		this.maxItemStack = data.maxItemStack
 
+		if (data.type == "container" || data.type == "block") {
+			this.full = data.full
+		} else this.full = true
+
 		if (data.type == "container") {
 			this.inventorySlots = data.inventorySlots
 			this.inventoryColumns = data.inventoryColumns
 		} else this.inventorySlots = this.inventoryColumns = null
+
+		if (data.type == "block") {
+			this.lightLevel = data.lightLevel
+		} else this.lightLevel = 0
 	}
 
 	get assetsPath() {
@@ -40,14 +50,19 @@ export default class BlockDef extends Base {
 }
 
 type BlockDefData = {
-	maxItemStack: number
+	maxItemStack: number,
 } & ({
-	type: "block" | "fluid"
+	type: "fluid"
+} | {
+	full: boolean
+} & ({
+	type: "block",
+	lightLevel: number	
 } | {
 	type: "container",
 	inventorySlots: number
 	inventoryColumns: number
-})
+}))
 
 function validate(data: any): data is BlockDefData {
 	if (typeof data != "object") return false
@@ -62,6 +77,22 @@ function validate(data: any): data is BlockDefData {
 		if (!isInteger(data.maxItemStack) || data.maxItemStack <= 0) return false
 	} else {
 		data.maxItemStack = 128 // default
+	}
+
+	if (data.type == "container" || data.type == "block") {
+		if ("full" in data) {
+			if (typeof data.full != "boolean") return false
+		} else {
+			data.full = true // default
+		}
+	}
+
+	if (data.type == "block") {
+		if ("lightLevel" in data) {
+			if (!isInteger(data.lightLevel) || data.lightLevel < 0 || data.lightLevel > 15) return false
+		} else {
+			data.lightLevel = 0 // default
+		}
 	}
 
 	if (data.type == "container") {
