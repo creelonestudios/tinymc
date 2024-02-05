@@ -136,11 +136,15 @@ export default class Entity {
 		if (this.position.y < world.minY - 50) this.die(world)
 	}
 
-	draw(g: Graphics) {
+	draw(g: Graphics, world: World) {
+		const block = world.getBlock(this.position.x, this.position.y, this.position.z)
+		const light = block?.lightLevel ?? 15
+
 		g.save()
 		g.translate(this.x, this.y)
 		g.translate(-this.size.x/2, 0) // to center (x)
 
+		g.brightness(light / 15)
 		this.texture?.draw(g, this.size.x, this.size.y)
 
 		g.restore()
