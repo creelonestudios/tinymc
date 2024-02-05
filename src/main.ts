@@ -105,8 +105,9 @@ export function getTexture(path: string) {
 }
 
 function tick() {
-	player.motion.x = (Number(input.pressed("KeyD")) - Number(input.pressed("KeyA"))) * 0.25
-	player.motion.y = (Number(input.pressed("KeyW")) - Number(input.pressed("KeyS"))) * 0.25
+	player.motion.x = (Number(input.pressed("KeyD")) - Number(input.pressed("KeyA"))) * 0.15
+	//player.motion.y = (Number(input.pressed("KeyW")) - Number(input.pressed("KeyS"))) * 0.25
+	if (player.inFluid && input.pressed("Space")) player.motion.y = Entity.TERMINAL_FLUID_VELOCITY
 	world.tick()
 }
 
@@ -203,19 +204,29 @@ input.on("keydown", (key: string) => {
 		// temp
 		debug.showAirLightLevel = debug.showOrigin
 	}
+
 	if (key == "KeyQ") {
-		let stack = player.selectedItem
-		let index = player.selectedItemSlot
+		const stack = player.selectedItem
+		const index = player.selectedItemSlot
 		if (stack.item.id == "tiny:air") return
-		if (input.pressed("ControlLeft")) { // drop whole stack
-			world.spawn(new ItemEntity(stack, { position: player.position.asArray() }))
-			player.hotbar.set(index, new ItemStack("tiny:air"))
-		} else { // drop single item
-			world.spawn(new ItemEntity(new ItemStack(stack.item.id), { position: player.position.asArray() }))
-			if (stack.amount > 1) stack.amount--
-			else player.hotbar.set(index, new ItemStack("tiny:air"))
+
+		const entityData = {
+			position: player.position.asArray(),
+			motion: getMousePos().sub(player.position).normalize().scale(0.6).asArray()
 		}
+		let dropStack = stack
+
+		if (!input.pressed("ControlLeft")) {
+			dropStack = new ItemStack(stack.item.id)
+		}
+
+		if (input.pressed("ControlLeft") || stack.amount <= 1) {
+			player.hotbar.set(index, new ItemStack("tiny:air"))
+		} else stack.amount--
+
+		world.spawn(new ItemEntity(dropStack, entityData))
 	}
+
 	inv: if (key == "KeyE") { // open inventory under mouse
 		if (Container.showingInventory()) {
 			Container.setInventory()
@@ -233,6 +244,10 @@ input.on("keydown", (key: string) => {
 
 	if (key == "F3") {
 		debug.showDebugScreen = !debug.showDebugScreen
+	}
+
+	if (key == "Space") {
+		if (!player.inFluid && player.onGround) player.motion.y = 0.35
 	}
 
 	if (key == "F11" || key == "F1") {

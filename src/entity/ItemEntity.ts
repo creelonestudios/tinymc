@@ -12,7 +12,7 @@ export default class ItemEntity extends Entity {
 	readonly itemstack: ItemStack
 
 	constructor(itemstack: ItemStack | null, data: Partial<ItemEntityData> = {}) {
-		super(new EntityDef("tiny", "item", {}), data)
+		super(new EntityDef("tiny", "item", { hasFriction: true }), data)
 		this.itemstack = data.item ? new ItemStack(data.item.item.id, data.item.amount) : (itemstack || new ItemStack("tiny:air"))
 		this.size.set(0.5, 0.5)
 	}
@@ -22,7 +22,9 @@ export default class ItemEntity extends Entity {
 	}
 
 	tick(world: World) {
+		if (this.inFluid) this.motion.y = Entity.TERMINAL_FLUID_VELOCITY
 		super.tick(world)
+    
 		const pickupDelay = Math.max(this.spawnTime + ItemEntity.PICKUP_TIME - Date.now(), 0)
 		const boundingBox = this.getBoundingBox()
 
@@ -51,6 +53,7 @@ export default class ItemEntity extends Entity {
 			if (boundingBox.intersect(item.getBoundingBox())) {
 				if (stack.amount + this.itemstack.amount < this.itemstack.item.maxItemStack) {
 					stack.amount += this.itemstack.amount
+					item.motion.add(this.motion)
 					world.removeEntity(this)
 					return
 				}

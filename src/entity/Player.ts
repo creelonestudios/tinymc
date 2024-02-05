@@ -67,6 +67,12 @@ export default class Player extends Entity {
 		}
 	}
 
+	die() { // respawn
+		this.position.set(0, 1, 0) // TODO: spawn point
+		this.motion.set(0, 0, 0)
+		this.rotation.set(0, 0)
+	}
+
 	tick(world: World) {
 		super.tick(world)
 	}
