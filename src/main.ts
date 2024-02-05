@@ -248,7 +248,6 @@ input.on("keydown", (key: string) => {
 
 	if (key == "Space") {
 		if (!player.inFluid && player.onGround) player.motion.y = 0.35
-		console.log(player.motion.y)
 	}
 
 	if (key == "F11" || key == "F1") {
