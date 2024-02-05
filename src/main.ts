@@ -105,7 +105,7 @@ export function getTexture(path: string) {
 }
 
 function tick() {
-	player.motion.x = (Number(input.pressed("KeyD")) - Number(input.pressed("KeyA"))) * 0.25
+	player.motion.x = (Number(input.pressed("KeyD")) - Number(input.pressed("KeyA"))) * 0.15
 	//player.motion.y = (Number(input.pressed("KeyW")) - Number(input.pressed("KeyS"))) * 0.25
 	if (player.inFluid && input.pressed("Space")) player.motion.y = Entity.TERMINAL_FLUID_VELOCITY
 	world.tick()
