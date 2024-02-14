@@ -3,6 +3,7 @@ import EntityDef from "../defs/EntityDef.js";
 import ItemStack, { type ItemStackData } from "../ItemStack.js";
 import World from "../world/World.js";
 import Player from "./Player.js"
+import { type Flatten } from "../util/interfaces.js";
 
 export default class ItemEntity extends Entity {
 
@@ -70,10 +71,10 @@ export default class ItemEntity extends Entity {
 
 }
 
-export type ItemEntityData = EntityData & {
+export type ItemEntityData = Flatten<EntityData & {
 	item: ItemStackData,
 	pickupDelay: number
-}
+}>
 
 export function isItemEntityData(data: Partial<EntityData>, id: string = data.id || ""): data is ItemEntityData {
 	return id == "tiny:item"

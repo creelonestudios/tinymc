@@ -8,6 +8,7 @@ import { getTexture, player, world } from "../main.js"
 import PlayerDef from "../defs/PlayerDef.js"
 import Texture from "../texture/Texture.js"
 import World from "../world/World.js"
+import { type Flatten } from "../util/interfaces.js"
 
 export default class Player extends Entity {
 
@@ -89,9 +90,9 @@ export default class Player extends Entity {
 
 }
 
-export type PlayerData = EntityData & {
+export type PlayerData = Flatten<EntityData & {
 	selectedItem: ItemStackData,
 	selectedItemSlot: number,
 	playerName: string,
 	hotbar: InventoryData
-}
+}>

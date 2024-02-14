@@ -5,8 +5,9 @@ import EntityDef from "../defs/EntityDef.js"
 import { entitydefs } from "../main.js"
 import World from "../world/World.js"
 import Graphics from "../Graphics.js"
+import { type Flatten, type BaseData, type HasData } from "../util/interfaces.js"
 
-export default class Entity {
+export default class Entity implements HasData {
 
 	static readonly TERMINAL_VELOCITY = 3
 	static readonly TERMINAL_FLUID_VELOCITY = 0.15
@@ -168,12 +169,11 @@ export default class Entity {
 
 }
 
-export type EntityData = {
-	id: string,
+export type EntityData = Flatten<BaseData & {
 	motion: number[],
 	position: number[],
 	rotation: number[],
 	noGravity: boolean,
 	onGround: boolean,
 	spawnTime: number
-}
+}>

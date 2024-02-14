@@ -2,9 +2,9 @@ import ItemDef from "./defs/ItemDef.js"
 import BlockDef from "./defs/BlockDef.js"
 import { itemdefs, blockdefs } from "./main.js"
 import Block from "./block/Block.js"
-import { type BaseData } from "./util/interfaces.js"
+import { type HasData, type BaseData } from "./util/interfaces.js"
 
-export default class Item {
+export default class Item implements HasData {
 
 	static fromYSON(data: any) {
 		if (!(data instanceof Object) || typeof data.id != "string") throw new Error("Could not parse Block:", data)

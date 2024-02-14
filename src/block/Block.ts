@@ -4,10 +4,10 @@ import Dim2 from "../dim/Dim2.js"
 import Dim3 from "../dim/Dim3.js"
 import { blockdefs, debug } from "../main.js"
 import Graphics from "../Graphics.js"
-import { type BaseData } from "../util/interfaces.js"
+import { type HasData, type BaseData, type Flatten } from "../util/interfaces.js"
 import World from "../world/World.js"
 
-export default class Block {
+export default class Block implements HasData {
 
 	static fromYSON(data: any) {
 		if (!(data instanceof Object) || typeof data.id != "string") throw new Error("Could not parse Block:", data)
@@ -119,11 +119,11 @@ export default class Block {
 
 }
 
-export type BlockData = BaseData & {
+export type BlockData = Flatten<BaseData & {
 	x: number,
 	y: number,
 	z: number
-}
+}>
 
 function updateSkyLight(world: World, x: number, y: number, z: number, skyLightBefore: number) {
 	const derivLight = []

@@ -1,7 +1,8 @@
 import Item from "./Item.js"
 import ItemStack, { type ItemStackData } from "./ItemStack.js"
+import { type Flatten, type HasData } from "./util/interfaces.js"
 
-export default class Inventory {
+export default class Inventory implements HasData {
 
 	readonly size: number
 	readonly columns: number
@@ -101,4 +102,4 @@ export default class Inventory {
 
 }
 
-export type InventoryData = (ItemStackData & { slot: number })[]
+export type InventoryData = Flatten<(ItemStackData & { slot: number })[]>

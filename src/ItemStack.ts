@@ -1,7 +1,8 @@
 import Graphics from "./Graphics.js"
 import Item, { type ItemData } from "./Item.js"
+import { type HasData } from "./util/interfaces.js"
 
-export default class ItemStack {
+export default class ItemStack implements HasData {
 
 	readonly item: Item
 	#amount: number

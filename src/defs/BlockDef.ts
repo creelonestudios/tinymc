@@ -1,3 +1,4 @@
+import { type Flatten } from "../util/interfaces.js"
 import { isInteger } from "../util/typecheck.js"
 import Base from "./Base.js"
 
@@ -49,7 +50,7 @@ export default class BlockDef extends Base {
 
 }
 
-type BlockDefData = {
+type BlockDefData = Flatten<{
 	maxItemStack: number,
 } & ({
 	type: "fluid"
@@ -62,7 +63,7 @@ type BlockDefData = {
 	type: "container",
 	inventorySlots: number
 	inventoryColumns: number
-}))
+}))>
 
 function validate(data: any): data is BlockDefData {
 	if (typeof data != "object") return false
