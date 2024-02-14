@@ -1,18 +1,17 @@
 import Entity, { type EntityData } from "./Entity.js";
 import EntityDef from "../defs/EntityDef.js";
 import ItemStack, { type ItemStackData } from "../ItemStack.js";
-import { getMousePos, player } from "../main.js";
 import World from "../world/World.js";
 import Player from "./Player.js"
 
 export default class ItemEntity extends Entity {
 
-	static PICKUP_TIME: number = 40 * 50 // 40 ticks
+	static PICKUP_TIME: number = 40 // in ticks
 
 	readonly itemstack: ItemStack
 
-	constructor(itemstack: ItemStack | null, data: Partial<ItemEntityData> = {}) {
-		super(new EntityDef("tiny", "item", { hasFriction: true }), data)
+	constructor(itemstack: ItemStack | null, spawnTime: number, data: Partial<ItemEntityData> = {}) {
+		super(new EntityDef("tiny", "item", { hasFriction: true }), spawnTime, data)
 		this.itemstack = data.item ? new ItemStack(data.item.item.id, data.item.amount) : (itemstack || new ItemStack("tiny:air"))
 		this.size.set(0.5, 0.5)
 	}
@@ -25,7 +24,7 @@ export default class ItemEntity extends Entity {
 		if (this.inFluid) this.motion.y = Entity.TERMINAL_FLUID_VELOCITY
 		super.tick(world)
     
-		const pickupDelay = Math.max(this.spawnTime + ItemEntity.PICKUP_TIME - Date.now(), 0)
+		const pickupDelay = Math.max(this.spawnTime + ItemEntity.PICKUP_TIME - world.tickTime, 0)
 		const boundingBox = this.getBoundingBox()
 
 		// player collision
@@ -61,11 +60,11 @@ export default class ItemEntity extends Entity {
 		}
 	}
 
-	getData() {
+	getData(world: World) {
 		return {
 			...super.getData(),
 			item: this.itemstack.getData(),
-			pickupDelay: Math.max(Math.floor((this.spawnTime + ItemEntity.PICKUP_TIME - Date.now()) * 20 / 1000), 0) // should be in ticks
+			pickupDelay: Math.max(this.spawnTime + ItemEntity.PICKUP_TIME - world.tickTime, 0)
 		}
 	}
 

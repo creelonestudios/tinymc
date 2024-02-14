@@ -47,7 +47,7 @@ blockdefs.set("tiny:air", new BlockDef("tiny", "air", {}))
 
 // other
 export const world = new World([-20, 20, -20, 20, -1, 1])
-export const player = new Player("jens", "TinyJens")
+export const player = new Player("jens", "TinyJens", 0)
 export const cam = new Cam(player)
 export const input = new Input()
 export let debug = { showHitboxes: false, showOrigin: false, showDebugScreen: false, showAirLightLevel: false }
@@ -224,7 +224,7 @@ input.on("keydown", (key: string) => {
 			player.hotbar.set(index, new ItemStack("tiny:air"))
 		} else stack.amount--
 
-		world.spawn(new ItemEntity(dropStack, entityData))
+		world.spawn<ItemEntityData>("tiny:item", { ...entityData, item: dropStack })
 	}
 
 	inv: if (key == "KeyE") { // open inventory under mouse
@@ -350,8 +350,8 @@ export function createBlock<T extends BlockData = BlockData>(id: string, data: P
 	else return new Block(blockdef)
 }
 
-export function createEntity<T extends EntityData = EntityData>(id: string, data: Partial<T> = {}) {
+export function createEntity<T extends EntityData = EntityData>(id: string, spawnTime: number, data: Partial<T> = {}) {
 	data.id = id
-	if (isItemEntityData(data, id)) return new ItemEntity(null, data)
-	else return new Entity(id, data)
+	if (isItemEntityData(data, id)) return new ItemEntity(null, spawnTime, data)
+	else return new Entity(id, spawnTime, data)
 }

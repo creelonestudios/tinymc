@@ -2,7 +2,7 @@ import Block from "../block/Block.js"
 import Entity, { EntityData } from "./Entity.js"
 import Inventory, { InventoryData } from "../Inventory.js"
 import Item from "../Item.js"
-import ItemEntity from "./ItemEntity.js"
+import { ItemEntityData } from "./ItemEntity.js"
 import ItemStack, { ItemStackData } from "../ItemStack.js"
 import { getTexture, player, world } from "../main.js"
 import PlayerDef from "../defs/PlayerDef.js"
@@ -17,8 +17,8 @@ export default class Player extends Entity {
 	#selectedItemSlot: number
 	readonly hotbar: Inventory
 	
-	constructor(skin: string, name: string, data: Partial<PlayerData> = {}) {
-		super(new PlayerDef(), { ...data, position: [0, 1, 0] })
+	constructor(skin: string, name: string, spawnTime: number, data: Partial<PlayerData> = {}) {
+		super(new PlayerDef(), spawnTime, { ...data, position: [0, 1, 0] })
 		this.name = name
 		this.hotbar = data.hotbar ? new Inventory(5, 5, data.hotbar) : new Inventory(5)
 		this.skin = skin
@@ -47,7 +47,7 @@ export default class Player extends Entity {
 
 	addItems(stack: ItemStack) {
 		let leftover = this.hotbar.addItems(stack)
-		if (leftover) world.spawn(new ItemEntity(new ItemStack(player.selectedItem.item.id), { position: player.position.asArray() }))
+		if (leftover) world.spawn<ItemEntityData>("tiny:item", { item: new ItemStack(player.selectedItem.item.id), position: player.position.asArray() })
 	}
 
 	pickBlock(block: Block) {

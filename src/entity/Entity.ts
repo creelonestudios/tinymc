@@ -33,7 +33,7 @@ export default class Entity {
 	onGround: boolean
 	inFluid: boolean
 
-	constructor(def: EntityDef | string, data: Partial<EntityData> = {}) {
+	constructor(def: EntityDef | string, spawnTime: number, data: Partial<EntityData> = {}) {
 		if (def instanceof EntityDef) this.def = def
 		else {
 			let entitydef = entitydefs.get(def)
@@ -47,7 +47,7 @@ export default class Entity {
 		this.rotation = new Dim3(...(data.rotation || [0, 0, 0]))
 		this.motion   = new Dim3(...(data.motion   || [0, 0, 0]))
 		this.size     = new Dim2()
-		this.spawnTime = data.spawnTime || Date.now() // TODO: ticks since world creation
+		this.spawnTime = spawnTime
 		this.noGravity = typeof data.noGravity == "undefined" ? false : data.noGravity
 		this.onGround  = typeof data.onGround == "undefined" ? false : data.onGround
 		this.inFluid   = false
@@ -154,7 +154,7 @@ export default class Entity {
 		world.removeEntity(this)
 	}
 
-	getData(): EntityData {
+	getData(world?: World): EntityData {
 		return {
 			id: this.id,
 			motion: this.motion.asArray(),

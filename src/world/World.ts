@@ -37,7 +37,7 @@ export default class World {
 		blockData.forEach(data => blockDataMap.set(`${data.x},${data.y},${data.z}`, data))
 
 		const world = new World(dims)
-		world.entities = new Set(entities.map(data => createEntity(data.id, data)))
+		world.entities = new Set(entities.map(data => createEntity(data.id, data.spawnTime, data)))
 		
 		let i = 0
 		for (let z = world.minZ; z <= world.maxZ; z++) {
@@ -55,6 +55,7 @@ export default class World {
 
 	private blocks: Map<`${number},${number},${number}`, Block>
 	private entities: Set<Entity>
+	private tickCount: number
 	readonly minX: number
 	readonly maxX: number
 	readonly minY: number
@@ -68,6 +69,7 @@ export default class World {
 		[this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ] = dimensions
 		this.blocks = new Map()
 		this.entities = new Set()
+		this.tickCount = 0
 
 		for (let x = this.minX; x <= this.maxX; x++) {
 			for (let y = this.minY; y <= this.maxY; y++) {
@@ -78,6 +80,10 @@ export default class World {
 		}
 
 		this.updateQueue = []
+	}
+
+	get tickTime() {
+		return this.tickCount
 	}
 
 	validBlockPosition(x: number, y: number, z: number) {
@@ -149,7 +155,7 @@ export default class World {
 
 	spawn<T extends EntityData = EntityData>(entity: Entity | string, data?: Partial<T>) {
 		if (typeof entity == "string") {
-			this.entities.add(createEntity(entity, data))
+			this.entities.add(createEntity(entity, this.tickCount, data))
 		} else {
 			this.entities.add(entity)
 		}
@@ -166,12 +172,16 @@ export default class World {
 
 		// block updates
 		let entry: {x: number, y: number, z: number} | undefined
-		if (this.updateQueue.length == 0) return
-		while (entry = this.updateQueue.shift()) {
-			const {x, y, z} = entry
-			const block = this.getBlock(x, y, z)
-			block?.update(this, x, y, z)
+		if (this.updateQueue.length > 0) {
+			while (entry = this.updateQueue.shift()) {
+				const {x, y, z} = entry
+				const block = this.getBlock(x, y, z)
+				block?.update(this, x, y, z)
+			}
 		}
+
+		// increase tick count
+		this.tickCount++
 	}
 
 	draw(g: Graphics) {
