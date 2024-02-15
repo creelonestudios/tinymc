@@ -21,9 +21,9 @@ export default class Dim3 implements Dim {
 	}
 	
 	sub(dim: Dim2 | Dim3): Dim3 {
-		this.x += dim.x
-		this.y += dim.y
-		if (dim instanceof Dim3) this.z += dim.z
+		this.x -= dim.x
+		this.y -= dim.y
+		if (dim instanceof Dim3) this.z -= dim.z
 		return this
 	}
 

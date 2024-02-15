@@ -309,6 +309,9 @@ input.on("mousemove", () => {
 	const items = world.getAllEntities<ItemEntity>("tiny:item")
 	for (let item of items) {
 		if (item.getBoundingBox().touch(mouse)) {
+			const reachable = item.position.distanceTo(player.position) <= player.attributes.get("player.entity_interaction_range")!
+			if (!reachable) continue
+
 			const leftover = player.hotbar.addItems(item.itemstack)
 			world.removeEntity(item)
 			if (leftover) world.spawn<ItemEntityData>("tiny:item", { item: leftover.getData(), position: player.position.asArray() })

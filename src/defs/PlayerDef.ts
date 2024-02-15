@@ -12,7 +12,7 @@ export default class PlayerDef extends EntityDef {
 				base: 4.5
 			}, {
 				name: "player.entity_interaction_range",
-				base: 3
+				base: 5
 			}]
 		} satisfies Partial<EntityDefData>)
 	}
