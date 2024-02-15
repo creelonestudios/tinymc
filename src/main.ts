@@ -6,7 +6,7 @@ import World from "./world/World.js"
 import Player from "./entity/Player.js"
 import ItemDef from "./defs/ItemDef.js"
 import Hotbar from "./util/Hotbar.js"
-import WorldGenerator from "./world/WorldGenerator.js"
+import { generators } from "./world/WorldGenerator.js"
 import Cam from "./Cam.js"
 import Input from "./Input.js"
 import EntityDef from "./defs/EntityDef.js"
@@ -46,15 +46,17 @@ export const entitydefs = await loadDefs<EntityDef>("entities.yson", EntityDef)
 blockdefs.set("tiny:air", new BlockDef("tiny", "air", {}))
 
 // other
-export const world = new World([-20, 20, -20, 20, -1, 1])
+export const world = new World([-20, 20, -1, 1], generators.flat)
 export const player = new Player("jens", "TinyJens", 0)
 export const cam = new Cam(player)
 export const input = new Input()
 export let debug = { showHitboxes: false, showOrigin: false, showDebugScreen: false, showAirLightLevel: false }
 
+// @ts-ignore
+window.world = world
+
 Hotbar.loadTexture()
 Container.loadTexture()
-WorldGenerator.flat(world)
 world.spawn(player)
 
 export const perf = {

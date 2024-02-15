@@ -1,9 +1,21 @@
 import Block from "../block/Block.js";
 import { blockdefs } from "../main.js";
+import Chunk from "./Chunk.js";
 import World from "./World.js";
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 
-export default class WorldGenerator {
+export type WorldGenerator = (world: World, chunk: number, x: number, y: number, z: number) => string | undefined
+
+export const generators: Record<string, WorldGenerator> = {
+	flat: (world, chunk, x, y, z) => {
+		if (z >= 1) return
+		if (y <= -3) return "tiny:stone"
+		if (y < 0) return "tiny:dirt"
+		if (y == 0) return "tiny:grass_block"
+	} 
+}
+
+/*export default class WorldGenerator {
 
     static flat(world: World) {
         for (let y = world.minY; y <= world.maxY && y <= 0; y++) {
@@ -52,7 +64,7 @@ export default class WorldGenerator {
 					}
 				}
 			}
-		})()*/
+		})()*//*
     }
 
     static random(world: World) {
@@ -73,3 +85,4 @@ export default class WorldGenerator {
     }
 
 }
+*/

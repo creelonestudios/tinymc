@@ -35,7 +35,7 @@ function gameInfo(g: Graphics, world: World, player: Player) {
 	lines.push(`${Math.min(1000/perf.draw, drawTarget).toFixed(1)}/${drawTarget} fps`)
 	lines.push(`${perf.tick.toFixed(2)}/${1000/tickTarget}ms ticks (${Math.min(1000/perf.tick, tickTarget).toFixed(1)} tps)`)
 	lines.push(`entities: ${world.getAllEntities().length}`)
-	lines.push(`world size: ${world.minX}..${world.maxX}; ${world.minY}..${world.maxY}; ${world.minZ}..${world.maxZ}`)
+	lines.push(`world size: unbounded; ${world.minY}..${world.maxY}; ${world.minZ}..${world.maxZ}`)
 	lines.push(`shift: ${input.pressed("ShiftLeft")}`)
 
 	lines.push(``)

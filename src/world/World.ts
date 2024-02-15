@@ -5,10 +5,12 @@ import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 import { getFirstBlock } from "../main.js"
 import Player, { type PlayerData } from "../entity/Player.js"
 import { createBlock, createEntity } from "../main.js"
+import Chunk from "./Chunk.js"
+import { WorldGenerator } from "./WorldGenerator.js"
 
 export default class World {
 
-	static fromYSON(data: any) {
+	/*static fromYSON(data: any) {
 		if (!(data instanceof Object) || !data.blocks || !(data.blocks instanceof Map)) throw new Error("Could not parse World:", data)
 		if (data.entities && !(data.entites instanceof Set)) throw new Error("Could not parse World:", data)
 		let dims = data.dims
@@ -24,9 +26,9 @@ export default class World {
 		}
 		world.entities = data.entities || new Set()
 		return world
-	}
+	}*/
 
-	static load(stringBlocks: string, blockData: BlockData[], dims: number[], entities: EntityData[]) {
+	/*static load(stringBlocks: string, blockData: BlockData[], dims: number[], entities: EntityData[]) {
 		const semi = stringBlocks.indexOf(";")
 		if (!semi) return // invalid save
 
@@ -51,13 +53,15 @@ export default class World {
 		}
 
 		return world
-	}
+	}*/
 
-	private blocks: Map<`${number},${number},${number}`, Block>
+	private readonly generator: WorldGenerator
+	private readonly chunks: Array<Chunk>
+	private readonly loadedChunks: Set<number>
+	//private blocks: Map<`${number},${number},${number}`, Block>
 	private entities: Set<Entity>
 	private tickCount: number
-	readonly minX: number
-	readonly maxX: number
+
 	readonly minY: number
 	readonly maxY: number
 	readonly minZ: number
@@ -65,21 +69,29 @@ export default class World {
 
 	private updateQueue: ({ x: number, y: number, z: number })[]
 
-	constructor(dimensions: number[]) {
-		[this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ] = dimensions
-		this.blocks = new Map()
+	constructor(dimensions: number[], generator: WorldGenerator) {
+		[this.minY, this.maxY, this.minZ, this.maxZ] = dimensions
+		this.generator = generator
+		this.chunks = []
+		this.loadedChunks = new Set()
+		//this.blocks = new Map()
 		this.entities = new Set()
 		this.tickCount = 0
 
-		for (let x = this.minX; x <= this.maxX; x++) {
+		/*for (let x = this.minX; x <= this.maxX; x++) {
 			for (let y = this.minY; y <= this.maxY; y++) {
 				for (let z = this.minZ; z <= this.maxZ; z++) {
 					this.blocks.set(`${x},${y},${z}`, new Block("tiny:air"))
 				}
 			}
-		}
+		}*/
 
 		this.updateQueue = []
+
+		this.chunks[-1] = new Chunk(this, -1, generator)
+		this.chunks[0] = new Chunk(this, 0, generator)
+		this.loadedChunks.add(-1)
+		this.loadedChunks.add(0)
 	}
 
 	get tickTime() {
@@ -90,7 +102,7 @@ export default class World {
 		x = Math.floor(x)
 		y = Math.floor(y)
 		z = Math.floor(z)
-		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) return null
+		if (y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) return null
 		return [x, y, z]
 	}
 
@@ -98,52 +110,72 @@ export default class World {
 		const pos = this.validBlockPosition(x, y, z)
 		if (!pos) return
 		[x, y, z] = pos
-		return this.blocks.get(`${x},${y},${z}`)
+		const chunkIndex = Math.floor(x / Chunk.CHUNK_WIDTH)
+		x -= chunkIndex * Chunk.CHUNK_WIDTH
+		const chunk = this.chunks[chunkIndex]
+		return chunk?.getBlock(x, y, z)
+		//return this.blocks.get(`${x},${y},${z}`)
 	}
 
-	getAllBlocks() {
+	/*getAllBlocks() {
 		return Array.from(this.blocks.values())
-	}
+	}*/
 
 	setBlock(x: number, y: number, z: number, block: Block | string, data?: Partial<BlockData>) {
 		const pos = this.validBlockPosition(x, y, z)
 		if (!pos) return
 		[x, y, z] = pos
 
+		const chunkIndex = Math.floor(x / Chunk.CHUNK_WIDTH)
+		x -= chunkIndex * Chunk.CHUNK_WIDTH
+		const chunk = this.chunks[chunkIndex]
+		if (!chunk) return
+
 		if (typeof block == "string") {
 			block = createBlock(block, data)
-		}	
+		}
 
-		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) throw new Error(`Tried to set block outside the world: ${x},${y},${z}; ${block.id}`)
-		this.blocks.set(`${x},${y},${z}`, block)
+		/*if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) throw new Error(`Tried to set block outside the world: ${x},${y},${z}; ${block.id}`)
+		this.blocks.set(`${x},${y},${z}`, block)*/
 
-		this.scheduleBlockUpdate(x, y, z)
+		chunk.setBlock(x, y, z, block)
+
+		/*this.scheduleBlockUpdate(x, y, z)
 		this.scheduleBlockUpdate(x-1, y, z)
 		this.scheduleBlockUpdate(x+1, y, z)
 		this.scheduleBlockUpdate(x, y-1, z)
 		this.scheduleBlockUpdate(x, y+1, z)
 		this.scheduleBlockUpdate(x, y, z-1)
-		this.scheduleBlockUpdate(x, y, z+1)
+		this.scheduleBlockUpdate(x, y, z+1)*/
 	}
 
 	clearBlock(x: number, y: number, z: number) {
 		const pos = this.validBlockPosition(x, y, z)
+		console.trace(pos)
 		if (!pos) return
 		[x, y, z] = pos
+
+		const chunkIndex = Math.floor(x / Chunk.CHUNK_WIDTH)
+		x -= chunkIndex * Chunk.CHUNK_WIDTH
+		const chunk = this.chunks[chunkIndex]
+		if (!chunk) return
 
 		const oldBlock = this.getBlock(x, y, z)
 		if (oldBlock?.id == "tiny:air") return
 
-		const block = new Block("tiny:air")
-		this.blocks.set(`${x},${y},${z}`, block)
+		//console.log("world clear block", x, y, z)
 
-		this.scheduleBlockUpdate(x, y, z)
+		//const block = new Block("tiny:air")
+		//this.blocks.set(`${x},${y},${z}`, block)
+		chunk.clearBlock(x, y, z)
+
+		/*this.scheduleBlockUpdate(x, y, z)
 		this.scheduleBlockUpdate(x-1, y, z)
 		this.scheduleBlockUpdate(x+1, y, z)
 		this.scheduleBlockUpdate(x, y-1, z)
 		this.scheduleBlockUpdate(x, y+1, z)
 		this.scheduleBlockUpdate(x, y, z-1)
-		this.scheduleBlockUpdate(x, y, z+1)
+		this.scheduleBlockUpdate(x, y, z+1)*/
 	}
 
 	getAllEntities<E extends Entity = Entity>(filter?: string | ((entity: Entity, index: number) => boolean)): E[] {
@@ -186,6 +218,9 @@ export default class World {
 
 	draw(g: Graphics) {
 
+		// temp!!!
+		const minX = -16, maxX = 15
+
 		for (let z = this.minZ; z <= this.maxZ; z++) {
 			if (z == 0) { // draw entities behind blocks (e.g. water)
 				for (let entity of this.getAllEntities()) {
@@ -193,7 +228,7 @@ export default class World {
 				}
 			}
 			for (let y = this.minY; y <= this.maxY; y++) {
-				for (let x = this.minX; x <= this.maxX; x++) {
+				for (let x = minX; x <= maxX; x++) {
 					const frontBlock = getFirstBlock(this, x, y, undefined, block => block.full)
 					if (z >= frontBlock.z) this.getBlock(x, y, z)?.draw(g, x, y, z)
 				}
@@ -204,9 +239,12 @@ export default class World {
 
 	drawBoundingBoxes(g: Graphics) {
 
+		// temp!!!
+		const minX = -16, maxX = 15
+
 		for (let z = this.minZ; z <= this.maxZ; z++) {
 			for (let y = this.minY; y <= this.maxY; y++) {
-				for (let x = this.minX; x <= this.maxX; x++) {
+				for (let x = minX; x <= maxX; x++) {
 					const block = this.getBlock(x, y, z)
 					if (!block || block.id == "tiny:air") continue
 					block.getBoundingBox(x, y).draw(g, "blue")
@@ -230,7 +268,7 @@ export default class World {
 	}
 
 	save() {
-		const blockCount = (this.maxX - this.minX +1) * (this.maxY - this.minY +1) * (this.maxZ - this.minZ +1)
+		/*const blockCount = (this.maxX - this.minX +1) * (this.maxY - this.minY +1) * (this.maxZ - this.minZ +1)
 		const blocks = new Uint16Array(blockCount)
 		const blockIds = ["tiny:air"]
 		const blockData: BlockData[] = []
@@ -256,7 +294,9 @@ export default class World {
 					i++
 				}
 			}
-		}
+		}*/
+
+		const chunks = Array.from(this.loadedChunks.values()).map(i => this.chunks[i]?.save())
 
 		const entities: EntityData[] = []
 		const players:  PlayerData[] = []
@@ -270,21 +310,10 @@ export default class World {
 		})
 
 		return {
-			blockIds,
-			blocks,
-			stringBlocks: blockIds.join(",") + ";" + String.fromCharCode(...Array.from(blocks)),
-			blockData,
-			dims: [this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ],
+			chunks,
+			dims: [this.minY, this.maxY, this.minZ, this.maxZ],
 			entities,
 			players
-		}
-	}
-
-	toYSON() {
-		return {
-			dims: [this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ],
-			blocks: this.blocks,
-			entites: this.entities
 		}
 	}
 
