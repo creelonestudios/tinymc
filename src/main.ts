@@ -139,14 +139,15 @@ function draw() {
 
 	// block highlight
 	{
-		let mousePos = getMouseBlock().floor()
+		const mousePos = getMouseBlock().floor()
+		const reachable = mousePos.distanceTo(player.position) <= player.attributes.get("player.block_interaction_range")!
 
 		graphics.save()
 		graphics.translate(mousePos.x, mousePos.y)
 
 		graphics.fillStyle = "transparent"
-		graphics.strokeStyle = "white"
-		graphics.lineWidth = 2
+		graphics.strokeStyle = reachable ? "white" : "#707070"
+		graphics.lineWidth = reachable ? 2 : 1
 		graphics.strokeRect(1, 1)
 
 		graphics.restore()
@@ -270,12 +271,15 @@ input.on("click", (button: number) => {
 		if (Container.onClick(button)) return
 	}
 
-	const {x, y} = getMouseBlock()
+	const mouseBlock = getMouseBlock()
+	const {x, y} = mouseBlock
 	let z = input.pressed("ShiftLeft") ? -1 : 0
 	const {block: frontBlock, z: frontZ} = getFirstBlock(world, x, y)
+	const reachable = mouseBlock.distanceTo(player.position) <= player.attributes.get("player.block_interaction_range")!
 
 	switch (button) {
 		case 0:
+			if (!reachable) break
 			if (z < frontZ && frontBlock?.full) break // inaccessible
 			world.clearBlock(x, y, z)
 			break
@@ -284,6 +288,7 @@ input.on("click", (button: number) => {
 			player.pickBlock(frontBlock)
 			break
 		case 2:
+			if (!reachable) break
 			const stack = player.selectedItem
 			if (z != 0 && stack.item.getBlock().mainLayerOnly()) z = 0
 			if (z < frontZ && frontBlock?.full) break // inaccessible

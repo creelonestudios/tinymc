@@ -8,6 +8,7 @@ export default interface Dim {
 	sqMag(): number
 	mag(): number,
 	normalize(): Dim,
+	distanceTo(other: Dim): number
 	floor(): Dim,
 	copy(): Dim
 

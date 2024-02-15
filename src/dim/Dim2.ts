@@ -57,6 +57,10 @@ export default class Dim2 implements Dim {
 		return this.scale(1/mag)
 	}
 
+	distanceTo(other: Dim2 | Dim3): number {
+		return this.copy().sub(other).mag()
+	}
+
 	floor(): Dim2 {
 		this.x = Math.floor(this.x)
 		this.y = Math.floor(this.y)
