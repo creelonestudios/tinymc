@@ -6,6 +6,7 @@ import { entitydefs } from "../main.js"
 import World from "../world/World.js"
 import Graphics from "../Graphics.js"
 import { type Flatten, type BaseData, type HasData } from "../util/interfaces.js"
+import AttributeList from "../AttributeList.js"
 
 export default class Entity implements HasData {
 
@@ -29,6 +30,7 @@ export default class Entity implements HasData {
 	readonly motion: Dim3
 	protected readonly size: Dim2
 	readonly spawnTime: number
+	readonly attributes: AttributeList
 
 	noGravity: boolean
 	onGround: boolean
@@ -49,6 +51,7 @@ export default class Entity implements HasData {
 		this.motion   = new Dim3(...(data.motion   || [0, 0, 0]))
 		this.size     = new Dim2()
 		this.spawnTime = spawnTime
+		this.attributes = new AttributeList(this.def)
 		this.noGravity = typeof data.noGravity == "undefined" ? false : data.noGravity
 		this.onGround  = typeof data.onGround == "undefined" ? false : data.onGround
 		this.inFluid   = false

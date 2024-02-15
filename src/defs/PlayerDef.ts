@@ -1,9 +1,20 @@
-import EntityDef from "./EntityDef.js"
+import EntityDef, { EntityDefData } from "./EntityDef.js"
 
 export default class PlayerDef extends EntityDef {
 
 	constructor() {
-		super("tiny", "player", {})
+		super("tiny", "player", {
+			attributes: [{
+				name: "generic.movement_speed",
+				base: 1
+			}, {
+				name: "player.block_interaction_range",
+				base: 4.5
+			}, {
+				name: "player.entity_interaction_range",
+				base: 3
+			}]
+		} satisfies Partial<EntityDefData>)
 	}
 
 	get assetsPath() {
