@@ -8,6 +8,7 @@ import Texture from "../texture/Texture.js"
 
 let slot: Texture
 let inventory: Inventory | undefined
+let floatingStackIndex: number | undefined
 
 const scale = 4
 const slotSize = 12 * scale
@@ -22,10 +23,15 @@ export default class Container {
 
 	static setInventory(inv?: Inventory) {
 		inventory = inv
+		floatingStackIndex = undefined
 	}
 
 	static showingInventory() {
 		return inventory != undefined
+	}
+
+	static floatingStack() {
+		return (floatingStackIndex != undefined && inventory) ? inventory.get(floatingStackIndex) : undefined
 	}
 
 	static drawContainer(g: Graphics) {
@@ -43,7 +49,7 @@ export default class Container {
 		// item
 		drawSlots(g, inventory, (inv, i) => {
 			const stack = inv.get(i)
-			if (stack.item.id != "tiny:air") {
+			if (stack.item.id != "tiny:air" && i != floatingStackIndex) {
 				ctx.save()
 				ctx.translate(inset, inset)
 				stack.draw(g, itemSize, inv instanceof CreativeInventory)
@@ -97,6 +103,17 @@ export default class Container {
 				} else {
 					inventory.set(mouseSlot.slotIndex, new ItemStack("tiny:air"))
 				}
+			} else {
+				const stack = inventory.get(mouseSlot.slotIndex)
+				const previous = Container.floatingStack()
+				
+				if (floatingStackIndex != undefined) {
+					inventory.set(mouseSlot.slotIndex, previous || new ItemStack("tiny:air"))
+					inventory.set(floatingStackIndex,  stack    || new ItemStack("tiny:air"))
+				}
+
+				if (stack.item.id != "tiny:air" && floatingStackIndex != mouseSlot.slotIndex) floatingStackIndex = mouseSlot.slotIndex
+				else floatingStackIndex = undefined
 			}
 		}
 

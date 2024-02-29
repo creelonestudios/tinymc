@@ -177,7 +177,11 @@ function draw() {
 		graphics.translate(-cam.x, -cam.y) // move game into view
 		graphics.translate(mouse.x, mouse.y)
 
-		if (reachable && player.selectedItem.item.id != "tiny:air") {
+		const floatingStack = Container.floatingStack()
+		if (floatingStack) {
+			graphics.ctx.translate(-size/2, -size/2)
+			floatingStack.draw(graphics, size)
+		} else if (reachable && player.selectedItem.item.id != "tiny:air") {
 			graphics.ctx.translate(-size/2, -size/2)
 			graphics.globalAlpha = 0.8
 			player.selectedItem.item.texture?.draw(graphics, size, size, true)
