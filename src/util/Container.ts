@@ -79,12 +79,16 @@ export default class Container {
 		mouse.add(new Dim2(-game.width/2, -game.height/2))
 		mouse.add(offset)
 		const slotPos = new Dim2(mouse.x / slotSize, mouse.y / slotSize).floor()
-		if (slotPos.y < 0) return null
+		const rows = Math.ceil(inventory.size / inventory.columns)
+
+		if (slotPos.x < 0 || slotPos.x >= inventory.columns || slotPos.y < 0 || slotPos.y >= rows) return null
 		const slotIndex = slotPos.y * inventory.columns + slotPos.x
 
 		if (slotIndex >= 0 && slotIndex < inventory.size) {
+			console.log(slotPos, slotIndex)
 			return { slotPos, slotIndex }
 		}
+
 		return null
 	}
 	
@@ -112,7 +116,7 @@ export default class Container {
 					inventory.set(floatingStackIndex,  stack    || new ItemStack("tiny:air"))
 				}
 
-				if (floatingStackIndex == undefined) floatingStackIndex = mouseSlot.slotIndex
+				if (floatingStackIndex == undefined && stack.item.id != "tiny:air") floatingStackIndex = mouseSlot.slotIndex
 				else if (stack.item.id == "tiny:air" || floatingStackIndex == mouseSlot.slotIndex) {
 					floatingStackIndex = undefined
 				}
