@@ -1,5 +1,6 @@
 import Block from "../block/Block.js";
 import { blockdefs } from "../main.js";
+import { type NamespacedId } from "../util/interfaces.js";
 import World from "./World.js";
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 
@@ -8,7 +9,7 @@ export default class WorldGenerator {
     static flat(world: World) {
         for (let y = world.minY; y <= world.maxY && y <= 0; y++) {
             for (let x = world.minX; x <= world.maxX; x++) {
-				let blockId: string
+				let blockId: NamespacedId
                 if (y <= -3) blockId = "tiny:stone"
                 else if(y < 0) blockId = "tiny:dirt"
                 else if(y == 0) blockId = "tiny:grass_block"

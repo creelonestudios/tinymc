@@ -1,13 +1,13 @@
 import Graphics from "./Graphics.js"
 import Item, { type ItemData } from "./Item.js"
-import { type HasData } from "./util/interfaces.js"
+import { type NamespacedId, type HasData } from "./util/interfaces.js"
 
 export default class ItemStack implements HasData {
 
 	readonly item: Item
 	#amount: number
 
-	constructor(item: Item | string, amount: number = 1) {
+	constructor(item: Item | NamespacedId, amount: number = 1) {
 		if (item instanceof Item) this.item = item
 		else this.item = new Item(item)
 		if (amount > 0 && amount <= this.item.maxItemStack) this.#amount = amount
