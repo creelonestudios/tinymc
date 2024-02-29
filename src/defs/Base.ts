@@ -1,5 +1,6 @@
 import Texture from "../texture/Texture.js"
 import { getTexture } from "../main.js"
+import { type NamespacedId } from "../util/interfaces.js";
 
 export default class Base {
 	readonly namespace: string;
@@ -14,8 +15,8 @@ export default class Base {
 		else this.texture = getTexture(this.assetsPath)
 	}
 
-	get id() {
-		return this.namespace + ":" + this.idname
+	get id(): NamespacedId {
+		return `${this.namespace}:${this.idname}`
 	}
 
 	get assetsPath() {

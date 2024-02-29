@@ -21,6 +21,7 @@ import DebugScreen from "./util/DebugScreen.js"
 import CreativeInventory from "./CreativeInventory.js"
 import Entity, { type EntityData } from "./entity/Entity.js"
 import Item from "./Item.js"
+import { type NamespacedId } from "./util/interfaces.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -108,9 +109,9 @@ function perfRun(name: "tick" | "draw", fn: Function, target: number) {
 	}
 }
 
-async function loadDefs<T>(path: string, cls: any): Promise<Map<String, T>> {
+async function loadDefs<T>(path: string, cls: any): Promise<Map<NamespacedId, T>> {
 	let data = await YSON.load(path)
-	let defs = new Map<String, T>()
+	let defs = new Map<NamespacedId, T>()
 	let namespaces = Object.keys(data)
 
 	for (let ns of namespaces) {
@@ -417,7 +418,7 @@ export function getFirstFluid(world: World, x: number, y: number, startZ: number
 	return { block: undefined, z: world.minZ }
 }
 
-export function createBlock<T extends BlockData = BlockData>(id: string, data: Partial<T> = {}) {
+export function createBlock<T extends BlockData = BlockData>(id: NamespacedId, data: Partial<T> = {}) {
 	const blockdef = blockdefs.get(id)
 	if (!blockdef) {
 		console.trace()
@@ -428,7 +429,7 @@ export function createBlock<T extends BlockData = BlockData>(id: string, data: P
 	else return new Block(blockdef)
 }
 
-export function createEntity<T extends EntityData = EntityData>(id: string, spawnTime: number, data: Partial<T> = {}) {
+export function createEntity<T extends EntityData = EntityData>(id: NamespacedId, spawnTime: number, data: Partial<T> = {}) {
 	data.id = id
 	if (isItemEntityData(data, id)) return new ItemEntity(null, spawnTime, data)
 	else return new Entity(id, spawnTime, data)

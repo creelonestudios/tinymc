@@ -5,6 +5,8 @@ import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 import { getFirstBlock } from "../main.js"
 import Player, { type PlayerData } from "../entity/Player.js"
 import { createBlock, createEntity } from "../main.js"
+import { type NamespacedId } from "../util/interfaces.js"
+import { isNamespacedId } from "../util/typecheck.js"
 
 export default class World {
 
@@ -30,7 +32,11 @@ export default class World {
 		const semi = stringBlocks.indexOf(";")
 		if (!semi) return // invalid save
 
-		const blockIds = stringBlocks.substring(0, semi).split(",")
+		const blockIdStrings: string[] = stringBlocks.substring(0, semi).split(",")
+		const blockIds: NamespacedId[] = blockIdStrings.map(v => {
+			if (isNamespacedId(v)) return v
+			else return "tiny:air"
+		})
 		const blocks = Array.from(stringBlocks.substring(semi + 1)).map(v => v.charCodeAt(0))
 
 		const blockDataMap: Map<`${number},${number},${number}`, BlockData> = new Map()
@@ -105,7 +111,7 @@ export default class World {
 		return Array.from(this.blocks.values())
 	}
 
-	setBlock(x: number, y: number, z: number, block: Block | string, data?: Partial<BlockData>) {
+	setBlock(x: number, y: number, z: number, block: Block | NamespacedId, data?: Partial<BlockData>) {
 		const pos = this.validBlockPosition(x, y, z)
 		if (!pos) return
 		[x, y, z] = pos
@@ -153,7 +159,7 @@ export default class World {
 		return entities as E[]
 	}
 
-	spawn<T extends EntityData = EntityData>(entity: Entity | string, data?: Partial<T>) {
+	spawn<T extends EntityData = EntityData>(entity: Entity | NamespacedId, data?: Partial<T>) {
 		if (typeof entity == "string") {
 			this.entities.add(createEntity(entity, this.tickCount, data))
 		} else {

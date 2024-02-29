@@ -1,5 +1,4 @@
 import Inventory from "../Inventory"
-import ItemEntity from "../entity/ItemEntity"
 
 export type ArrayElement<A> = A extends readonly (infer T)[] ? T : never
 
@@ -12,7 +11,7 @@ export interface HasInventory {
 }
 
 export type BaseData = {
-	id: string
+	id: NamespacedId
 }
 
 export interface HasData {
@@ -20,3 +19,5 @@ export interface HasData {
 }
 
 export type DataOf<T extends HasData> = ReturnType<T["getData"]>
+
+export type NamespacedId = `${string}:${string}`

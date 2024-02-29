@@ -2,7 +2,7 @@ import ItemDef from "./defs/ItemDef.js"
 import BlockDef from "./defs/BlockDef.js"
 import { itemdefs, blockdefs } from "./main.js"
 import Block from "./block/Block.js"
-import { type HasData, type BaseData, type Flatten } from "./util/interfaces.js"
+import { type HasData, type BaseData, type Flatten, type NamespacedId } from "./util/interfaces.js"
 
 export default class Item implements HasData {
 
@@ -13,7 +13,7 @@ export default class Item implements HasData {
 
 	private readonly def: ItemDef | BlockDef
 
-	constructor(def: ItemDef | BlockDef | string) {
+	constructor(def: ItemDef | BlockDef | NamespacedId) {
 		if (def instanceof ItemDef || def instanceof BlockDef) this.def = def
 		else {
 			let itemdef = itemdefs.get(def) || blockdefs.get(def)

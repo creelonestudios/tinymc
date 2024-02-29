@@ -4,7 +4,7 @@ import Dim2 from "../dim/Dim2.js"
 import Dim3 from "../dim/Dim3.js"
 import { blockdefs, debug } from "../main.js"
 import Graphics from "../Graphics.js"
-import { type HasData, type BaseData, type Flatten } from "../util/interfaces.js"
+import { type HasData, type BaseData, type Flatten, type NamespacedId } from "../util/interfaces.js"
 import World from "../world/World.js"
 
 export default class Block implements HasData {
@@ -18,7 +18,7 @@ export default class Block implements HasData {
 
 	private readonly light: { sky: number, block: number }
 
-	constructor(def: BlockDef | string) {
+	constructor(def: BlockDef | NamespacedId) {
 		if (def instanceof BlockDef) this.def = def
 		else {
 			let blockdef = blockdefs.get(def)

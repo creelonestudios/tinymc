@@ -5,7 +5,7 @@ import EntityDef from "../defs/EntityDef.js"
 import { entitydefs } from "../main.js"
 import World from "../world/World.js"
 import Graphics from "../Graphics.js"
-import { type Flatten, type BaseData, type HasData } from "../util/interfaces.js"
+import { type Flatten, type BaseData, type HasData, type NamespacedId } from "../util/interfaces.js"
 import AttributeList from "../AttributeList.js"
 
 export default class Entity implements HasData {
@@ -36,7 +36,7 @@ export default class Entity implements HasData {
 	onGround: boolean
 	inFluid: boolean
 
-	constructor(def: EntityDef | string, spawnTime: number, data: Partial<EntityData> = {}) {
+	constructor(def: EntityDef | NamespacedId, spawnTime: number, data: Partial<EntityData> = {}) {
 		if (def instanceof EntityDef) this.def = def
 		else {
 			let entitydef = entitydefs.get(def)
