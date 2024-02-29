@@ -31,7 +31,14 @@ export default class Container {
 	}
 
 	static floatingStack() {
-		return (floatingStackIndex != undefined && inventory) ? inventory.get(floatingStackIndex) : undefined
+		if ((floatingStackIndex != undefined && inventory)) {
+			const stack = inventory.get(floatingStackIndex)
+			if (stack.item.id != "tiny:air") return stack
+			else { // shouldn't happen, but just in case
+				floatingStackIndex = undefined
+			}
+		}
+		return undefined
 	}
 
 	static drawContainer(g: Graphics) {
@@ -85,7 +92,6 @@ export default class Container {
 		const slotIndex = slotPos.y * inventory.columns + slotPos.x
 
 		if (slotIndex >= 0 && slotIndex < inventory.size) {
-			console.log(slotPos, slotIndex)
 			return { slotPos, slotIndex }
 		}
 
@@ -129,7 +135,7 @@ export default class Container {
 	static onKey(key: string): boolean { // true -> an action was performed
 		if (!inventory) return false
 		const mouseSlot = this.getMouseSlot()
-		if (!mouseSlot) return false
+		if (!mouseSlot || mouseSlot.slotIndex == floatingStackIndex) return false
 
 		if (!key.startsWith("Digit")) return false
 		const hotbarIndex = +key.substring(5)
