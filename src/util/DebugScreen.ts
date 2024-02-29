@@ -93,7 +93,7 @@ function envInfo(g: Graphics) { // some of this might break
 
 	if (memUsage) lines.push(`Mem: ${(memUsage / memTotal * 100).toFixed(1)}% ${memUsage.toFixed(1)}/${memTotal}MiB`)
 	else lines.push(`Mem: ${memTotal || 0}GiB`)
-	if (memAllocated) lines.push(`Allocated: ${(memAllocated / memTotal * 100).toFixed(1)}% ${memUsage.toFixed(1)}MiB`)
+	if (memAllocated) lines.push(`Allocated: ${(memAllocated / memTotal * 100).toFixed(1)}% ${memAllocated.toFixed(1)}MiB`)
 
 	lines.push(`Display: ${game.width}x${game.height}`)
 
