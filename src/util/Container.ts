@@ -112,8 +112,10 @@ export default class Container {
 					inventory.set(floatingStackIndex,  stack    || new ItemStack("tiny:air"))
 				}
 
-				if (stack.item.id != "tiny:air" && floatingStackIndex != mouseSlot.slotIndex) floatingStackIndex = mouseSlot.slotIndex
-				else floatingStackIndex = undefined
+				if (floatingStackIndex == undefined) floatingStackIndex = mouseSlot.slotIndex
+				else if (stack.item.id == "tiny:air" || floatingStackIndex == mouseSlot.slotIndex) {
+					floatingStackIndex = undefined
+				}
 			}
 		}
 
