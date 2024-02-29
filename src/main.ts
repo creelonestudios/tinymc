@@ -39,6 +39,9 @@ const graphics = new Graphics(game, blockSize)
 
 // assets
 const textures: Map<String, Texture> = new Map()
+const cursors = {
+	open_container: getTexture("tiny/textures/gui/cursors/open_container.png")
+} satisfies Record<string, Texture>
 
 // defs
 export const blockdefs  = await loadDefs<BlockDef>("blocks.yson", BlockDef)
@@ -170,21 +173,29 @@ function draw() {
 
 	// cursor
 	{
-		const mouse = getMousePos()
+		const {x, y} = getMousePos()
 		const size = blockSize/2
 		graphics.save()
 		graphics.translate(gameOffset.x, gameOffset.y) // move game by offset
 		graphics.translate(-cam.x, -cam.y) // move game into view
-		graphics.translate(mouse.x, mouse.y)
+		graphics.translate(x, y)
 
 		const floatingStack = Container.floatingStack()
+		const {block: frontBlock, z: frontZ} = getFirstBlock(world, x, y)
+		const z = input.pressed("ShiftLeft") ? -1 : 0
+		const targetBlock = world.getBlock(x, y, z)
+		const inaccessible = z < frontZ && frontBlock?.full
+
 		if (floatingStack) {
 			graphics.ctx.translate(-size/2, -size/2)
 			floatingStack.draw(graphics, size)
-		} else if (reachable && player.selectedItem.item.id != "tiny:air") {
+		} else if (reachable && player.selectedItem.item.id != "tiny:air" && !inaccessible && targetBlock?.id == "tiny:air") {
 			graphics.ctx.translate(-size/2, -size/2)
 			graphics.globalAlpha = 0.8
 			player.selectedItem.item.texture?.draw(graphics, size, size, true)
+		} else if (targetBlock?.type == "container") {
+			graphics.ctx.translate(-size/2, -size)
+			cursors.open_container.draw(graphics, size, size, true)
 		} else {
 			graphics.strokeStyle = reachable ? "white" : "#707070"
 			graphics.lineWidth = 2
