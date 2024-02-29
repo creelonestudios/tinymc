@@ -32,8 +32,8 @@ function gameInfo(g: Graphics, world: World, player: Player) {
 	const lines = []
 
 	lines.push(`${GAME_NAME} ${GAME_VERSION} (${GAME_VERSION_BRANCH})`)
-	lines.push(`${Math.min(1000/perf.draw, drawTarget).toFixed(1)}/${drawTarget} fps (${perf.draw.toFixed(2)}ms / frame)`)
-	lines.push(`${Math.min(1000/perf.tick, tickTarget).toFixed(1)}/${tickTarget} tps (${perf.tick.toFixed(2)}ms / tick)`)
+	lines.push(`${perf.fps.toFixed(1)}/${drawTarget} fps (${perf.mspf.toFixed(2)}ms / frame)`)
+	lines.push(`${perf.tps.toFixed(1)}/${tickTarget} tps (${perf.mspt.toFixed(2)}ms / tick)`)
 	lines.push(`entities: ${world.getAllEntities().length}`)
 	lines.push(`world size: ${world.minX}..${world.maxX}; ${world.minY}..${world.maxY}; ${world.minZ}..${world.maxZ}`)
 	lines.push(`shift: ${input.pressed("ShiftLeft")}`)

@@ -62,8 +62,32 @@ WorldGenerator.flat(world)
 world.spawn(player)
 
 export const perf = {
-	tick: 0,
-	draw: 0
+	tick: [] as number[],
+	draw: [] as number[],
+
+	get mspt(): number {
+		if (perf.tick.length <= 0) return 0
+		let sum = 0
+		perf.tick.forEach(v => sum += v)
+		return sum / perf.tick.length
+	},
+
+	get mspf(): number {
+		if (perf.draw.length <= 0) return 0
+		let sum = 0
+		perf.draw.forEach(v => sum += v)
+		return sum / perf.draw.length
+	},
+
+	get tps(): number {
+		if (perf.mspt <= 0) return 0
+		return Math.min(1000 / perf.mspt, tickTarget)
+	},
+
+	get fps(): number {
+		if (perf.mspf <= 0) return 0
+		return Math.min(1000 / perf.mspf, drawTarget)
+	}
 }
 export const tickTarget = 20
 export const drawTarget = 20
@@ -72,14 +96,15 @@ const perfDraw = perfRun("draw", draw, 1000/drawTarget)
 setInterval(perfTick, 1000/tickTarget)
 setInterval(() => requestAnimationFrame(perfDraw), 1000/drawTarget)
 
-function perfRun(name: keyof typeof perf, fn: Function, target: number) {
+function perfRun(name: "tick" | "draw", fn: Function, target: number) {
 	return () => {
 		const before = performance.now()
 		fn()
 		const timeElapsed = performance.now() - before
 		if (timeElapsed >= 1000) console.warn(`game lagging: last ${name} took ${timeElapsed}ms`)
 		else if (timeElapsed >= target) console.debug(`%cgame lagging: last ${name} took ${timeElapsed}ms`, "color: skyblue")
-		perf[name] = timeElapsed
+		perf[name].push(timeElapsed)
+		if (perf[name].length > 50) perf[name].shift()
 	}
 }
 
