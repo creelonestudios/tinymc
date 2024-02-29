@@ -20,6 +20,7 @@ import ContainerBlock from "./block/ContainerBlock.js"
 import DebugScreen from "./util/DebugScreen.js"
 import CreativeInventory from "./CreativeInventory.js"
 import Entity, { type EntityData } from "./entity/Entity.js"
+import Item from "./Item.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -62,7 +63,7 @@ export const perf = {
 	draw: 0
 }
 export const tickTarget = 20
-export const drawTarget = 10
+export const drawTarget = 20
 const perfTick = perfRun("tick", tick, 1000/tickTarget)
 const perfDraw = perfRun("draw", draw, 1000/drawTarget)
 setInterval(perfTick, 1000/tickTarget)
@@ -111,6 +112,8 @@ function tick() {
 	world.tick()
 }
 
+const item = new Item("tiny:stone")
+
 function draw() {
 	graphics.reset()
 
@@ -137,13 +140,13 @@ function draw() {
 		graphics.ctx.stroke()
 	}
 
+	const mouseBlock = getMouseBlock()
+	const reachable = mouseBlock.distanceTo(player.position) <= player.attributes.get("player.block_interaction_range")!
+
 	// block highlight
 	{
-		const mousePos = getMouseBlock().floor()
-		const reachable = mousePos.distanceTo(player.position) <= player.attributes.get("player.block_interaction_range")!
-
 		graphics.save()
-		graphics.translate(mousePos.x, mousePos.y)
+		graphics.translate(mouseBlock.x, mouseBlock.y)
 
 		graphics.fillStyle = "transparent"
 		graphics.strokeStyle = reachable ? "white" : "#707070"
@@ -163,6 +166,33 @@ function draw() {
 	// container
 	{
 		Container.drawContainer(graphics)
+	}
+
+	// cursor
+	{
+		const mouse = getMousePos()
+		const size = blockSize/2
+		graphics.save()
+		graphics.translate(gameOffset.x, gameOffset.y) // move game by offset
+		graphics.translate(-cam.x, -cam.y) // move game into view
+		graphics.translate(mouse.x, mouse.y)
+
+		if (reachable && player.selectedItem.item.id != "tiny:air") {
+			graphics.ctx.translate(-size/2, -size/2)
+			graphics.globalAlpha = 0.8
+			player.selectedItem.item.texture?.draw(graphics, size, size, true)
+		} else {
+			graphics.strokeStyle = reachable ? "white" : "#707070"
+			graphics.lineWidth = 2
+			graphics.ctx.beginPath()
+			graphics.ctx.moveTo(0, -size/3)
+			graphics.ctx.lineTo(0,  size/3)
+			graphics.ctx.moveTo(-size/3, 0)
+			graphics.ctx.lineTo( size/3, 0)
+			graphics.ctx.stroke()
+		}
+		
+		graphics.restore()
 	}
 
 	// debug screen

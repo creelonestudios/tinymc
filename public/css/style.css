@@ -4,6 +4,7 @@ body {
 	height: 100vh;
 	background-color: black;
 	overflow: hidden;
+	cursor: none;
 }
 
 canvas#game {
