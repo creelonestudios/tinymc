@@ -1,11 +1,13 @@
-import Item from "./Item.js"
+import Graphics from "./Graphics.js"
+import Item, { type ItemData } from "./Item.js"
+import { type NamespacedId, type HasData } from "./util/interfaces.js"
 
-export default class ItemStack {
+export default class ItemStack implements HasData {
 
 	readonly item: Item
 	#amount: number
 
-	constructor(item: Item | string, amount: number = 1) {
+	constructor(item: Item | NamespacedId, amount: number = 1) {
 		if (item instanceof Item) this.item = item
 		else this.item = new Item(item)
 		if (amount > 0 && amount <= this.item.maxItemStack) this.#amount = amount
@@ -25,11 +27,30 @@ export default class ItemStack {
 		return this.item.match(item)
 	}
 
-	getData() {
+	draw(g: Graphics, size: number, hideAmount: boolean = false) {
+		if (this.item.id == "tiny:air") return
+		this.item.texture?.draw(g, size, size, true)
+
+		if (this.amount != 1 && !hideAmount) {
+			g.save()
+			g.ctx.translate(size * 0.95, size * 0.95)
+			g.ctx.textAlign = "center"
+			g.ctx.textBaseline = "middle"
+			g.drawText(this.amount + "", { color: "white", font: { size: size/2 } })
+			g.restore()
+		}
+	}
+
+	getData(): ItemStackData {
 		return {
 			item: this.item.getData(),
 			amount: this.amount
 		}
 	}
 
+}
+
+export type ItemStackData = {
+	item: ItemData,
+	amount: number
 }

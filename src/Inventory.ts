@@ -1,17 +1,28 @@
 import Item from "./Item.js"
-import ItemStack from "./ItemStack.js"
+import ItemStack, { type ItemStackData } from "./ItemStack.js"
+import { type Flatten, type HasData } from "./util/interfaces.js"
 
-export default class Inventory {
+export default class Inventory implements HasData {
 
 	readonly size: number
+	readonly columns: number
 	private slots: ItemStack[]
 
-	constructor(size: number) {
+	constructor(size: number, columns: number = 9, data: InventoryData = []) {
 		this.size = size
+		this.columns = columns
 		this.slots = []
+
+		// fill with air (default)
 		for (let i = 0; i < this.size; i++) {
 			this.slots[i] = new ItemStack(new Item("tiny:air"), 1)
 		}
+
+		// fill slots with data
+		data.forEach(stack => {
+			this.slots[stack.slot] = new ItemStack(stack.item.id, stack.amount)
+		})
+		
 	}
 
 	set(index: number, stack: ItemStack) {
@@ -90,3 +101,5 @@ export default class Inventory {
 	}
 
 }
+
+export type InventoryData = Flatten<(ItemStackData & { slot: number })[]>

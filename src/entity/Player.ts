@@ -1,14 +1,16 @@
 import Block from "../block/Block.js"
-import Dim3 from "../dim/Dim3.js"
-import Entity from "./Entity.js"
-import Inventory from "../Inventory.js"
+import Entity, { EntityData } from "./Entity.js"
+import Inventory, { InventoryData } from "../Inventory.js"
 import Item from "../Item.js"
-import ItemEntity from "./ItemEntity.js"
-import ItemStack from "../ItemStack.js"
+import { ItemEntityData } from "./ItemEntity.js"
+import ItemStack, { ItemStackData } from "../ItemStack.js"
 import { getTexture, player, world } from "../main.js"
 import PlayerDef from "../defs/PlayerDef.js"
 import Texture from "../texture/Texture.js"
 import World from "../world/World.js"
+import { type Flatten } from "../util/interfaces.js"
+
+const playerDef = new PlayerDef()
 
 export default class Player extends Entity {
 
@@ -18,21 +20,14 @@ export default class Player extends Entity {
 	#selectedItemSlot: number
 	readonly hotbar: Inventory
 	
-	constructor(skin: string, name: string) {
-		super(new PlayerDef(), new Dim3(0, 0, 0))
+	constructor(skin: string, name: string, spawnTime: number, data: Partial<PlayerData> = {}) {
+		super(playerDef, spawnTime, { ...data, position: [0, 1, 0] })
 		this.name = name
-		this.hotbar = new Inventory(5)
+		this.hotbar = data.hotbar ? new Inventory(5, 5, data.hotbar) : new Inventory(5)
 		this.skin = skin
 		this.#texture = getTexture((this.def as PlayerDef).skinAssetsPath(skin))
-		this.#selectedItemSlot = 0
+		this.#selectedItemSlot = data.selectedItemSlot || 0
 		this.size.set(1.5, 1.5)
-
-		// for testing, temp
-		this.hotbar.set(0, new ItemStack(new Item("tiny:stone"), 4))
-		this.hotbar.set(1, new ItemStack(new Item("tiny:dirt")))
-		this.hotbar.set(2, new ItemStack(new Item("tiny:water")))
-		this.hotbar.set(3, new ItemStack(new Item("tiny:grass_block")))
-		this.hotbar.set(4, new ItemStack(new Item("tiny:chest")))
 	}
 
 	get texture() {
@@ -55,7 +50,7 @@ export default class Player extends Entity {
 
 	addItems(stack: ItemStack) {
 		let leftover = this.hotbar.addItems(stack)
-		if (leftover) world.spawn(new ItemEntity(new ItemStack(player.selectedItem.item.id), player.position.copy()))
+		if (leftover) world.spawn<ItemEntityData>("tiny:item", { item: new ItemStack(player.selectedItem.item.id), position: player.position.asArray() })
 	}
 
 	pickBlock(block: Block) {
@@ -75,11 +70,17 @@ export default class Player extends Entity {
 		}
 	}
 
+	die() { // respawn
+		this.position.set(0, 1, 0) // TODO: spawn point
+		this.motion.set(0, 0, 0)
+		this.rotation.set(0, 0)
+	}
+
 	tick(world: World) {
 		super.tick(world)
 	}
 
-	getData() {
+	getData(): PlayerData {
 		return {
 			...super.getData(),
 			selectedItem: this.selectedItem.getData(),
@@ -90,3 +91,10 @@ export default class Player extends Entity {
 	}
 
 }
+
+export type PlayerData = Flatten<EntityData & {
+	selectedItem: ItemStackData,
+	selectedItemSlot: number,
+	playerName: string,
+	hotbar: InventoryData
+}>

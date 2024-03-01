@@ -1,5 +1,6 @@
 import Block from "../block/Block.js";
 import { blockdefs } from "../main.js";
+import { type NamespacedId } from "../util/interfaces.js";
 import World from "./World.js";
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 
@@ -8,24 +9,36 @@ export default class WorldGenerator {
     static flat(world: World) {
         for (let y = world.minY; y <= world.maxY && y <= 0; y++) {
             for (let x = world.minX; x <= world.maxX; x++) {
-                if (y <= -3) world.setBlock(x, y, 0, new Block("tiny:stone"))
-                else if(y < 0) world.setBlock(x, y, 0, new Block("tiny:dirt"))
-                else if(y == 0) world.setBlock(x, y, 0, new Block("tiny:grass_block"))
+				let blockId: NamespacedId
+                if (y <= -3) blockId = "tiny:stone"
+                else if(y < 0) blockId = "tiny:dirt"
+                else if(y == 0) blockId = "tiny:grass_block"
+				else continue
+
+				for (let z = world.minZ; z <= 0; z++) {
+					world.setBlock(x, y, z, new Block(blockId))
+				}
             }
         }
+
+		for (let x = world.minX; x <= world.maxX; x++) {
+			for (let z = world.minZ; z <= world.maxZ; z++) {
+				world.scheduleBlockUpdate(x, world.maxY, z)
+			}
+		}
 
 		// for testing of world.save() and World.load()
 		/*(async () => {
 			let ysonSave = YSON.stringify(world.toYSON().blocks)
 			let save = world.save()
-			let saveLength = save.stringSave.length
+			let saveLength = save.stringBlocks.length
 			
 			console.log("blocks:", world.toYSON().blocks)
 			console.log("save:", save)
 			console.log("space effi:", saveLength - ysonSave.length, ysonSave.length / saveLength + "x")
 			console.log(saveLength, "new vs. old", ysonSave.length)
 
-			let worldCopy = World.load(save.stringSave, save.dims, Array.from(save.entites))
+			let worldCopy = World.load(save.stringBlocks, save.blockData, save.dims, save.entities)
 			if (!worldCopy) {
 				console.error("oh no")
 				return

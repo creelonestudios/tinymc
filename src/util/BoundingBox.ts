@@ -1,3 +1,4 @@
+import Graphics from "../Graphics.js"
 import Dim2 from "../dim/Dim2.js"
 import Dim3 from "../dim/Dim3.js"
 
@@ -20,7 +21,20 @@ export default class BoundingBox {
 	}
 
 	touch(point: Dim2 | Dim3) {
-		return point.x >= this.pos.x && point.x <= this.corner.x && point.y >= this.pos.y && point.y <= this.corner.y
+		const t = point.x >= this.pos.x && point.x <= this.corner.x && point.y >= this.pos.y && point.y <= this.corner.y
+		// if (t) console.log(this, point, point.x >= this.pos.x, point.x <= this.corner.x, point.y >= this.pos.y, point.y <= this.corner.y)
+		return t
+	}
+
+	draw(g: Graphics, color: string) {
+		g.save()
+		g.translate(this.pos.x, this.pos.y)
+
+		g.strokeStyle = color
+		g.lineWidth = 1
+		g.strokeRect(this.size.x, this.size.y)
+
+		g.restore()
 	}
 
 }
