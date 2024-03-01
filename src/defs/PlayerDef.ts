@@ -8,6 +8,9 @@ export default class PlayerDef extends EntityDef {
 				name: "generic.movement_speed",
 				base: 1
 			}, {
+				name: "generic.jump_strength",
+				base: 0.35
+			}, {
 				name: "player.block_interaction_range",
 				base: 4.5
 			}, {

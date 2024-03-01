@@ -3,9 +3,10 @@ import { type ArrayElement, type HasData } from "./util/interfaces";
 
 const AttributeNames = [
 	"generic.movement_speed",
+	"generic.jump_strength",
 	"player.block_interaction_range",
 	"player.entity_interaction_range"
-] as const
+] as const satisfies `${string}.${string}`[]
 
 export type AttributeName = ArrayElement<typeof AttributeNames>
 
