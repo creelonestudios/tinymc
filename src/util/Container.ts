@@ -104,7 +104,7 @@ export default class Container {
 		if (!mouseSlot) return false
 
 		if (button == 0) {
-			if (input.pressed("ShiftLeft")) {
+			if (input.keyPressed("ShiftLeft")) {
 				const stack = inventory.get(mouseSlot.slotIndex)
 				if (stack.item.id == "tiny:air") return false
 				const leftOver = player.hotbar.addItems(stack)

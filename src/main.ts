@@ -135,9 +135,13 @@ export function getTexture(path: string) {
 }
 
 function tick() {
-	player.motion.x = (Number(input.pressed("KeyD")) - Number(input.pressed("KeyA"))) * 0.15
-	//player.motion.y = (Number(input.pressed("KeyW")) - Number(input.pressed("KeyS"))) * 0.25
-	if (player.inFluid && input.pressed("Space")) player.motion.y = Entity.TERMINAL_FLUID_VELOCITY
+	if (input.keyPressed("Space")) {
+		if (player.inFluid) player.motion.y = Entity.TERMINAL_FLUID_VELOCITY
+		else if (player.onGround) player.motion.y = 0.35
+	}
+
+	player.motion.x = (Number(input.keyPressed("KeyD")) - Number(input.keyPressed("KeyA"))) * 0.15
+
 	world.tick()
 }
 
@@ -239,7 +243,7 @@ function draw() {
 
 		const floatingStack = Container.floatingStack()
 		const {block: frontBlock, z: frontZ} = getFirstBlock(world, x, y)
-		const z = input.pressed("ShiftLeft") ? -1 : 0
+		const z = input.keyPressed("ShiftLeft") ? -1 : 0
 		const targetBlock = world.getBlock(x, y, z)
 		const inaccessible = z < frontZ && frontBlock?.full
 
@@ -300,28 +304,6 @@ input.on("keydown", (key: string) => {
 	if (key == "Digit4") player.selectedItemSlot = 3
 	if (key == "Digit5") player.selectedItemSlot = 4
 
-	if (key == "KeyQ") {
-		const stack = player.selectedItem
-		const index = player.selectedItemSlot
-		if (stack.item.id == "tiny:air") return
-
-		const entityData = {
-			position: player.position.asArray(),
-			motion: getMousePos().sub(player.position).normalize().scale(0.6).asArray()
-		}
-		let dropStack = stack
-
-		if (!input.pressed("ControlLeft")) {
-			dropStack = new ItemStack(stack.item.id)
-		}
-
-		if (input.pressed("ControlLeft") || stack.amount <= 1) {
-			player.hotbar.set(index, new ItemStack("tiny:air"))
-		} else stack.amount--
-
-		world.spawn<ItemEntityData>("tiny:item", { ...entityData, item: dropStack })
-	}
-
 	inv: if (key == "KeyE") { // open inventory under mouse
 		if (Container.showingInventory()) {
 			Container.setInventory()
@@ -341,7 +323,7 @@ input.on("keydown", (key: string) => {
 		debug.showDebugScreen = !debug.showDebugScreen
 	}
 
-	if (input.pressed("F3") && debug.showDebugScreen) {
+	if (input.keyPressed("F3") && debug.showDebugScreen) {
 
 		if (key == "KeyN") {
 			debug.showRange = !debug.showRange
@@ -358,10 +340,6 @@ input.on("keydown", (key: string) => {
 
 	}
 
-	if (key == "Space") {
-		if (!player.inFluid && player.onGround) player.motion.y = 0.35
-	}
-
 	if (key == "F11" || key == "F1") {
 		if (document.fullscreenElement) document.exitFullscreen()
 		else game.requestFullscreen()
@@ -374,7 +352,31 @@ input.on("keydown", (key: string) => {
 		console.log("blockData:", worldSave.blockData)
 		world = World.load(worldSave.stringBlocks, worldSave.blockData, worldSave.dims, worldSave.entities) as World
 		world.spawn(player)
-	}*/
+	}*/2
+})
+
+input.on("keypress", (key: string) => {
+	if (input.keyPressed("KeyQ")) {
+		const stack = player.selectedItem
+		const index = player.selectedItemSlot
+		if (stack.item.id == "tiny:air") return
+
+		const entityData = {
+			position: player.position.asArray(),
+			motion: getMousePos().sub(player.position).normalize().scale(0.6).asArray()
+		}
+		let dropStack = stack
+
+		if (!input.keyPressed("ControlLeft")) {
+			dropStack = new ItemStack(stack.item.id)
+		}
+
+		if (input.keyPressed("ControlLeft") || stack.amount <= 1) {
+			player.hotbar.set(index, new ItemStack("tiny:air"))
+		} else stack.amount--
+
+		world.spawn<ItemEntityData>("tiny:item", { ...entityData, item: dropStack })
+	}
 })
 
 input.on("click", (button: number) => {
@@ -384,7 +386,7 @@ input.on("click", (button: number) => {
 
 	const mouseBlock = getMouseBlock()
 	const {x, y} = mouseBlock
-	let z = input.pressed("ShiftLeft") ? -1 : 0
+	let z = input.keyPressed("ShiftLeft") ? -1 : 0
 	const {block: frontBlock, z: frontZ} = getFirstBlock(world, x, y)
 	const reachable = isBlockReachable(mouseBlock)
 
