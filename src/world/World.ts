@@ -2,11 +2,10 @@ import Graphics from "../Graphics.js"
 import Block, { BlockData } from "../block/Block.js"
 import Entity, { EntityData } from "../entity/Entity.js"
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
-import { getFirstBlock } from "../main.js"
 import Player, { type PlayerData } from "../entity/Player.js"
-import { createBlock, createEntity } from "../main.js"
 import { type NamespacedId } from "../util/interfaces.js"
 import { isNamespacedId } from "../util/typecheck.js"
+import { createBlock, createEntity, getFirstBlock } from "../gui/state/ingame.js"
 
 export default class World {
 

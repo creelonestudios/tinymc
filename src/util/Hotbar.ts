@@ -1,5 +1,6 @@
 import Graphics from "../Graphics.js"
-import { game, getTexture, player } from "../main.js";
+import { player } from "../gui/state/ingame.js";
+import { game, getTexture } from "../main.js";
 import Subtexture from "../texture/Subtexture.js";
 import Texture from "../texture/Texture.js";
 
@@ -35,14 +36,14 @@ export default class Hotbar {
         // first and last are diff b/c black outline
         ctx.save()
         ctx.scale(21, 22)
-        leftSlot.draw(g)
+        leftSlot.draw(g, 1, 1, true)
         ctx.restore()
         
         ctx.save()
         ctx.translate(21, 0)
         ctx.scale(20, 22)
         for (let i = 1; i < hotbar.size -1; i++) {
-            middleSlot.draw(g)
+            middleSlot.draw(g, 1, 1, true)
             ctx.translate(1, 0)
         }
         ctx.restore()
@@ -50,7 +51,7 @@ export default class Hotbar {
         ctx.save()
         ctx.translate(21 + (hotbar.size-2) * 20, 0)
         ctx.scale(21, 22)
-        rightSlot.draw(g)
+        rightSlot.draw(g, 1, 1, true)
         ctx.restore()
 
         ctx.restore()
@@ -75,7 +76,7 @@ export default class Hotbar {
         ctx.translate(-1, -1)
         ctx.translate(player.selectedItemSlot * 20, 0)
         ctx.scale(24, 24)
-        selector.draw(g)
+        selector.draw(g, 1, 1, true)
         ctx.restore()
     
         ctx.restore()

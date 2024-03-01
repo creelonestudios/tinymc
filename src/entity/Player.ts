@@ -4,11 +4,12 @@ import Inventory, { InventoryData } from "../Inventory.js"
 import Item from "../Item.js"
 import { ItemEntityData } from "./ItemEntity.js"
 import ItemStack, { ItemStackData } from "../ItemStack.js"
-import { getTexture, player, world } from "../main.js"
+import { getTexture } from "../main.js"
 import PlayerDef from "../defs/PlayerDef.js"
 import Texture from "../texture/Texture.js"
 import World from "../world/World.js"
 import { type Flatten } from "../util/interfaces.js"
+import { player, world } from "../gui/state/ingame.js"
 
 const playerDef = new PlayerDef()
 

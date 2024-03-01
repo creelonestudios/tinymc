@@ -1,6 +1,7 @@
 import Graphics from "../Graphics.js"
 import Player from "../entity/Player.js"
-import { GAME_NAME, GAME_VERSION, GAME_VERSION_BRANCH, drawTarget, game, getFirstBlock, getFirstFluid, getMouseBlock, input, perf, tickTarget } from "../main.js"
+import { getFirstBlock, getFirstFluid, getMouseBlock } from "../gui/state/ingame.js"
+import { GAME_NAME, GAME_VERSION, GAME_VERSION_BRANCH, drawTarget, game, input, perf, tickTarget } from "../main.js"
 import World from "../world/World.js"
 
 export default class DebugScreen {
