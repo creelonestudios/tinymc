@@ -4,7 +4,7 @@ import Inventory, { InventoryData } from "../Inventory.js"
 import Item from "../Item.js"
 import { ItemEntityData } from "./ItemEntity.js"
 import ItemStack, { ItemStackData } from "../ItemStack.js"
-import { getMousePos, getTexture, player, world } from "../main.js"
+import { getMousePos, getTexture, world } from "../main.js"
 import PlayerDef from "../defs/PlayerDef.js"
 import Texture from "../texture/Texture.js"
 import World from "../world/World.js"
@@ -51,7 +51,7 @@ export default class Player extends Entity {
 
 	addItems(stack: ItemStack) {
 		let leftover = this.hotbar.addItems(stack)
-		if (leftover) world.spawn<ItemEntityData>("tiny:item", { item: new ItemStack(player.selectedItem.item.id), position: player.position.asArray() })
+		if (leftover) world.spawn<ItemEntityData>("tiny:item", { item: new ItemStack(this.selectedItem.item.id), position: this.position.asArray() })
 	}
 
 	pickBlock(block: Block) {
