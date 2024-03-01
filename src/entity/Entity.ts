@@ -73,6 +73,10 @@ export default class Entity implements HasData {
 		return this.position.y
 	}
 
+	get eyeHeight() {
+		return this.attributes.get("generic.scale", 1)! * this.size.y * this.def.eyeHeight
+	}
+
 	getBoundingBox() {
 		const size = this.size.copy().scale(this.attributes.get("generic.scale", 1)!)
 		const pos = this.position.copy()

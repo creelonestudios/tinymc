@@ -19,7 +19,8 @@ export default class PlayerDef extends EntityDef {
 			}, {
 				name: "player.entity_interaction_range",
 				base: 5
-			}]
+			}],
+			eyeHeight:  0.6
 		} satisfies Partial<EntityDefData>)
 	}
 

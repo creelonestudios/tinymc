@@ -5,6 +5,7 @@ export default class EntityDef extends Base {
 
 	readonly hasFriction: boolean
 	readonly attributes: Attribute[]
+	readonly eyeHeight: number
 
 	constructor(namespace: string, idname: string, data: any) {
 		super(namespace, idname)
@@ -12,6 +13,7 @@ export default class EntityDef extends Base {
 
 		this.hasFriction = data.hasFriction
 		this.attributes = data.attributes
+		this.eyeHeight = data.eyeHeight
 	}
 
 	get assetsPath() {
@@ -22,7 +24,8 @@ export default class EntityDef extends Base {
 
 export type EntityDefData = {
 	hasFriction: boolean,
-	attributes: Attribute[]
+	attributes: Attribute[],
+	eyeHeight: number
 }
 
 function validate(data: any): data is EntityDefData {
@@ -40,6 +43,12 @@ function validate(data: any): data is EntityDefData {
 		}
 	} else {
 		data.attributes = []
+	}
+
+	if ("eyeHeight" in data) {
+		if (typeof data.eyeHeight != "number" || data.eyeHeight < 0 || data.eyeHeight > 1) return false
+	} else {
+		data.eyeHeight = 0.6
 	}
 
 	return true

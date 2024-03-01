@@ -191,13 +191,13 @@ function draw() {
 
 	// distance and player range (debug)
 	if (debug.showDebugScreen && debug.showRange) {
-		const range  = (player.attributes.get("player.block_interaction_range") || 0) * blockSize
+		const range = (player.attributes.get("player.block_interaction_range", 0)!) * blockSize
 		graphics.lineWidth = 2
 		graphics.strokeStyle = "white"
 		graphics.fillStyle = "white"
 
 		const blockpos  = mouseBlock.add(new Dim2(0.5, 0.5))
-		const playerpos = player.position.copy().add(new Dim2(0, 1))
+		const playerpos = player.position.copy().add(new Dim2(0, player.eyeHeight))
 
 		graphics.save()
 		graphics.translate(blockpos.x + 0.2, blockpos.y)
@@ -290,7 +290,7 @@ export function getMousePos() {
 }
 
 function isBlockReachable(pos: Dim2) {
-	return pos.copy().add(new Dim2(0.5, 0.5)).distanceTo(player.position.copy().add(new Dim2(0, 1))) <= player.attributes.get("player.block_interaction_range")!
+	return pos.copy().add(new Dim2(0.5, 0.5)).distanceTo(player.position.copy().add(new Dim2(0, player.eyeHeight))) <= player.attributes.get("player.block_interaction_range")!
 }
 
 input.on("keydown", (key: string) => {
