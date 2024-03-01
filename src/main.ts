@@ -129,6 +129,7 @@ function draw() {
 	game.height = innerHeight
 	game.style.width  = innerWidth  + "px"
 	game.style.height = innerHeight + "px"
+	game.style.cursor = (menuState == MenuState.INGAME) ? "none" : "initial"
 
 	if (menuState == MenuState.MENU) game_menu_state.draw(g)
 	else if (menuState == MenuState.INGAME) ingame_state.draw(g)

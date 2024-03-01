@@ -1,10 +1,11 @@
 import Graphics from "../Graphics.js"
-import Input from "../Input.js"
-import { getTexture, input } from "../main.js"
+import Dim2 from "../dim/Dim2.js"
+import Dim3 from "../dim/Dim3.js"
+import { game, getTexture, input } from "../main.js"
 import Subtexture from "../texture/Subtexture.js"
 import Texture from "../texture/Texture.js"
+import BoundingBox from "../util/BoundingBox.js"
 import TextRenderer from "../util/TextRenderer.js"
-import { getMousePos } from "./state/ingame.js"
 
 let widgetsTex: Texture
 let buttonTex: Subtexture
@@ -12,18 +13,11 @@ let hoverButtonTex: Subtexture
 let clickButtonTex: Subtexture
 
 export class Button {
-	x: number
-	y: number
-	w: number
-	h: number
-	text: string
 
-	constructor(x: number, y: number, w: number, h: number, text: string) {
-		this.x = x
-		this.y = y
-		this.w = w
-		this.h = h
-		this.text = text
+	readonly boundingBox: BoundingBox
+
+	constructor(readonly x: number, readonly y: number, readonly w: number, readonly h: number, readonly text: string) {
+		this.boundingBox = new BoundingBox(new Dim3(x - w/2, y + h/2, 0), new Dim2(w, h))
 	}
 
 	static loadTexture() {
@@ -34,13 +28,16 @@ export class Button {
 	}
 
 	static touchingRect(x: number, y: number, w: number, h: number) {
-		let mouse = getMousePos()
+		const mouse = input.mouse
+		mouse.x -= game.width/2
 		return mouse.x >= x && mouse.x <= x + w && mouse.y >= y && mouse.y <= y + h
 	}
 
 	draw(g: Graphics) {
-		const touching = Button.touchingRect(this.x, this.y, this.w, this.h)
-		const tex = touching ? false ? clickButtonTex : hoverButtonTex : buttonTex
+		const mouse = input.mouse
+		mouse.x -= game.width/2
+		const touching = this.boundingBox.touch(mouse)
+		const tex = touching ? (false ? clickButtonTex : hoverButtonTex) : buttonTex
 
 		g.save()
 		g.ctx.translate(this.x - this.w/2, this.y + this.h/2)
