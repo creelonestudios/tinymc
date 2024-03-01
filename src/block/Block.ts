@@ -89,7 +89,7 @@ export default class Block implements HasData {
 
 	draw(g: Graphics, x: number, y: number, z: number) {
 		if (this.def.id == "tiny:air") {
-			if (debug.showAirLightLevel) {
+			if (debug.showDebugScreen && debug.showAirLightLevel) {
 				overlayLightLevel(g, x, y, this.lightLevel)
 			}
 			return

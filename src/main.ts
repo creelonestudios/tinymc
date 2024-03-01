@@ -55,7 +55,7 @@ export const world = new World([-20, 20, -20, 20, -1, 1])
 export const player = new Player("jens", "TinyJens", 0)
 export const cam = new Cam(player)
 export const input = new Input()
-export let debug = { showHitboxes: false, showOrigin: false, showDebugScreen: false, showAirLightLevel: false }
+export let debug = { showHitboxes: false, showOrigin: false, showDebugScreen: false, showAirLightLevel: false, showRange: false }
 
 Hotbar.loadTexture()
 Container.loadTexture()
@@ -154,12 +154,12 @@ function draw() {
 	world.draw(graphics)
 
 	// hitboxes
-	if (debug.showHitboxes) {
+	if (debug.showDebugScreen && debug.showHitboxes) {
 		world.drawBoundingBoxes(graphics)
 	}
 
 	// origin / axis
-	if (debug.showOrigin) {
+	if (debug.showDebugScreen && debug.showOrigin) {
 		graphics.ctx.strokeStyle = "lime"
 		graphics.ctx.beginPath()
 		graphics.ctx.moveTo(0, -100)
@@ -170,7 +170,7 @@ function draw() {
 	}
 
 	const mouseBlock = getMouseBlock()
-	const reachable = mouseBlock.distanceTo(player.position) <= player.attributes.get("player.block_interaction_range")!
+	const reachable = isBlockReachable(mouseBlock)
 
 	// block highlight
 	{
@@ -183,6 +183,37 @@ function draw() {
 		graphics.strokeRect(1, 1)
 
 		graphics.restore()
+	}
+
+	// distance and player range (debug)
+	if (debug.showDebugScreen && debug.showRange) {
+		const range  = (player.attributes.get("player.block_interaction_range") || 0) * blockSize
+		graphics.lineWidth = 2
+		graphics.strokeStyle = "white"
+		graphics.fillStyle = "white"
+
+		const blockpos  = mouseBlock.add(new Dim2(0.5, 0.5))
+		const playerpos = player.position.copy().add(new Dim2(0, 1))
+
+		graphics.save()
+		graphics.translate(blockpos.x + 0.2, blockpos.y)
+		graphics.drawText(blockpos.distanceTo(playerpos).toFixed(2))
+		graphics.restore()
+
+		blockpos.scale(blockSize)
+		playerpos.scale(blockSize)
+		const {x, y} = playerpos
+
+		graphics.ctx.beginPath()
+		graphics.ctx.ellipse(x, -y, range, range, 0, 0, 2 * Math.PI)
+		graphics.ctx.stroke()
+
+		graphics.ctx.beginPath()
+		graphics.ctx.ellipse(blockpos.x,  -blockpos.y,  10, 10, 0, 0, 2 * Math.PI)
+		graphics.ctx.moveTo(blockpos.x,  -blockpos.y)
+		graphics.ctx.lineTo(playerpos.x, -playerpos.y)
+		graphics.ctx.ellipse(playerpos.x, -playerpos.y, 10, 10, 0, 0, 2 * Math.PI)
+		graphics.ctx.stroke()
 	}
 
 	graphics.restore()
@@ -254,8 +285,11 @@ export function getMousePos() {
 	)
 }
 
+function isBlockReachable(pos: Dim2) {
+	return pos.copy().add(new Dim2(0.5, 0.5)).distanceTo(player.position.copy().add(new Dim2(0, 1))) <= player.attributes.get("player.block_interaction_range")!
+}
+
 input.on("keydown", (key: string) => {
-	//console.log(key)
 	if (Container.showingInventory()) {
 		if (Container.onKey(key)) return
 	}
@@ -265,17 +299,6 @@ input.on("keydown", (key: string) => {
 	if (key == "Digit3") player.selectedItemSlot = 2
 	if (key == "Digit4") player.selectedItemSlot = 3
 	if (key == "Digit5") player.selectedItemSlot = 4
-
-	if (key == "KeyM") {
-		debug.showHitboxes = !debug.showHitboxes
-
-		// also show origin if shift is pressed
-		if (!debug.showHitboxes) debug.showOrigin = false
-		else if (input.pressed("ShiftLeft")) debug.showOrigin = true
-
-		// temp
-		debug.showAirLightLevel = debug.showOrigin
-	}
 
 	if (key == "KeyQ") {
 		const stack = player.selectedItem
@@ -318,6 +341,23 @@ input.on("keydown", (key: string) => {
 		debug.showDebugScreen = !debug.showDebugScreen
 	}
 
+	if (input.pressed("F3") && debug.showDebugScreen) {
+
+		if (key == "KeyN") {
+			debug.showRange = !debug.showRange
+		}
+
+		if (key == "KeyM") {
+			debug.showHitboxes = !debug.showHitboxes
+			debug.showOrigin = debug.showHitboxes
+		}
+
+		if (key == "KeyK") {
+			debug.showAirLightLevel = !debug.showAirLightLevel
+		}
+
+	}
+
 	if (key == "Space") {
 		if (!player.inFluid && player.onGround) player.motion.y = 0.35
 	}
@@ -346,7 +386,7 @@ input.on("click", (button: number) => {
 	const {x, y} = mouseBlock
 	let z = input.pressed("ShiftLeft") ? -1 : 0
 	const {block: frontBlock, z: frontZ} = getFirstBlock(world, x, y)
-	const reachable = mouseBlock.distanceTo(player.position) <= player.attributes.get("player.block_interaction_range")!
+	const reachable = isBlockReachable(mouseBlock)
 
 	switch (button) {
 		case 0:

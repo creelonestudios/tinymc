@@ -7,10 +7,12 @@ export default class Texture {
 	static LOADED  = 1
 	static FAILED  = 2
 
-	private image: HTMLImageElement
+	readonly path: string
+	private readonly image: HTMLImageElement
 	#state: number
 
 	constructor(path: string) {
+		this.path = path
 		const img = new Image()
 		img.addEventListener("load", () => {
 			this.#state = Texture.LOADED
@@ -27,6 +29,14 @@ export default class Texture {
 
 	get state() {
 		return this.#state
+	}
+
+	get width() {
+		return this.image.width
+	}
+
+	get height() {
+		return this.image.height
 	}
 
 	ready() {
