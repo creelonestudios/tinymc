@@ -26,7 +26,7 @@ export default class Entity implements HasData {
 
 	readonly def: EntityDef
 	readonly position: Dim3
-	readonly rotation: Dim3
+	protected rotation: number
 	readonly motion: Dim3
 	protected readonly size: Dim2
 	readonly spawnTime: number
@@ -47,7 +47,7 @@ export default class Entity implements HasData {
 			}
 		}
 		this.position = new Dim3(...(data.position || [0, 0, 0]))
-		this.rotation = new Dim3(...(data.rotation || [0, 0, 0]))
+		this.rotation = data.rotation || 0
 		this.motion   = new Dim3(...(data.motion   || [0, 0, 0]))
 		this.size     = new Dim2()
 		this.spawnTime = spawnTime
@@ -73,10 +73,23 @@ export default class Entity implements HasData {
 		return this.position.y
 	}
 
+	get eyeHeight() {
+		return this.attributes.get("generic.scale", 1)! * this.size.y * this.def.eyeHeight
+	}
+
+	get rotationAngle() {
+		return this.rotation
+	}
+
+	get eyes() {
+		return this.position.copy().add(new Dim2(0, this.eyeHeight))
+	}
+
 	getBoundingBox() {
-		let pos = this.position.copy()
-		pos.x -= this.size.x/2
-		return new BoundingBox(pos, this.size)
+		const size = this.size.copy().scale(this.attributes.get("generic.scale", 1)!)
+		const pos = this.position.copy()
+		pos.x -= size.x/2
+		return new BoundingBox(pos, size)
 	}
 
 	tick(world: World) {
@@ -143,13 +156,14 @@ export default class Entity implements HasData {
 	draw(g: Graphics, world: World) {
 		const block = world.getBlock(this.position.x, this.position.y, this.position.z)
 		const light = block?.lightLevel ?? 15
+		const box = this.getBoundingBox()
 
 		g.save()
-		g.translate(this.x, this.y)
-		g.translate(-this.size.x/2, 0) // to center (x)
+		g.translate(box.pos.x, box.pos.y)
+		//g.translate(-box.size.x/2, 0) // to center (x)
 
 		g.brightness(light / 15)
-		this.texture?.draw(g, this.size.x, this.size.y)
+		this.texture?.draw(g, box.size.x, box.size.y)
 
 		g.restore()
 	}
@@ -163,7 +177,7 @@ export default class Entity implements HasData {
 			id: this.id,
 			motion: this.motion.asArray(),
 			position: this.position.asArray(), // TODO: "pos" alias for compatibility
-			rotation: this.rotation.asArray(),
+			rotation: this.rotation,
 			noGravity: this.noGravity,
 			onGround: this.onGround,
 			spawnTime: this.spawnTime
@@ -175,7 +189,7 @@ export default class Entity implements HasData {
 export type EntityData = Flatten<BaseData & {
 	motion: number[],
 	position: number[],
-	rotation: number[],
+	rotation: number,
 	noGravity: boolean,
 	onGround: boolean,
 	spawnTime: number

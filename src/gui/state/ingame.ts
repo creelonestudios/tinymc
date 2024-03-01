@@ -36,7 +36,7 @@ export function init() {
 export function tick() {
 	if (input.keyPressed("Space")) {
 		if (player.inFluid) player.motion.y = Entity.TERMINAL_FLUID_VELOCITY
-		else if (player.onGround) player.motion.y = 0.35
+		else if (player.onGround) player.motion.y = player.attributes.get("generic.jump_strength", 0.35)!
 	}
 
 	player.motion.x = (Number(input.keyPressed("KeyD")) - Number(input.keyPressed("KeyA"))) * 0.15
@@ -88,13 +88,13 @@ export function draw(g: Graphics) {
 
 	// distance and player range (debug)
 	if (debug.showDebugScreen && debug.showRange) {
-		const range  = (player.attributes.get("player.block_interaction_range") || 0) * blockSize
+		const range  = (player.attributes.get("player.block_interaction_range", 0)!) * blockSize
 		g.lineWidth = 2
 		g.strokeStyle = "white"
 		g.fillStyle = "white"
 
 		const blockpos  = mouseBlock.add(new Dim2(0.5, 0.5))
-		const playerpos = player.position.copy().add(new Dim2(0, 1))
+		const playerpos = player.position.copy().add(new Dim2(0, player.eyeHeight))
 
 		g.save()
 		g.translate(blockpos.x + 0.2, blockpos.y)
@@ -244,8 +244,8 @@ export function whileKey(key: string) {
 		if (stack.item.id == "tiny:air") return
 
 		const entityData = {
-			position: player.position.asArray(),
-			motion: getMousePos().sub(player.position).normalize().scale(0.6).asArray()
+			position: player.eyes.asArray(),
+			motion: Dim2.polar(player.rotationAngle, 0.6).asArray()
 		}
 		let dropStack = stack
 
@@ -326,7 +326,7 @@ export function getMousePos() {
 }
 
 function isBlockReachable(pos: Dim2) {
-	return pos.copy().add(new Dim2(0.5, 0.5)).distanceTo(player.position.copy().add(new Dim2(0, 1))) <= player.attributes.get("player.block_interaction_range")!
+	return pos.copy().add(new Dim2(0.5, 0.5)).distanceTo(player.position.copy().add(new Dim2(0, player.eyeHeight))) <= player.attributes.get("player.block_interaction_range", 0)!
 }
 
 function openInventory() {

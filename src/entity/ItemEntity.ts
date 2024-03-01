@@ -24,6 +24,8 @@ export default class ItemEntity extends Entity {
 	tick(world: World) {
 		if (this.inFluid) this.motion.y = Entity.TERMINAL_FLUID_VELOCITY
 		super.tick(world)
+		if (this.motion.sqMag() > 0) this.rotation = this.motion.angle()
+		else if (isNaN(this.rotation)) this.rotation = 0
     
 		const pickupDelay = Math.max(this.spawnTime + ItemEntity.PICKUP_TIME - world.tickTime, 0)
 		const boundingBox = this.getBoundingBox()

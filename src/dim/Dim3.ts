@@ -51,16 +51,26 @@ export default class Dim3 implements Dim {
 		return this
 	}
 
+	dot(dim: Dim2 | Dim3): number {
+		if (dim instanceof Dim2) return this.x * dim.x + this.y * dim.y
+		return this.x * dim.x + this.y * dim.y + this.z * dim.z
+	}
+
 	sqMag(): number {
-		return this.x ** 2 + this.y ** 2 + this.z ** 2
+		return this.dot(this)
 	}
 
 	mag(): number {
 		return Math.sqrt(this.sqMag())
 	}
 
-	normalize(): Dim2 {
+	angle(): number {
+		return Math.acos(this.dot(new Dim2(1, 0)) / this.mag()) * Math.sign(this.y)
+	}
+
+	normalize(): Dim3 {
 		const mag = this.mag()
+		if (mag == 0) return this
 		return this.scale(1/mag)
 	}
 
