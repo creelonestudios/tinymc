@@ -74,9 +74,10 @@ export default class Entity implements HasData {
 	}
 
 	getBoundingBox() {
-		let pos = this.position.copy()
-		pos.x -= this.size.x/2
-		return new BoundingBox(pos, this.size)
+		const size = this.size.copy().scale(this.attributes.get("generic.scale", 1)!)
+		const pos = this.position.copy()
+		pos.x -= size.x/2
+		return new BoundingBox(pos, size)
 	}
 
 	tick(world: World) {
@@ -143,13 +144,14 @@ export default class Entity implements HasData {
 	draw(g: Graphics, world: World) {
 		const block = world.getBlock(this.position.x, this.position.y, this.position.z)
 		const light = block?.lightLevel ?? 15
+		const box = this.getBoundingBox()
 
 		g.save()
-		g.translate(this.x, this.y)
-		g.translate(-this.size.x/2, 0) // to center (x)
+		g.translate(box.pos.x, box.pos.y)
+		//g.translate(-box.size.x/2, 0) // to center (x)
 
 		g.brightness(light / 15)
-		this.texture?.draw(g, this.size.x, this.size.y)
+		this.texture?.draw(g, box.size.x, box.size.y)
 
 		g.restore()
 	}

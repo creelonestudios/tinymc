@@ -4,6 +4,7 @@ import { type ArrayElement, type HasData } from "./util/interfaces";
 const AttributeNames = [
 	"generic.movement_speed",
 	"generic.jump_strength",
+	"generic.scale",
 	"player.block_interaction_range",
 	"player.entity_interaction_range"
 ] as const satisfies `${string}.${string}`[]
@@ -37,8 +38,8 @@ export default class AttributeList implements HasData {
 		})
 	}
 
-	get(name: AttributeName) {
-		return this.list.get(name)
+	get(name: AttributeName, defaultValue?: number) {
+		return this.list.get(name) || defaultValue
 	}
 
 	set(name: AttributeName, base: number) {

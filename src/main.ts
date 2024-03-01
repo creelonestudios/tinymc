@@ -137,7 +137,7 @@ export function getTexture(path: string) {
 function tick() {
 	if (input.keyPressed("Space")) {
 		if (player.inFluid) player.motion.y = Entity.TERMINAL_FLUID_VELOCITY
-		else if (player.onGround) player.motion.y = player.attributes.get("generic.jump_strength") || 0.35
+		else if (player.onGround) player.motion.y = player.attributes.get("generic.jump_strength", 0.35)!
 	}
 
 	player.motion.x = (Number(input.keyPressed("KeyD")) - Number(input.keyPressed("KeyA"))) * 0.15
