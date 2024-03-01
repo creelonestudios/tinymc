@@ -3,7 +3,7 @@ export default class TextRenderer {
 	static drawText(ctx: CanvasRenderingContext2D, text: string, x: number = 0, y: number = 0, options?: TextRenderingOptions) {
 		const { color = ctx.fillStyle || "white", opacity = 1, bgOpacity = 0.35, font = {}, drawBg = false } = options || {}
 		const { padding = drawBg ? 1 : 0 } = options || {}
-		font.family = font.family || "sans-serif"
+		font.family = font.family || "default regular"
 		font.size   = font.size   || 16
 		if (text.trim() == "") return font.size + 2 * padding
 

@@ -43,14 +43,12 @@ export class Button {
 		const tex = touching ? false ? clickButtonTex : hoverButtonTex : buttonTex
 
 		g.save()
-		g.ctx.translate(this.x, this.y)
+		g.ctx.translate(this.x - this.w/2, this.y + this.h/2)
 		tex.draw(g, this.w, this.h, true)
 		g.ctx.textAlign = "center"
-		TextRenderer.drawText(g.ctx, this.text, 400, 100, {
-			font: {
-				family: "default regular",
-				size: 50
-			},
+		g.ctx.textBaseline = "middle"
+		TextRenderer.drawText(g.ctx, this.text, this.w/2, this.h/2, {
+			font: { size: 40 },
 			color: "white"
 		})
 		//g.ctx.fillText(this.text, 400, 100)

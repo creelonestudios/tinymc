@@ -4,8 +4,8 @@ import TextRenderer from "../../util/TextRenderer.js"
 import { Button } from "../Button.js"
 
 let widgetsTex
-const testButton = new Button(-400, 100, 10, 2, "Test Button")
-const testButton2 = new Button(-400, 300, 10, 2, "Test Button 2")
+const testButton = new Button(0, 100, 800, 80, "Test Button")
+const testButton2 = new Button(0, 300, 800, 80, "Test Button 2")
 
 export function loadTexture() {
 	widgetsTex = getTexture("tiny/textures/gui/widgets.png")
@@ -36,10 +36,7 @@ export function draw(g: Graphics) {
 function drawLogo(ctx: CanvasRenderingContext2D) {
 	ctx.textAlign = "center"
 	TextRenderer.drawText(ctx, "Tiny MC", 0, 70, {
-		font: {
-			family: "default regular",
-			size: 50
-		},
+		font: { size: 50 },
 		color: "white"
 	})
 }
