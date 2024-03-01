@@ -13,7 +13,7 @@ export default class GameMenu {
 
 	static drawLogo(graphics: Graphics) {
 		graphics.fillStyle = "white";
-		graphics.ctx.font = "50px Minecraft Regular";
+		graphics.ctx.font = "50px default regular";
 		graphics.ctx.textAlign = "center";
 		graphics.ctx.fillText("Tiny MC", 0, 70);
 	}

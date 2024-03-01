@@ -12,6 +12,21 @@ canvas#game {
 }
 
 @font-face {
-	font-family: "Minecraft Regular";
-	src: url(../assets/tiny/font/MinecraftRegular-Bmg3.otf);
+	font-family: "default regular";
+	src: url(../assets/tiny/font/Minecraft.otf);
+}
+
+@font-face {
+	font-family: "default bold";
+	src: url(../assets/tiny/font/MinecraftBold.otf);
+}
+
+@font-face {
+	font-family: "default italics";
+	src: url(../assets/tiny/font/MinecraftItalics.otf);
+}
+
+@font-face {
+	font-family: "default bold italics";
+	src: url(../assets/tiny/font/MinecraftBoldItalics.otf);
 }
