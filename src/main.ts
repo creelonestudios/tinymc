@@ -137,19 +137,23 @@ function draw() {
 }
 
 input.on("keydown", (key: string) => {
-	ingame_state.onKey(key)
+	/*if (menuState == MenuState.MENU) game_menu_state.onKey(key)
+	else*/ if (menuState == MenuState.INGAME) ingame_state.onKey(key)
 })
 
 input.on("keypress", (key: string) => {
-	ingame_state.whileKey(key)
+	/*if (menuState == MenuState.MENU) game_menu_state.whileKey(key)
+	else*/ if (menuState == MenuState.INGAME) ingame_state.whileKey(key)
 })
 
 input.on("click", (button: number) => {
-	ingame_state.onClick(button)
+	if (menuState == MenuState.MENU) game_menu_state.onClick(button)
+	else if (menuState == MenuState.INGAME) ingame_state.onClick(button)
 })
 
 input.on("mousemove", () => {
-	ingame_state.onMouseMove()
+	/*if (menuState == MenuState.MENU) game_menu_state.onMouseMove()
+	else*/ if (menuState == MenuState.INGAME) ingame_state.onMouseMove()
 })
 
 

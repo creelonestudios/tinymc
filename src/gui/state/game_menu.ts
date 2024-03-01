@@ -7,6 +7,14 @@ let widgetsTex
 const testButton = new Button(0, 100, 800, 80, "Test Button")
 const testButton2 = new Button(0, 300, 800, 80, "Test Button 2")
 
+testButton.on("click", () => {
+	console.log("button 1 clicked")
+})
+
+testButton2.on("click", () => {
+	console.log("button 2 clicked")
+})
+
 export function loadTexture() {
 	widgetsTex = getTexture("tiny/textures/gui/widgets.png")
 }
@@ -44,4 +52,9 @@ function drawLogo(ctx: CanvasRenderingContext2D) {
 function drawMenu(g: Graphics) {
 	testButton.draw(g)
 	testButton2.draw(g)
+}
+
+export function onClick(button: number) {
+	testButton.click(button)
+	testButton2.click(button)
 }

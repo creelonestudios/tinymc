@@ -5,6 +5,7 @@ import { game, getTexture, input } from "../main.js"
 import Subtexture from "../texture/Subtexture.js"
 import Texture from "../texture/Texture.js"
 import BoundingBox from "../util/BoundingBox.js"
+import EventEmitter from "../util/EventEmitter.js"
 import TextRenderer from "../util/TextRenderer.js"
 
 let widgetsTex: Texture
@@ -12,11 +13,12 @@ let buttonTex: Subtexture
 let hoverButtonTex: Subtexture
 let clickButtonTex: Subtexture
 
-export class Button {
+export class Button extends EventEmitter {
 
 	readonly boundingBox: BoundingBox
 
 	constructor(readonly x: number, readonly y: number, readonly w: number, readonly h: number, readonly text: string) {
+		super()
 		this.boundingBox = new BoundingBox(new Dim3(x - w/2, y + h/2, 0), new Dim2(w, h))
 	}
 
@@ -27,16 +29,8 @@ export class Button {
 		clickButtonTex = widgetsTex.getSubtexture(0, 86, 200, 20)
 	}
 
-	static touchingRect(x: number, y: number, w: number, h: number) {
-		const mouse = input.mouse
-		mouse.x -= game.width/2
-		return mouse.x >= x && mouse.x <= x + w && mouse.y >= y && mouse.y <= y + h
-	}
-
 	draw(g: Graphics) {
-		const mouse = input.mouse
-		mouse.x -= game.width/2
-		const touching = this.boundingBox.touch(mouse)
+		const touching = this.isHovered()
 		const tex = touching ? (false ? clickButtonTex : hoverButtonTex) : buttonTex
 
 		g.save()
@@ -50,5 +44,15 @@ export class Button {
 		})
 		//g.ctx.fillText(this.text, 400, 100)
 		g.restore()
+	}
+
+	isHovered() {
+		const mouse = input.mouse
+		mouse.x -= game.width/2
+		return this.boundingBox.touch(mouse)
+	}
+
+	click(button: number) {
+		if (button == 0 && this.isHovered()) this.emit("click")
 	}
 }
