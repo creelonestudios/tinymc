@@ -48,7 +48,7 @@ function validate(data: any): data is EntityDefData {
 	if ("eyeHeight" in data) {
 		if (typeof data.eyeHeight != "number" || data.eyeHeight < 0 || data.eyeHeight > 1) return false
 	} else {
-		data.eyeHeight = 0.6
+		data.eyeHeight = 0.5
 	}
 
 	return true

@@ -7,6 +7,7 @@ import Player, { type PlayerData } from "../entity/Player.js"
 import { createBlock, createEntity } from "../main.js"
 import { type NamespacedId } from "../util/interfaces.js"
 import { isNamespacedId } from "../util/typecheck.js"
+import Dim2 from "../dim/Dim2.js"
 
 export default class World {
 
@@ -221,6 +222,20 @@ export default class World {
 			if (z == 0) {
 				for (let entity of this.getAllEntities()) {
 					entity.getBoundingBox().draw(g, "red")
+
+					// eye ray
+					const eyes = entity.position.copy().add(new Dim2(0, entity.eyeHeight))
+					const dir  = Dim2.polar(entity.rotationAngle, 100)
+					const endpoint = eyes.copy().add(dir)
+
+					g.save()
+					g.strokeStyle = "red"
+					g.translate(eyes.x, eyes.y)
+					g.ctx.beginPath()
+					g.ctx.moveTo(0, 0)
+					g.ctx.lineTo(endpoint.x, -endpoint.y)
+					g.ctx.stroke()
+					g.restore()
 				}
 			}
 		}

@@ -26,7 +26,7 @@ export default class Entity implements HasData {
 
 	readonly def: EntityDef
 	readonly position: Dim3
-	readonly rotation: Dim3
+	protected rotation: number
 	readonly motion: Dim3
 	protected readonly size: Dim2
 	readonly spawnTime: number
@@ -47,7 +47,7 @@ export default class Entity implements HasData {
 			}
 		}
 		this.position = new Dim3(...(data.position || [0, 0, 0]))
-		this.rotation = new Dim3(...(data.rotation || [0, 0, 0]))
+		this.rotation = data.rotation || 0
 		this.motion   = new Dim3(...(data.motion   || [0, 0, 0]))
 		this.size     = new Dim2()
 		this.spawnTime = spawnTime
@@ -75,6 +75,10 @@ export default class Entity implements HasData {
 
 	get eyeHeight() {
 		return this.attributes.get("generic.scale", 1)! * this.size.y * this.def.eyeHeight
+	}
+
+	get rotationAngle() {
+		return this.rotation
 	}
 
 	getBoundingBox() {
@@ -169,7 +173,7 @@ export default class Entity implements HasData {
 			id: this.id,
 			motion: this.motion.asArray(),
 			position: this.position.asArray(), // TODO: "pos" alias for compatibility
-			rotation: this.rotation.asArray(),
+			rotation: this.rotation,
 			noGravity: this.noGravity,
 			onGround: this.onGround,
 			spawnTime: this.spawnTime
@@ -181,7 +185,7 @@ export default class Entity implements HasData {
 export type EntityData = Flatten<BaseData & {
 	motion: number[],
 	position: number[],
-	rotation: number[],
+	rotation: number,
 	noGravity: boolean,
 	onGround: boolean,
 	spawnTime: number

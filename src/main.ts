@@ -158,7 +158,7 @@ function draw() {
 	world.draw(graphics)
 
 	// hitboxes
-	if (debug.showDebugScreen && debug.showHitboxes) {
+	if (debug.showHitboxes) {
 		world.drawBoundingBoxes(graphics)
 	}
 

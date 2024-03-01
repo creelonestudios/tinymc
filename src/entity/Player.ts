@@ -4,11 +4,12 @@ import Inventory, { InventoryData } from "../Inventory.js"
 import Item from "../Item.js"
 import { ItemEntityData } from "./ItemEntity.js"
 import ItemStack, { ItemStackData } from "../ItemStack.js"
-import { getTexture, player, world } from "../main.js"
+import { getMousePos, getTexture, player, world } from "../main.js"
 import PlayerDef from "../defs/PlayerDef.js"
 import Texture from "../texture/Texture.js"
 import World from "../world/World.js"
 import { type Flatten } from "../util/interfaces.js"
+import Dim2 from "../dim/Dim2.js"
 
 const playerDef = new PlayerDef()
 
@@ -73,11 +74,13 @@ export default class Player extends Entity {
 	die() { // respawn
 		this.position.set(0, 1, 0) // TODO: spawn point
 		this.motion.set(0, 0, 0)
-		this.rotation.set(0, 0)
+		this.rotation = 0
 	}
 
 	tick(world: World) {
 		super.tick(world)
+		const eyes = this.position.copy().add(new Dim2(0, this.eyeHeight))
+		this.rotation = getMousePos().sub(eyes).angle()
 	}
 
 	getData(): PlayerData {

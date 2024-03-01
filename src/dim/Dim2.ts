@@ -2,6 +2,10 @@ import Dim from "./Dim.js"
 import Dim3 from "./Dim3.js"
 
 export default class Dim2 implements Dim {
+
+	static polar(theta: number, scale: number = 1) {
+		return new Dim2(Math.cos(theta) * scale, Math.sin(theta) * scale)
+	}
 	
 	x: number
 	y: number
@@ -24,6 +28,8 @@ export default class Dim2 implements Dim {
 	}
 
 	mult(dim: Dim2): Dim2 {
+		this.x = this.x * dim.x - this.y * dim.y
+		this.y = this.x * dim.y + this.x * dim.x
 		return this
 	}
 
@@ -44,16 +50,32 @@ export default class Dim2 implements Dim {
 		return this
 	}
 
+	rotate(theta: number): Dim2 {
+		const {x, y} = this
+		const vec = Dim2.polar(theta)
+		this.mult(vec)
+		return this
+	}
+
+	dot(dim: Dim2 | Dim3): number {
+		return this.x * dim.x + this.y * dim.y
+	}
+
 	sqMag(): number {
-		return this.x ** 2 + this.y ** 2
+		return this.dot(this)
 	}
 
 	mag(): number {
 		return Math.sqrt(this.sqMag())
 	}
 
+	angle(): number {
+		return Math.acos(this.dot(new Dim2(1, 0)) / this.mag()) * Math.sign(this.y)
+	}
+
 	normalize(): Dim2 {
 		const mag = this.mag()
+		if (mag == 0) return this
 		return this.scale(1/mag)
 	}
 
