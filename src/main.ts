@@ -362,8 +362,8 @@ input.on("keypress", (key: string) => {
 		if (stack.item.id == "tiny:air") return
 
 		const entityData = {
-			position: player.position.asArray(),
-			motion: getMousePos().sub(player.position).normalize().scale(0.6).asArray()
+			position: player.eyes.asArray(),
+			motion: Dim2.polar(player.rotationAngle, 0.6).asArray()
 		}
 		let dropStack = stack
 

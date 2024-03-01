@@ -81,6 +81,10 @@ export default class Entity implements HasData {
 		return this.rotation
 	}
 
+	get eyes() {
+		return this.position.copy().add(new Dim2(0, this.eyeHeight))
+	}
+
 	getBoundingBox() {
 		const size = this.size.copy().scale(this.attributes.get("generic.scale", 1)!)
 		const pos = this.position.copy()

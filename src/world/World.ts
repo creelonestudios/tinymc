@@ -224,7 +224,7 @@ export default class World {
 					entity.getBoundingBox().draw(g, "red")
 
 					// eye ray
-					const eyes = entity.position.copy().add(new Dim2(0, entity.eyeHeight))
+					const eyes = entity.eyes
 					const dir  = Dim2.polar(entity.rotationAngle, 100)
 					const endpoint = eyes.copy().add(dir)
 
