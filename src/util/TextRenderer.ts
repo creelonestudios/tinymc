@@ -3,12 +3,14 @@ export default class TextRenderer {
 	static drawText(ctx: CanvasRenderingContext2D, text: string, x: number = 0, y: number = 0, options?: TextRenderingOptions) {
 		const { color = ctx.fillStyle || "white", opacity = 1, bgOpacity = 0.35, font = {}, drawBg = false } = options || {}
 		const { padding = drawBg ? 1 : 0 } = options || {}
-		font.family = font.family || "default regular"
+		font.family = font.family || "tinymc"
 		font.size   = font.size   || 16
+		font.weight = font.weight || "normal"
+		font.style  = font.style  || "normal"
 		if (text.trim() == "") return font.size + 2 * padding
 
 		ctx.save()
-		ctx.font = `${font.size}px ${font.family}`
+		ctx.font = `${font.style} ${font.weight} ${font.size}px ${font.family}`
 		const textWidth = ctx.measureText(text).width
 
 		if (drawBg) {
@@ -44,8 +46,11 @@ export type TextRenderingOptions = {
 	bgOpacity?: number,
 	font?: {
 		family?: string,
-		size?: number
+		size?: number,
+		weight?: number | "normal" | "bold" | "lighter" | "bolder",
+		style?: "normal" | "italic"
 	},
 	padding?: number,
-	drawBg?: boolean
+	drawBg?: boolean,
+	hideShadow?: boolean
 }
