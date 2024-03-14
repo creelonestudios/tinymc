@@ -1,7 +1,7 @@
 export default class TextRenderer {
 
 	static drawText(ctx: CanvasRenderingContext2D, text: string, x: number = 0, y: number = 0, options?: TextRenderingOptions) {
-		const { color = ctx.fillStyle || "white", opacity = 1, bgOpacity = 0.35, font = {}, drawBg = false } = options || {}
+		const { color = ctx.fillStyle || "white", opacity = 1, bgOpacity = 0.35, font = {}, drawBg = false, shadow = true } = options || {}
 		const { padding = drawBg ? 1 : 0 } = options || {}
 		font.family = font.family || "tinymc"
 		font.size   = font.size   || 16
@@ -29,9 +29,20 @@ export default class TextRenderer {
 			ctx.fillRect(x, y, width, height)
 		}
 
-		ctx.fillStyle = color
 		ctx.globalAlpha = opacity
-		ctx.fillText(text, x + (ctx.textAlign == "left" ? padding : -padding), y + (ctx.textBaseline == "top" ? padding : -padding))
+		ctx.fillStyle = color
+
+		const textX = x + (ctx.textAlign == "left" ? padding : -padding)
+		const textY = y + (ctx.textBaseline == "top" ? padding : -padding)
+
+		if (shadow) {
+			ctx.save()
+			ctx.filter = `brightness(0.314)`
+			ctx.fillText(text, textX + font.size / 10, textY + font.size / 10)
+			ctx.restore()
+		}
+
+		ctx.fillText(text, textX, textY)
 
 		ctx.restore()
 
@@ -52,5 +63,5 @@ export type TextRenderingOptions = {
 	},
 	padding?: number,
 	drawBg?: boolean,
-	hideShadow?: boolean
+	shadow?: boolean
 }

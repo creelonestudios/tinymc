@@ -41,8 +41,8 @@ function gameInfo(g: Graphics, world: World, player: Player) {
 
 	lines.push(``)
 	lines.push(`pos: ${Math.floor(player.position.x * 1000) / 1000}, ${Math.floor(player.position.y * 1000) / 1000}`)
-	lines.push(`motion: ${Math.floor(player.motion.x * 1000) / 1000}, ${Math.floor(player.motion.y * 1000) / 1000} (${Math.floor(player.motion.mag() * 1000) / 1000}/s)`)
-	lines.push(`rotation: ${Math.floor(player.rotationAngle * 1000) / 1000} (${Math.floor(player.rotationAngle * 180 / Math.PI * 1000) / 1000}°)`)
+	lines.push(`motion: ${player.motion.x.toFixed(3)}, ${player.motion.y.toFixed(3) } (${player.motion.mag().toFixed(2)}/s)`)
+	lines.push(`rotation: ${player.rotationAngle.toFixed(3)} (${(player.rotationAngle * 180 / Math.PI).toFixed(1)}°)`)
 	lines.push(`mouse: ${mouseBlock.x}, ${mouseBlock.y}`)
 
 	if (lookingAt.block) {
@@ -59,10 +59,10 @@ function gameInfo(g: Graphics, world: World, player: Player) {
 		lines.push(`light: ${lookingAtFluid.block.lightLevel} (${lookingAtFluid.block.skyLight} sky, ${lookingAtFluid.block.blockLight} block)`)
 	}
 
-	const offset = g.drawText(lines[0], { drawBg: true, padding: 3, font: { size: 20 } })
+	const offset = g.drawText(lines[0], { drawBg: true, padding: 3, font: { size: 20 }, shadow: false })
 	for (let i = 1; i < lines.length; i++) {
 		ctx.translate(0, offset)
-		g.drawText(lines[i], { drawBg: true, padding: 3, font: { size: 20 } })
+		g.drawText(lines[i], { drawBg: true, padding: 3, font: { size: 20 }, shadow: false })
 	}
 
 	ctx.restore()
@@ -100,10 +100,10 @@ function envInfo(g: Graphics) { // some of this might break
 
 	lines.push(`Display: ${game.width}x${game.height}`)
 
-	const offset = g.drawText(lines[0], { drawBg: true, padding: 3, font: { size: 20 } })
+	const offset = g.drawText(lines[0], { drawBg: true, padding: 3, font: { size: 20 }, shadow: false })
 	for (let i = 1; i < lines.length; i++) {
 		ctx.translate(0, offset)
-		g.drawText(lines[i], { drawBg: true, padding: 3, font: { size: 20 } })
+		g.drawText(lines[i], { drawBg: true, padding: 3, font: { size: 20 }, shadow: false })
 	}
 
 	ctx.restore()
