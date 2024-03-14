@@ -1,7 +1,18 @@
+const SHADOW_BRIGHTNESS = "0.314"
+
 export default class TextRenderer {
 
 	static drawText(ctx: CanvasRenderingContext2D, text: string, x: number = 0, y: number = 0, options?: TextRenderingOptions) {
-		const { color = ctx.fillStyle || "white", opacity = 1, bgOpacity = 0.35, font = {}, drawBg = false, shadow = true } = options || {}
+		const {
+			color = ctx.fillStyle || "white",
+			opacity = 1, bgOpacity = 0.35,
+			font = {},
+			drawBg = false,
+			shadow = true,
+			underline = false,
+			overline = false,
+			strikethrough = false
+		} = options || {}
 		const { padding = drawBg ? 1 : 0 } = options || {}
 		font.family = font.family || "tinymc"
 		font.size   = font.size   || 16
@@ -34,15 +45,16 @@ export default class TextRenderer {
 
 		const textX = x + (ctx.textAlign == "left" ? padding : -padding)
 		const textY = y + (ctx.textBaseline == "top" ? padding : -padding)
+		const unit = font.size / 10
 
 		if (shadow) {
 			ctx.save()
-			ctx.filter = `brightness(0.314)`
-			ctx.fillText(text, textX + font.size / 10, textY + font.size / 10)
+			ctx.filter = `brightness(${SHADOW_BRIGHTNESS})`
+			drawDecoratedText(ctx, text, textX + unit, textY + unit, unit, textWidth, underline, overline, strikethrough)
 			ctx.restore()
 		}
 
-		ctx.fillText(text, textX, textY)
+		drawDecoratedText(ctx, text, textX, textY, unit, textWidth, underline, overline, strikethrough)
 
 		ctx.restore()
 
@@ -63,5 +75,36 @@ export type TextRenderingOptions = {
 	},
 	padding?: number,
 	drawBg?: boolean,
-	shadow?: boolean
+	shadow?: boolean,
+	underline?: boolean,
+	overline?: boolean,
+	strikethrough?: boolean
+}
+
+function drawDecoratedText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, unit: number, textWidth: number, underline: boolean, overline: boolean, strikethrough: boolean) {
+	ctx.fillText(text, x, y)
+
+	if (underline) drawLine(ctx, x, y, textWidth, unit)
+	if (overline) drawLine(ctx, x, y - unit * 10, textWidth, unit)
+	if (strikethrough) drawLine(ctx, x, y - unit * 5, textWidth, unit)
+}
+
+function drawLine(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
+	if (ctx.textAlign == "right") {
+		x -= width
+	} else if (ctx.textAlign == "center") {
+		x -= width / 2
+	}
+
+	if (ctx.textBaseline == "top") {
+		y += height * 9
+	} else if (ctx.textBaseline == "middle") {
+		y += height * 4
+	} else if (ctx.textBaseline == "alphabetic") {
+		y += height
+	} else if (ctx.textBaseline == "bottom" || ctx.textBaseline == "ideographic") {
+		y -= height
+	}
+
+	ctx.fillRect(x, y, width, height)
 }
