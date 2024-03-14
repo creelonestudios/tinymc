@@ -41,9 +41,14 @@ blockdefs.set("tiny:air", new BlockDef("tiny", "air", {}))
 export const input = new Input()
 export const debug = { showHitboxes: false, showOrigin: false, showDebugScreen: false, showAirLightLevel: false, showRange: false }
 export let menuState: MenuState = MenuState.MENU
+export let currentWorldName: string | null = null
 
 export function setMenuState(state: MenuState) {
 	menuState = state
+}
+
+export function setCurrentWorldName(name: string | null) {
+	currentWorldName = name
 }
 
 game_menu_state.loadTexture()
@@ -144,6 +149,15 @@ input.on("keydown", (key: string) => {
 		if (document.fullscreenElement) document.exitFullscreen()
 		else game.requestFullscreen()
 		return
+	} else if(key == "KeyS" && menuState == MenuState.INGAME) {
+		const currentWorlds = JSON.parse(localStorage.getItem("worlds") || "[]");
+		let currentWorldIndex = currentWorlds.findIndex((world: { name: string; data: any; }) => world.name == currentWorldName);
+		currentWorlds[currentWorldIndex] = {
+			...currentWorlds[currentWorldIndex],
+			...ingame_state.world.save()
+		}
+		localStorage.setItem("worlds", JSON.stringify(currentWorlds))
+		alert("Saved world!")
 	}
 
 	/*if (menuState == MenuState.MENU) game_menu_state.onKey(key)

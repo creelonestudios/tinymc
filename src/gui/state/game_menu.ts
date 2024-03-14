@@ -1,6 +1,6 @@
 import type Graphics from "../../Graphics.js"
 import MenuState from "../../enums/MenuState.js"
-import { game, getTexture, menuState, setMenuState } from "../../main.js"
+import { game, getTexture, menuState, setCurrentWorldName, setMenuState } from "../../main.js"
 import TextRenderer from "../../util/TextRenderer.js"
 import { Button } from "../Button.js"
 import * as ingame_state from "../../gui/state/ingame.js"
@@ -21,8 +21,9 @@ singleplayerButton.on("click", () => {
 		const world = worlds[i]
 		const button = new Button(0, 200 + i * 100, 800, 80, world.name)
 		button.on("click", () => {
-			console.log(JSON.stringify(world.data));	
-			const worldObj = World.load(world.data.stringBlocks, world.data.blockData, world.data.dims, world.data.entities)
+			console.log(JSON.stringify(world));
+			setCurrentWorldName(world.name)
+			const worldObj = World.load(world.stringBlocks, world.blockData, world.dims, world.entities)
 			if(!worldObj) {
 				alert("Failed to load world!")
 				return
@@ -51,8 +52,8 @@ createWorldButton.on("click", () => {
 	// Save it right away
 	const currentWorlds = JSON.parse(localStorage.getItem("worlds") || "[]");
 	currentWorlds.push({
-		name: prompt("World name") || "New World",
-		data: ingame_state.world.save()
+		...ingame_state.world.save(),
+		name: prompt("World name") || "New World"
 	})
 	localStorage.setItem("worlds", JSON.stringify(currentWorlds))
 	setMenuState(MenuState.INGAME);
