@@ -17,7 +17,7 @@ const inset = (slotSize - itemSize)/2
 
 export default class Container {
 
-	static loadTexture() {
+	static loadAssets() {
 		slot = getTexture("tiny/textures/gui/container/slot.png")
 	}
 

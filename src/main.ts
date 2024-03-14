@@ -22,6 +22,8 @@ import CreativeInventory from "./CreativeInventory.js"
 import Entity, { type EntityData } from "./entity/Entity.js"
 import Item from "./Item.js"
 import { type NamespacedId } from "./util/interfaces.js"
+import AudioFile from "./sound/AudioFile.js"
+import Sound from "./sound/Sound.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -43,6 +45,9 @@ const textures: Map<String, Texture> = new Map()
 const cursors = {
 	open_container: getTexture("tiny/textures/gui/cursors/open_container.png")
 } satisfies Record<string, Texture>
+export const soundList = await fetch("./assets/tiny/sounds.json").then(res => res.json())
+const audioFiles = new Map()
+const sounds = new Map()
 
 // defs
 export const blockdefs  = await loadDefs<BlockDef>("blocks.yson", BlockDef)
@@ -58,7 +63,7 @@ export const input = new Input()
 export let debug = { showHitboxes: false, showOrigin: false, showDebugScreen: false, showAirLightLevel: false, showRange: false }
 
 Hotbar.loadTexture()
-Container.loadTexture()
+Container.loadAssets()
 WorldGenerator.flat(world)
 world.spawn(player)
 
@@ -132,6 +137,24 @@ export function getTexture(path: string) {
 	texture = new Texture(path)
 	textures.set(path, texture)
 	return texture
+}
+
+export function getAudioFile(path: string) {
+	let audio = audioFiles.get(path)
+	if (audio) {
+		if (audio.state != AudioFile.FAILED) return audio
+	}
+	audio = new AudioFile(path)
+	audioFiles.set(path, audio)
+	return audio
+}
+
+export function getSound(key: string) {
+	let sound = sounds.get(key)
+	if (sound) return sound
+	sound = new Sound(key)
+	sounds.set(key, sound)
+	return sound
 }
 
 function tick() {
