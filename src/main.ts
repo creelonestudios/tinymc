@@ -42,11 +42,14 @@ export const input = new Input()
 export const debug = { showHitboxes: false, showOrigin: false, showDebugScreen: false, showAirLightLevel: false, showRange: false }
 export let menuState: MenuState = MenuState.MENU
 
+export function setMenuState(state: MenuState) {
+	menuState = state
+}
+
 game_menu_state.loadTexture()
 Button.loadTexture()
 Hotbar.loadTexture()
 Container.loadTexture()
-ingame_state.init()
 
 export const perf = {
 	tick: [] as number[],
@@ -131,9 +134,9 @@ function draw() {
 	game.style.height = innerHeight + "px"
 	game.style.cursor = (menuState == MenuState.INGAME) ? "none" : "initial"
 
-	if (menuState == MenuState.MENU) game_menu_state.draw(g)
+	if (menuState == MenuState.MENU || menuState == MenuState.WORLDSELECTION) game_menu_state.draw(g)
 	else if (menuState == MenuState.INGAME) ingame_state.draw(g)
-	// TODO: explode
+	else alert("unknown menu state")
 }
 
 input.on("keydown", (key: string) => {
@@ -147,7 +150,7 @@ input.on("keypress", (key: string) => {
 })
 
 input.on("click", (button: number) => {
-	if (menuState == MenuState.MENU) game_menu_state.onClick(button)
+	if (menuState == MenuState.MENU || menuState == MenuState.WORLDSELECTION) game_menu_state.onClick(button)
 	else if (menuState == MenuState.INGAME) ingame_state.onClick(button)
 })
 
