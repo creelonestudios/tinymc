@@ -121,7 +121,7 @@ export function getTexture(path: string) {
 }
 
 function tick() {
-	ingame_state.tick()
+	if (menuState == MenuState.INGAME) ingame_state.tick()
 }
 
 function draw() {
