@@ -222,11 +222,6 @@ export function onKey(key: string) {
 
 	}
 
-	if (key == "F11" || key == "F1") {
-		if (document.fullscreenElement) document.exitFullscreen()
-		else game.requestFullscreen()
-	}
-
 	/*if (key == "KeyZ") {
 		const worldSave = world.save()
 		console.log("entities:", worldSave.entities)
