@@ -137,6 +137,12 @@ function draw() {
 }
 
 input.on("keydown", (key: string) => {
+	if (key == "F11") {
+		if (document.fullscreenElement) document.exitFullscreen()
+		else game.requestFullscreen()
+		return
+	}
+
 	/*if (menuState == MenuState.MENU) game_menu_state.onKey(key)
 	else*/ if (menuState == MenuState.INGAME) ingame_state.onKey(key)
 })
