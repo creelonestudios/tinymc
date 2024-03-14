@@ -21,7 +21,7 @@ export default class DebugScreen {
 function gameInfo(g: Graphics, world: World, player: Player) {
 	const ctx = g.ctx
 	const mouseBlock = getMouseBlock()
-	const lookingAt = getFirstBlock(world, mouseBlock.x, mouseBlock.y)
+	const lookingAt = getFirstBlock(world, mouseBlock.x, mouseBlock.y, undefined, block => block.type != "fluid")
 	lookingAt.block = lookingAt.block
 	const lookingAtFluid = getFirstFluid(world, mouseBlock.x, mouseBlock.y)
 
@@ -40,12 +40,14 @@ function gameInfo(g: Graphics, world: World, player: Player) {
 	lines.push(`shift: ${input.keyPressed("ShiftLeft")}`)
 
 	lines.push(``)
-	lines.push(`player: (${player.position.x},${player.position.y})`)
-	lines.push(`mouse: (${mouseBlock.x},${mouseBlock.y})`)
+	lines.push(`pos: ${Math.floor(player.position.x * 1000) / 1000}, ${Math.floor(player.position.y * 1000) / 1000}`)
+	lines.push(`motion: ${Math.floor(player.motion.x * 1000) / 1000}, ${Math.floor(player.motion.y * 1000) / 1000} (${Math.floor(player.motion.mag() * 1000) / 1000}/s)`)
+	lines.push(`rotation: ${Math.floor(player.rotationAngle * 1000) / 1000} (${Math.floor(player.rotationAngle * 180 / Math.PI * 1000) / 1000}°)`)
+	lines.push(`mouse: ${mouseBlock.x}, ${mouseBlock.y}`)
 
 	if (lookingAt.block) {
 		lines.push(``)
-		lines.push(`looking at: ${mouseBlock.x}, ${mouseBlock.y}, ${lookingAt.z}`)
+		lines.push(`looking at block: ${mouseBlock.x}, ${mouseBlock.y}, ${lookingAt.z}`)
 		lines.push(`${lookingAt.block.id}`)
 		lines.push(`light: ${lookingAt.block.lightLevel} (${lookingAt.block.skyLight} sky, ${lookingAt.block.blockLight} block)`)
 	}
@@ -57,10 +59,10 @@ function gameInfo(g: Graphics, world: World, player: Player) {
 		lines.push(`light: ${lookingAtFluid.block.lightLevel} (${lookingAtFluid.block.skyLight} sky, ${lookingAtFluid.block.blockLight} block)`)
 	}
 
-	const offset = g.drawText(lines[0], { drawBg: true, padding: 3 })
+	const offset = g.drawText(lines[0], { drawBg: true, padding: 3, font: { size: 20 } })
 	for (let i = 1; i < lines.length; i++) {
 		ctx.translate(0, offset)
-		g.drawText(lines[i], { drawBg: true, padding: 3 })
+		g.drawText(lines[i], { drawBg: true, padding: 3, font: { size: 20 } })
 	}
 
 	ctx.restore()
@@ -80,7 +82,7 @@ function envInfo(g: Graphics) { // some of this might break
 	const lines = []
 
 	// @ts-expect-error
-	const browser = navigator.userAgentData?.brands.find(b => b.brand != "Not A(Brand") || navigator.userAgent.split(" ").at(-1).split("/") || {}
+	const browser = navigator.userAgent.split(" ").at(-1).split("/") || {} // navigator.userAgentData?.brands.find(b => b.brand != "Not A(Brand") || 
 	// @ts-expect-error
 	const memTotal =  (navigator.deviceMemory*1000) || (performance.memory?.jsHeapSizeLimit/1_000_000) || 0
 	// @ts-expect-error
@@ -88,7 +90,7 @@ function envInfo(g: Graphics) { // some of this might break
 	// @ts-expect-error
 	const memAllocated = performance.memory?.totalJSHeapSize / 1_000_000
 
-	lines.push(`${browser.brand || browser[0] || "Unknown"} ${browser.version || browser[1]?.split(".")[0] || "??"}`)
+	lines.push(`${browser[0] || "Unknown"} ${browser[1]?.split(".")[0] || "??"}`) // browser.brand ||; browser.version || 
 	// @ts-expect-error
 	lines.push(navigator.platform || navigator.userAgentData?.platform || navigator.oscpu || "Unknown")
 
@@ -98,10 +100,10 @@ function envInfo(g: Graphics) { // some of this might break
 
 	lines.push(`Display: ${game.width}x${game.height}`)
 
-	const offset = g.drawText(lines[0], { drawBg: true, padding: 3 })
+	const offset = g.drawText(lines[0], { drawBg: true, padding: 3, font: { size: 20 } })
 	for (let i = 1; i < lines.length; i++) {
 		ctx.translate(0, offset)
-		g.drawText(lines[i], { drawBg: true, padding: 3 })
+		g.drawText(lines[i], { drawBg: true, padding: 3, font: { size: 20 } })
 	}
 
 	ctx.restore()

@@ -344,7 +344,7 @@ export function getFirstBlock(world: World, x: number, y: number, startZ: number
 		if (predicate && !predicate(block)) continue
 		return { block, z }
 	}
-	return { block: world.getBlock(x, y, world.minZ), z: world.minZ }
+	return { block: undefined, z: world.minZ }
 }
 
 export function getFirstFluid(world: World, x: number, y: number, startZ: number = world.maxZ) {
