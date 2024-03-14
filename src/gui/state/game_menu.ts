@@ -16,12 +16,12 @@ const createWorldButton = new Button(0, 100, 800, 80, "Create World")
 
 singleplayerButton.on("click", () => {
 	worldButtons = []
-	const worlds = YSON.parse(localStorage.getItem("worlds") || "[]");
+	const worlds = JSON.parse(localStorage.getItem("worlds") || "[]");
 	for (let i = 0; i < worlds.length; i++) {
 		const world = worlds[i]
 		const button = new Button(0, 200 + i * 100, 800, 80, world.name)
 		button.on("click", () => {
-			console.log(YSON.stringify(world.data));	
+			console.log(JSON.stringify(world.data));	
 			const worldObj = World.load(world.data.stringBlocks, world.data.blockData, world.data.dims, world.data.entities)
 			if(!worldObj) {
 				alert("Failed to load world!")
@@ -30,6 +30,7 @@ singleplayerButton.on("click", () => {
 			ingame_state.init()
 			ingame_state.setWorld(worldObj)
 			setMenuState(MenuState.INGAME)
+			worldObj.spawn(ingame_state.player)
 		})
 		worldButtons.push(button)
 	}
@@ -48,12 +49,12 @@ createWorldButton.on("click", () => {
 	console.log("creating new world")
 	ingame_state.init()
 	// Save it right away
-	const currentWorlds = YSON.parse(localStorage.getItem("worlds") || "[]");
+	const currentWorlds = JSON.parse(localStorage.getItem("worlds") || "[]");
 	currentWorlds.push({
 		name: prompt("World name") || "New World",
 		data: ingame_state.world.save()
 	})
-	localStorage.setItem("worlds", YSON.stringify(currentWorlds))
+	localStorage.setItem("worlds", JSON.stringify(currentWorlds))
 	setMenuState(MenuState.INGAME);
 })
 
