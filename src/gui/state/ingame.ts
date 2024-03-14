@@ -33,6 +33,10 @@ export function init() {
 	world.spawn(player)
 }
 
+export function setWorld(newWorld: World) {
+	world = newWorld
+}
+
 export function tick() {
 	if (input.keyPressed("Space")) {
 		if (player.inFluid) player.motion.y = Entity.TERMINAL_FLUID_VELOCITY

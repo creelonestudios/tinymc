@@ -5,15 +5,34 @@ import TextRenderer from "../../util/TextRenderer.js"
 import { Button } from "../Button.js"
 import * as ingame_state from "../../gui/state/ingame.js"
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
+import World from "../../world/World.js"
 
 let widgetsTex
 const singleplayerButton = new Button(0, 200, 800, 80, "Singleplayer")
 const optionsButton = new Button(0, 300, 800, 80, "Options")
 const quitButton = new Button(0, 400, 800, 80, "Quit")
-const worldButtons = []
+let worldButtons: Button[] = []
 const createWorldButton = new Button(0, 100, 800, 80, "Create World")
 
 singleplayerButton.on("click", () => {
+	worldButtons = []
+	const worlds = YSON.parse(localStorage.getItem("worlds") || "[]");
+	for (let i = 0; i < worlds.length; i++) {
+		const world = worlds[i]
+		const button = new Button(0, 200 + i * 100, 800, 80, world.name)
+		button.on("click", () => {
+			console.log(YSON.stringify(world.data));	
+			const worldObj = World.load(world.data.stringBlocks, world.data.blockData, world.data.dims, world.data.entities)
+			if(!worldObj) {
+				alert("Failed to load world!")
+				return
+			}
+			ingame_state.init()
+			ingame_state.setWorld(worldObj)
+			setMenuState(MenuState.INGAME)
+		})
+		worldButtons.push(button)
+	}
 	setMenuState(MenuState.WORLDSELECTION);
 })
 
@@ -29,10 +48,10 @@ createWorldButton.on("click", () => {
 	console.log("creating new world")
 	ingame_state.init()
 	// Save it right away
-	const currentWorlds = YSON.parse(localStorage.getItem("worlds")) || [];
+	const currentWorlds = YSON.parse(localStorage.getItem("worlds") || "[]");
 	currentWorlds.push({
 		name: prompt("World name") || "New World",
-		data: ingame_state.world.toYSON()
+		data: ingame_state.world.save()
 	})
 	localStorage.setItem("worlds", YSON.stringify(currentWorlds))
 	setMenuState(MenuState.INGAME);
@@ -88,6 +107,9 @@ function drawWorldSelection(g: Graphics) {
 		})
 		return
 	}
+	for (let button of worldButtons) {
+		button.draw(g)
+	}
 }
 
 export function onClick(button: number) {
@@ -97,5 +119,8 @@ export function onClick(button: number) {
 		quitButton.click(button)
 	} else if(menuState == MenuState.WORLDSELECTION) {
 		createWorldButton.click(button)
+		for (let btn of worldButtons) {
+			btn.click(button)
+		}
 	}
 }
