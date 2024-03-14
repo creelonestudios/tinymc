@@ -14,14 +14,15 @@ export default class TextRenderer {
 			strikethrough = false
 		} = options || {}
 		const { padding = drawBg ? 1 : 0 } = options || {}
-		font.family = font.family || "tinymc"
-		font.size   = font.size   || 16
-		font.weight = font.weight || "normal"
-		font.style  = font.style  || "normal"
+		font.family  = font.family  || "tinymc"
+		font.size    = font.size    || 16
+		font.weight  = font.weight  || "normal"
+		font.style   = font.style   || "normal"
+		font.variant = font.variant || ""
 		if (text.trim() == "") return font.size + 2 * padding
 
 		ctx.save()
-		ctx.font = `${font.style} ${font.weight} ${font.size}px ${font.family}`
+		ctx.font = `${font.style} ${font.weight} ${font.variant} ${font.size}px "${font.family}"`
 		const textWidth = ctx.measureText(text).width
 
 		if (drawBg) {
@@ -71,7 +72,8 @@ export type TextRenderingOptions = {
 		family?: string,
 		size?: number,
 		weight?: number | "normal" | "bold" | "lighter" | "bolder",
-		style?: "normal" | "italic"
+		style?: "normal" | "italic",
+		variant?: string // https://developer.mozilla.org/en-US/docs/Web/CSS/font-variant
 	},
 	padding?: number,
 	drawBg?: boolean,

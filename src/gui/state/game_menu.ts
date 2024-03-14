@@ -43,8 +43,8 @@ export function draw(g: Graphics) {
 
 function drawLogo(ctx: CanvasRenderingContext2D) {
 	ctx.textAlign = "center"
-	TextRenderer.drawText(ctx, "Tiny MC", 0, 70, {
-		font: { size: 50 },
+	TextRenderer.drawText(ctx, "Tiny MC", 0, 90, {
+		font: { size: 80 },
 		color: "white"
 	})
 }
