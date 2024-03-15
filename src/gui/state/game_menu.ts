@@ -6,8 +6,10 @@ import { Button } from "../Button.js"
 import * as ingame_state from "../../gui/state/ingame.js"
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 import World from "../../world/World.js"
+import Texture from "../../texture/Texture.js"
 
 let widgetsTex
+let logoTex: Texture
 const singleplayerButton = new Button(0, 200, 800, 80, "Singleplayer")
 const optionsButton = new Button(0, 300, 800, 80, "Options")
 const quitButton = new Button(0, 400, 800, 80, "Quit")
@@ -61,6 +63,7 @@ createWorldButton.on("click", () => {
 
 export function loadTexture() {
 	widgetsTex = getTexture("tiny/textures/gui/widgets.png")
+	logoTex = getTexture("tiny/textures/gui/logo.png")
 }
 
 export function draw(g: Graphics) {
@@ -81,17 +84,20 @@ export function draw(g: Graphics) {
 	ctx.fillRect(0, 0, game.width, game.height)
 
 	ctx.translate(game.width/2, 0)
-	drawLogo(ctx)
+	drawLogo(g)
 	if(menuState == MenuState.MENU) drawMainMenu(g)
 	else if(menuState == MenuState.WORLDSELECTION) drawWorldSelection(g)
 }
 
-function drawLogo(ctx: CanvasRenderingContext2D) {
-	ctx.textAlign = "center"
-	TextRenderer.drawText(ctx, "Tiny MC", 0, 90, {
-		font: { size: 80 },
-		color: "white"
-	})
+function drawLogo(g: Graphics) {
+	// ctx.textAlign = "center"
+	// TextRenderer.drawText(ctx, "Tiny MC", 0, 90, {
+	// 	font: { size: 80 },
+	// 	color: "white"
+	// })
+	g.ctx.translate(-(424/2), 40)
+	logoTex.draw(g, 424, 120, true)
+	g.ctx.translate(424/2, -40)
 }
 
 function drawMainMenu(g: Graphics) {
