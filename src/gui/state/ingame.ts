@@ -8,7 +8,8 @@ import Dim2 from "../../dim/Dim2.js"
 import Entity, { EntityData } from "../../entity/Entity.js"
 import ItemEntity, { ItemEntityData, isItemEntityData } from "../../entity/ItemEntity.js"
 import Player from "../../entity/Player.js"
-import { blockdefs, cursors, debug, game, input } from "../../main.js"
+import MenuState from "../../enums/MenuState.js"
+import { blockdefs, cursors, debug, game, input, menuState } from "../../main.js"
 import Container from "../../util/Container.js"
 import DebugScreen from "../../util/DebugScreen.js"
 import Hotbar from "../../util/Hotbar.js"
@@ -78,7 +79,7 @@ export function draw(g: Graphics) {
 	const reachable = isBlockReachable(mouseBlock)
 
 	// block highlight
-	{
+	if(menuState == MenuState.INGAME) {
 		g.save()
 		g.translate(mouseBlock.x, mouseBlock.y)
 
@@ -134,7 +135,7 @@ export function draw(g: Graphics) {
 	}
 
 	// cursor
-	{
+	if(menuState == MenuState.INGAME) {
 		const {x, y} = getMousePos()
 		const size = blockSize/2
 		g.save()

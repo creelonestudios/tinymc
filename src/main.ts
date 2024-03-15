@@ -9,6 +9,7 @@ import { $ } from "./util/util.js"
 import Container from "./util/Container.js"
 import MenuState from "./enums/MenuState.js"
 import * as game_menu_state from "./gui/state/game_menu.js"
+import * as ingame_menu_state from "./gui/state/ingame_menu.js"
 import * as ingame_state from "./gui/state/ingame.js"
 import { Button } from "./gui/Button.js"
 import { type NamespacedId } from "./util/interfaces.js"
@@ -141,23 +142,39 @@ function draw() {
 
 	if (menuState == MenuState.MENU || menuState == MenuState.WORLDSELECTION) game_menu_state.draw(g)
 	else if (menuState == MenuState.INGAME) ingame_state.draw(g)
+	else if (menuState == MenuState.INGAME_MENU) {
+		// ingame_state.draw(g)
+		ingame_menu_state.draw(g)
+	}
 	else alert("unknown menu state")
 }
+
+function saveGame() {
+	if(!(menuState == MenuState.INGAME || menuState == MenuState.INGAME_MENU)) return
+	const currentWorlds = JSON.parse(localStorage.getItem("worlds") || "[]");
+	let currentWorldIndex = currentWorlds.findIndex((world: { name: string; data: any; }) => world.name == currentWorldName);
+	currentWorlds[currentWorldIndex] = {
+		...currentWorlds[currentWorldIndex],
+		...ingame_state.world.save()
+	}
+	localStorage.setItem("worlds", JSON.stringify(currentWorlds))
+	console.log("Game saved");
+}
+
+window.addEventListener("beforeunload", () => {
+	saveGame()
+});
 
 input.on("keydown", (key: string) => {
 	if (key == "F11") {
 		if (document.fullscreenElement) document.exitFullscreen()
 		else game.requestFullscreen()
 		return
-	} else if(key == "KeyS" && menuState == MenuState.INGAME) {
-		const currentWorlds = JSON.parse(localStorage.getItem("worlds") || "[]");
-		let currentWorldIndex = currentWorlds.findIndex((world: { name: string; data: any; }) => world.name == currentWorldName);
-		currentWorlds[currentWorldIndex] = {
-			...currentWorlds[currentWorldIndex],
-			...ingame_state.world.save()
+	} else if(key == "Escape" && (menuState == MenuState.INGAME || menuState == MenuState.INGAME_MENU)) {
+		menuState = menuState == MenuState.INGAME ? MenuState.INGAME_MENU : MenuState.INGAME
+		if(menuState == MenuState.INGAME_MENU) {
+			saveGame()
 		}
-		localStorage.setItem("worlds", JSON.stringify(currentWorlds))
-		alert("Saved world!")
 	}
 
 	/*if (menuState == MenuState.MENU) game_menu_state.onKey(key)
@@ -172,6 +189,7 @@ input.on("keypress", (key: string) => {
 input.on("click", (button: number) => {
 	if (menuState == MenuState.MENU || menuState == MenuState.WORLDSELECTION) game_menu_state.onClick(button)
 	else if (menuState == MenuState.INGAME) ingame_state.onClick(button)
+	else if (menuState == MenuState.INGAME_MENU) ingame_menu_state.onClick(button)
 })
 
 input.on("mousemove", () => {
