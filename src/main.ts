@@ -175,6 +175,8 @@ input.on("keydown", (key: string) => {
 		if(menuState == MenuState.INGAME_MENU) {
 			saveGame()
 		}
+	} else if(key == "Escape" && menuState == MenuState.WORLDSELECTION) {
+		setMenuState(MenuState.MENU)
 	}
 
 	/*if (menuState == MenuState.MENU) game_menu_state.onKey(key)
