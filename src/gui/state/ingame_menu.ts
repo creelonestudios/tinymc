@@ -4,7 +4,8 @@ import { game, setMenuState } from "../../main.js";
 import TextRenderer from "../../util/TextRenderer.js";
 import { Button } from "../Button.js";
 
-const continueButton = new Button(0, 400, 800, 80, "Continue")
+const continueButton = new Button(0, 300, 800, 80, "Continue")
+const optionsButton = new Button(0, 400, 800, 80, "Options")
 const quitButton = new Button(0, 500, 800, 80, "Quit")
 
 continueButton.on("click", () => {
@@ -33,10 +34,12 @@ export function draw(g: Graphics) {
 		color: "white"
 	})
 	continueButton.draw(g)
+	optionsButton.draw(g)
 	quitButton.draw(g)
 }
 
 export function onClick(button: number) {
 	continueButton.click(button)
+	optionsButton.click(button)
 	quitButton.click(button)
 }
