@@ -18,22 +18,21 @@ const createWorldButton = new Button(0, 100, 800, 80, "Create World")
 
 singleplayerButton.on("click", () => {
 	worldButtons = []
-	const worlds = JSON.parse(localStorage.getItem("worlds") || "[]");
-	for (let i = 0; i < worlds.length; i++) {
-		const world = worlds[i]
-		const button = new Button(0, 200 + i * 100, 800, 80, world.name)
+	const worldSaves = JSON.parse(localStorage.getItem("worlds") || "[]");
+	for (let i = 0; i < worldSaves.length; i++) {
+		const worldSave = worldSaves[i]
+		const button = new Button(0, 200 + i * 100, 800, 80, worldSave.name)
 		button.on("click", () => {
-			console.log(JSON.stringify(world));
-			setCurrentWorldName(world.name)
-			const worldObj = World.load(world.stringBlocks, world.blockData, world.dims, world.entities)
-			if(!worldObj) {
+			setCurrentWorldName(worldSave.name)
+			const world = World.load(worldSave.stringBlocks, worldSave.blockData, worldSave.dims, worldSave.entities)
+			if(!world) {
 				alert("Failed to load world!")
 				return
 			}
 			ingame_state.init()
-			ingame_state.setWorld(worldObj)
+			ingame_state.setWorld(world)
 			setMenuState(MenuState.INGAME)
-			worldObj.spawn(ingame_state.player)
+			world.spawn(ingame_state.player)
 		})
 		worldButtons.push(button)
 	}
