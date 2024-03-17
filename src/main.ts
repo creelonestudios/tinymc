@@ -150,7 +150,7 @@ function draw() {
 }
 
 export function saveGame() {
-	if(!(menuState == MenuState.INGAME || menuState == MenuState.INGAME_MENU)) return
+	if (menuState != MenuState.INGAME && menuState != MenuState.INGAME_MENU) return
 	const currentWorlds = JSON.parse(localStorage.getItem("worlds") || "[]");
 	let currentWorldIndex = currentWorlds.findIndex((world: { name: string; data: any; }) => world.name == currentWorldName);
 	currentWorlds[currentWorldIndex] = {
