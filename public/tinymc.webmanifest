@@ -1,0 +1,45 @@
+{
+	"name": "Tiny MC",
+	"description": "2D blocky game inspired my Minecraft Mob Votes",
+	"start_url": ".",
+	"id": "tinymc",
+	"display": "standalone",
+	"display_override": ["standalone", "minimal-ui", "browser"],
+	"icons": [
+		{
+			"src": "icons/576.png",
+			"type": "image/png",
+			"sizes": "576x576"
+		}, {
+			"src": "icons/480.png",
+			"type": "image/png",
+			"sizes": "480x480"
+		}, {
+			"src": "icons/240.png",
+			"type": "image/png",
+			"sizes": "240x240"
+		}, {
+			"src": "icons/192.png",
+			"type": "image/png",
+			"sizes": "192x192"
+		}, {
+			"src": "icons/144.png",
+			"type": "image/png",
+			"sizes": "144x144"
+		}, {
+			"src": "icons/96.png",
+			"type": "image/png",
+			"sizes": "96x96"
+		}, {
+			"src": "icons/48.png",
+			"type": "image/png",
+			"sizes": "48x48"
+		}, {
+			"src": "icons/24.png",
+			"type": "image/png",
+			"sizes": "24x24"
+		}
+	],
+	"orientation": "landscape",
+	"theme-color": "#38601f"
+}
