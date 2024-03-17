@@ -1,6 +1,6 @@
 import type Graphics from "../../Graphics.js"
 import MenuState from "../../enums/MenuState.js"
-import { game, getTexture, menuState, saveNewWorld, setCurrentWorldName, setMenuState } from "../../main.js"
+import { game, getTexture, menuState, saveNewWorld, setMenuState } from "../../main.js"
 import TextRenderer from "../../util/TextRenderer.js"
 import { Button } from "../Button.js"
 import * as ingame_state from "../../gui/state/ingame.js"
@@ -8,12 +8,12 @@ import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 import World from "../../world/World.js"
 import Texture from "../../texture/Texture.js"
 
-let widgetsTex
+let widgetsTex: Texture
 let logoTex: Texture
 const singleplayerButton = new Button(0, 200, 800, 80, "Singleplayer")
 const optionsButton = new Button(0, 300, 800, 80, "Options")
 const quitButton = new Button(0, 400, 800, 80, "Quit")
-let worldButtons: Button[] = []
+let worldButtons: Button[]
 const createWorldButton = new Button(0, 100, 800, 80, "Create World")
 
 singleplayerButton.on("click", () => {
@@ -23,8 +23,7 @@ singleplayerButton.on("click", () => {
 		const worldSave = worldSaves[i]
 		const button = new Button(0, 200 + i * 100, 800, 80, worldSave.name)
 		button.on("click", () => {
-			setCurrentWorldName(worldSave.name)
-			const world = World.load(worldSave.stringBlocks, worldSave.blockData, worldSave.dims, worldSave.entities)
+			const world = World.load(worldSave.name, worldSave.stringBlocks, worldSave.blockData, worldSave.dims, worldSave.entities)
 			if(!world) {
 				alert("Failed to load world!")
 				return
@@ -52,15 +51,14 @@ quitButton.on("click", () => {
 
 createWorldButton.on("click", () => {
 	console.log("creating new world")
-	ingame_state.init()
-	setMenuState(MenuState.INGAME);
-	setCurrentWorldName(prompt("World name") || "New World")
-	saveNewWorld();
+	const world = ingame_state.createWorld(prompt("World name") || "New World")
+	saveNewWorld(world)
+	setMenuState(MenuState.INGAME)
 })
 
 export function loadTexture() {
 	widgetsTex = getTexture("tiny/textures/gui/widgets.png")
-	logoTex = getTexture("tiny/textures/gui/logo.png")
+	logoTex = getTexture("tiny/textures/gui/title/logo.png")
 }
 
 export function draw(g: Graphics) {

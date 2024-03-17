@@ -62,7 +62,7 @@ export default class Hotbar {
 		ctx.translate(-1, -1)
 		ctx.translate(player.selectedItemSlot * 20, 0)
 		ctx.scale(24, 24)
-		selector.draw(g)
+		selector.draw(g, 1, 1, true)
 		ctx.restore()
 
 		for (let i = 0; i < hotbar.size; i++) {

@@ -14,6 +14,7 @@ import * as ingame_state from "./gui/state/ingame.js"
 import { Button } from "./gui/Button.js"
 import { type NamespacedId } from "./util/interfaces.js"
 import Graphics from "./Graphics.js"
+import World from "./world/World.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -42,14 +43,9 @@ blockdefs.set("tiny:air", new BlockDef("tiny", "air", {}))
 export const input = new Input()
 export const debug = { showHitboxes: false, showOrigin: false, showDebugScreen: false, showAirLightLevel: false, showRange: false }
 export let menuState: MenuState = MenuState.MENU
-export let currentWorldName: string | null = null
 
 export function setMenuState(state: MenuState) {
 	menuState = state
-}
-
-export function setCurrentWorldName(name: string | null) {
-	currentWorldName = name
 }
 
 game_menu_state.loadTexture()
@@ -151,8 +147,9 @@ function draw() {
 
 export function saveGame() {
 	if (menuState != MenuState.INGAME && menuState != MenuState.INGAME_MENU) return
+	if (!ingame_state.world) return
 	const currentWorlds = JSON.parse(localStorage.getItem("worlds") || "[]");
-	let currentWorldIndex = currentWorlds.findIndex((world: { name: string; data: any; }) => world.name == currentWorldName);
+	let currentWorldIndex = currentWorlds.findIndex((worldSave: { name: string; data: any; }) => worldSave.name == ingame_state.world.name);
 	currentWorlds[currentWorldIndex] = {
 		...currentWorlds[currentWorldIndex],
 		...ingame_state.world.save()
@@ -161,11 +158,10 @@ export function saveGame() {
 	console.log("Game saved");
 }
 
-export function saveNewWorld() {
+export function saveNewWorld(world: World) {
 	const currentWorlds = JSON.parse(localStorage.getItem("worlds") || "[]");
 	currentWorlds.push({
-		...ingame_state.world.save(),
-		name: currentWorldName
+		...world.save()
 	})
 	localStorage.setItem("worlds", JSON.stringify(currentWorlds))
 }

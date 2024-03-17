@@ -26,12 +26,13 @@ export let world: World
 export let player: Player
 export let cam: Cam
 
-export function init() {
-	world = new World([-20, 20, -20, 20, -1, 1])
+export function createWorld(name: string): World {
+	world = new World(name, [-20, 20, -20, 20, -1, 1])
 	player = new Player("jens", "TinyJens", 0)
 	cam = new Cam(player)
 	WorldGenerator.flat(world)
 	world.spawn(player)
+	return world
 }
 
 export function loadWorld(newWorld: World, playerData: PlayerData) {
