@@ -7,7 +7,7 @@ import ContainerBlock from "../../block/ContainerBlock.js"
 import Dim2 from "../../dim/Dim2.js"
 import Entity, { EntityData } from "../../entity/Entity.js"
 import ItemEntity, { ItemEntityData, isItemEntityData } from "../../entity/ItemEntity.js"
-import Player from "../../entity/Player.js"
+import Player, { PlayerData } from "../../entity/Player.js"
 import MenuState from "../../enums/MenuState.js"
 import { blockdefs, cursors, debug, game, input, menuState } from "../../main.js"
 import Container from "../../util/Container.js"
@@ -34,8 +34,12 @@ export function init() {
 	world.spawn(player)
 }
 
-export function setWorld(newWorld: World) {
-	world = newWorld
+export function loadWorld(newWorld: World/*, playerData: PlayerData*/) {
+	//console.log(playerData)
+	world  = newWorld
+	player = new Player("jens", "TinyJens"/*, playerData.spawnTime, playerData*/, 0)
+	cam = new Cam(player)
+	world.spawn(player)
 }
 
 export function tick() {

@@ -29,8 +29,7 @@ singleplayerButton.on("click", () => {
 				alert("Failed to load world!")
 				return
 			}
-			ingame_state.init()
-			ingame_state.setWorld(world)
+			ingame_state.loadWorld(world)
 			setMenuState(MenuState.INGAME)
 			world.spawn(ingame_state.player)
 		})
