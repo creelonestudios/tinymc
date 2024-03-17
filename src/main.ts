@@ -149,7 +149,7 @@ function draw() {
 	else alert("unknown menu state")
 }
 
-function saveGame() {
+export function saveGame() {
 	if(!(menuState == MenuState.INGAME || menuState == MenuState.INGAME_MENU)) return
 	const currentWorlds = JSON.parse(localStorage.getItem("worlds") || "[]");
 	let currentWorldIndex = currentWorlds.findIndex((world: { name: string; data: any; }) => world.name == currentWorldName);
@@ -159,6 +159,15 @@ function saveGame() {
 	}
 	localStorage.setItem("worlds", JSON.stringify(currentWorlds))
 	console.log("Game saved");
+}
+
+export function saveNewWorld() {
+	const currentWorlds = JSON.parse(localStorage.getItem("worlds") || "[]");
+	currentWorlds.push({
+		...ingame_state.world.save(),
+		name: currentWorldName
+	})
+	localStorage.setItem("worlds", JSON.stringify(currentWorlds))
 }
 
 window.addEventListener("beforeunload", () => {

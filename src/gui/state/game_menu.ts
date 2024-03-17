@@ -1,6 +1,6 @@
 import type Graphics from "../../Graphics.js"
 import MenuState from "../../enums/MenuState.js"
-import { game, getTexture, menuState, setCurrentWorldName, setMenuState } from "../../main.js"
+import { game, getTexture, menuState, saveNewWorld, setCurrentWorldName, setMenuState } from "../../main.js"
 import TextRenderer from "../../util/TextRenderer.js"
 import { Button } from "../Button.js"
 import * as ingame_state from "../../gui/state/ingame.js"
@@ -54,14 +54,9 @@ quitButton.on("click", () => {
 createWorldButton.on("click", () => {
 	console.log("creating new world")
 	ingame_state.init()
-	// Save it right away
-	const currentWorlds = JSON.parse(localStorage.getItem("worlds") || "[]");
-	currentWorlds.push({
-		...ingame_state.world.save(),
-		name: prompt("World name") || "New World"
-	})
-	localStorage.setItem("worlds", JSON.stringify(currentWorlds))
 	setMenuState(MenuState.INGAME);
+	setCurrentWorldName(prompt("World name") || "New World")
+	saveNewWorld();
 })
 
 export function loadTexture() {
