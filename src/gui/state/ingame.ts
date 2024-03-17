@@ -34,10 +34,10 @@ export function init() {
 	world.spawn(player)
 }
 
-export function loadWorld(newWorld: World/*, playerData: PlayerData*/) {
+export function loadWorld(newWorld: World, playerData: PlayerData) {
 	//console.log(playerData)
 	world  = newWorld
-	player = new Player("jens", "TinyJens"/*, playerData.spawnTime, playerData*/, 0)
+	player = new Player("jens", "TinyJens", playerData.spawnTime, playerData)
 	cam = new Cam(player)
 	world.spawn(player)
 }
