@@ -23,7 +23,7 @@ export default class Player extends Entity {
 	readonly hotbar: Inventory
 	
 	constructor(skin: string, name: string, spawnTime: number, data: Partial<PlayerData> = {}) {
-		super(playerDef, spawnTime, { ...data, position: [0, 1, 0] })
+		super(playerDef, spawnTime, data)
 		this.name = name
 		this.hotbar = data.hotbar ? new Inventory(5, 5, data.hotbar) : new Inventory(5)
 		this.skin = skin

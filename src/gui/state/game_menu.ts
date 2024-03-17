@@ -45,7 +45,11 @@ optionsButton.on("click", () => {
 })
 
 quitButton.on("click", () => {
-	location.href = "about:blank";
+	try {
+		window.close()
+	} catch (e) {
+		location.href = "about:blank"
+	}
 })
 
 createWorldButton.on("click", () => {

@@ -285,7 +285,7 @@ export default class World {
 			if (entity instanceof Player) {
 				players.push(entity.getData())
 			} else {
-				entities.push(entity.getData())
+				entities.push(entity.getData(this))
 			}
 		})
 
