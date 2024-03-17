@@ -10,3 +10,31 @@ body {
 canvas#game {
 	display: flex;
 }
+
+@font-face {
+	font-family: "tinymc";
+	src: url(../assets/tiny/font/Minecraft.otf);
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "tinymc";
+	src: url(../assets/tiny/font/MinecraftBold.otf);
+	font-weight: bold;
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "tinymc";
+	src: url(../assets/tiny/font/MinecraftItalic.otf);
+	font-weight: normal;
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "tinymc";
+	src: url(../assets/tiny/font/MinecraftBoldItalic.otf);
+	font-weight: bold;
+	font-style: italic;
+}

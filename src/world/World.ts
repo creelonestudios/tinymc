@@ -2,11 +2,10 @@ import Graphics from "../Graphics.js"
 import Block, { BlockData } from "../block/Block.js"
 import Entity, { EntityData } from "../entity/Entity.js"
 import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
-import { getFirstBlock } from "../main.js"
 import Player, { type PlayerData } from "../entity/Player.js"
-import { createBlock, createEntity } from "../main.js"
 import { type NamespacedId } from "../util/interfaces.js"
 import { isNamespacedId } from "../util/typecheck.js"
+import { createBlock, createEntity, getFirstBlock } from "../gui/state/ingame.js"
 import Dim2 from "../dim/Dim2.js"
 
 export default class World {
@@ -21,7 +20,7 @@ export default class World {
 				dims[i] = Number(dims[i])
 			}
 		} else return // fill in default dimensions
-		let world = new World(dims)
+		let world = new World("", dims)
 		for (let b of data.blocks) {
 			world.setBlock(b.x, b.y, b.z, b)
 		}
@@ -29,7 +28,7 @@ export default class World {
 		return world
 	}
 
-	static load(stringBlocks: string, blockData: BlockData[], dims: number[], entities: EntityData[]) {
+	static load(name: string, stringBlocks: string, blockData: BlockData[], dims: number[], entities: EntityData[]) {
 		const semi = stringBlocks.indexOf(";")
 		if (!semi) return // invalid save
 
@@ -43,7 +42,7 @@ export default class World {
 		const blockDataMap: Map<`${number},${number},${number}`, BlockData> = new Map()
 		blockData.forEach(data => blockDataMap.set(`${data.x},${data.y},${data.z}`, data))
 
-		const world = new World(dims)
+		const world = new World(name, dims)
 		world.entities = new Set(entities.map(data => createEntity(data.id, data.spawnTime, data)))
 		
 		let i = 0
@@ -60,6 +59,8 @@ export default class World {
 		return world
 	}
 
+	readonly name: string
+
 	private blocks: Map<`${number},${number},${number}`, Block>
 	private entities: Set<Entity>
 	private tickCount: number
@@ -72,8 +73,9 @@ export default class World {
 
 	private updateQueue: ({ x: number, y: number, z: number })[]
 
-	constructor(dimensions: number[]) {
-		[this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ] = dimensions
+	constructor(name: string, dimensions: number[]) {
+		this.name = name
+		;[this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ] = dimensions
 		this.blocks = new Map()
 		this.entities = new Set()
 		this.tickCount = 0
@@ -286,7 +288,7 @@ export default class World {
 			if (entity instanceof Player) {
 				players.push(entity.getData())
 			} else {
-				entities.push(entity.getData())
+				entities.push(entity.getData(this))
 			}
 		})
 
@@ -297,7 +299,8 @@ export default class World {
 			blockData,
 			dims: [this.minX, this.maxX, this.minY, this.maxY, this.minZ, this.maxZ],
 			entities,
-			players
+			players,
+			name: this.name
 		}
 	}
 
