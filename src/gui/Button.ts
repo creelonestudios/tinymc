@@ -1,7 +1,8 @@
 import Graphics from "../Graphics.js"
 import Dim2 from "../dim/Dim2.js"
 import Dim3 from "../dim/Dim3.js"
-import { game, getTexture, input } from "../main.js"
+import { game, getSound, getTexture, input } from "../main.js"
+import Sound from "../sound/Sound.js"
 import Subtexture from "../texture/Subtexture.js"
 import Texture from "../texture/Texture.js"
 import BoundingBox from "../util/BoundingBox.js"
@@ -12,6 +13,7 @@ let widgetsTex: Texture
 let buttonTex: Subtexture
 let hoverButtonTex: Subtexture
 let clickButtonTex: Subtexture
+let clickSound: Sound
 
 export class Button extends EventEmitter {
 
@@ -22,11 +24,12 @@ export class Button extends EventEmitter {
 		this.boundingBox = new BoundingBox(new Dim3(x - w/2, y + h/2, 0), new Dim2(w, h))
 	}
 
-	static loadTexture() {
+	static loadAssets() {
 		widgetsTex = getTexture("tiny/textures/gui/widgets.png")
 		buttonTex = widgetsTex.getSubtexture(0, 66, 200, 20)
 		hoverButtonTex = widgetsTex.getSubtexture(0, 86, 200, 20)
 		clickButtonTex = widgetsTex.getSubtexture(0, 86, 200, 20)
+		clickSound = getSound("gui.click")
 	}
 
 	draw(g: Graphics) {
@@ -53,6 +56,9 @@ export class Button extends EventEmitter {
 	}
 
 	click(button: number) {
-		if (button == 0 && this.isHovered()) this.emit("click")
+		if (button == 0 && this.isHovered()) {
+			clickSound.play()
+			this.emit("click")
+		}
 	}
 }

@@ -55,7 +55,7 @@ export function setMenuState(state: MenuState) {
 }
 
 game_menu_state.loadTexture()
-Button.loadTexture()
+Button.loadAssets()
 Hotbar.loadTexture()
 Container.loadAssets()
 Entity.loadAssets()
