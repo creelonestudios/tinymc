@@ -29,7 +29,7 @@ export default class BlockDef extends Base {
 		this.sounds = {
 			break: getSound(`block.${this.sound_material}.break`),
 			place: getSound(`block.${this.sound_material}.place`)
-		}
+		} as const
 
 		if (data.type == "container" || data.type == "block") {
 			this.full = data.full

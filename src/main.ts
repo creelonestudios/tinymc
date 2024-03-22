@@ -17,6 +17,7 @@ import AudioFile from "./sound/AudioFile.js"
 import Sound from "./sound/Sound.js"
 import Graphics from "./Graphics.js"
 import World from "./world/World.js"
+import Entity from "./entity/Entity.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -57,6 +58,7 @@ game_menu_state.loadTexture()
 Button.loadTexture()
 Hotbar.loadTexture()
 Container.loadAssets()
+Entity.loadAssets()
 
 export const perf = {
 	tick: [] as number[],
