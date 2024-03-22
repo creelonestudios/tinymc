@@ -30,13 +30,13 @@ export const game = $<HTMLCanvasElement>("#game")
 const g = new Graphics(game, ingame_state.blockSize)
 
 // assets
-const textures: Map<String, Texture> = new Map()
+const textures: Map<string, Texture> = new Map()
 export const cursors = {
 	open_container: getTexture("tiny/textures/gui/cursors/open_container.png")
 } satisfies Record<string, Texture>
 export const soundList = await fetch("./assets/tiny/sounds.json").then(res => res.json())
-const audioFiles = new Map()
-const sounds = new Map()
+const audioFiles: Map<string, AudioFile> = new Map()
+const sounds: Map<string, Sound> = new Map()
 
 // defs
 export const blockdefs  = await loadDefs<BlockDef>("blocks.yson", BlockDef)

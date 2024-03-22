@@ -3,5 +3,66 @@
 		"sounds": [
 			"gui/click"
 		]
+	},
+	"block.grass.break": {
+		"sounds": [
+			"block/grass1"
+		]
+	},
+	"block.grass.place": {
+		"sounds": [
+			"block/grass1"
+		]
+	},
+	"block.gravel.break": {
+		"sounds": [
+			"block/gravel2"
+		]
+	},
+	"block.gravel.place": {
+		"sounds": [
+			"block/gravel2"
+		]
+	},
+	"block.stone.break": {
+		"sounds": [
+			"block/stone3"
+		]
+	},
+	"block.stone.place": {
+		"sounds": [
+			"block/stone3"
+		]
+	},
+	"block.wood.break": {
+		"sounds": [
+			"block/wood4"
+		]
+	},
+	"block.wood.place": {
+		"sounds": [
+			"block/wood4"
+		]
+	},
+	"block.water.break": {
+		"sounds": [
+			"block/break/water"
+		]
+	},
+	"block.water.place": {
+		"sounds": [
+			"block/place/water"
+		]
+	},
+	"entity.generic.splash": {
+		"sounds": [
+			"liquid/splash"
+		]
+	},
+	"entity.generic.swim": {
+		"sounds": [
+			"liquid/swim5",
+			"liquid/swim14"
+		]
 	}
 }
