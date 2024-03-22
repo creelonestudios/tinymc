@@ -13,8 +13,11 @@ import * as ingame_menu_state from "./gui/state/ingame_menu.js"
 import * as ingame_state from "./gui/state/ingame.js"
 import { Button } from "./gui/Button.js"
 import { type NamespacedId } from "./util/interfaces.js"
+import AudioFile from "./sound/AudioFile.js"
+import Sound from "./sound/Sound.js"
 import Graphics from "./Graphics.js"
 import World from "./world/World.js"
+import Entity from "./entity/Entity.js"
 
 console.log("Never Gonna Give You Up")
 
@@ -28,10 +31,13 @@ export const game = $<HTMLCanvasElement>("#game")
 const g = new Graphics(game, ingame_state.blockSize)
 
 // assets
-const textures: Map<String, Texture> = new Map()
+const textures: Map<string, Texture> = new Map()
 export const cursors = {
 	open_container: getTexture("tiny/textures/gui/cursors/open_container.png")
 } satisfies Record<string, Texture>
+export const soundList = await fetch("./assets/tiny/sounds.json").then(res => res.json())
+const audioFiles: Map<string, AudioFile> = new Map()
+const sounds: Map<string, Sound> = new Map()
 
 // defs
 export const blockdefs  = await loadDefs<BlockDef>("blocks.yson", BlockDef)
@@ -51,7 +57,8 @@ export function setMenuState(state: MenuState) {
 game_menu_state.loadTexture()
 Button.loadTexture()
 Hotbar.loadTexture()
-Container.loadTexture()
+Container.loadAssets()
+Entity.loadAssets()
 
 export const perf = {
 	tick: [] as number[],
@@ -123,6 +130,24 @@ export function getTexture(path: string) {
 	texture = new Texture(path)
 	textures.set(path, texture)
 	return texture
+}
+
+export function getAudioFile(path: string) {
+	let audio = audioFiles.get(path)
+	if (audio) {
+		if (audio.state != AudioFile.FAILED) return audio
+	}
+	audio = new AudioFile(path)
+	audioFiles.set(path, audio)
+	return audio
+}
+
+export function getSound(key: string) {
+	let sound = sounds.get(key)
+	if (sound) return sound
+	sound = new Sound(key)
+	sounds.set(key, sound)
+	return sound
 }
 
 function tick() {

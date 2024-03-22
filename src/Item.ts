@@ -3,6 +3,7 @@ import BlockDef from "./defs/BlockDef.js"
 import { itemdefs, blockdefs } from "./main.js"
 import Block from "./block/Block.js"
 import { type HasData, type BaseData, type Flatten, type NamespacedId } from "./util/interfaces.js"
+import { createBlock } from "./gui/state/ingame.js"
 
 export default class Item implements HasData {
 
@@ -47,7 +48,7 @@ export default class Item implements HasData {
 
 	getBlock() {
 		if (!(this.def instanceof BlockDef)) throw new Error("Item is not a Block!")
-		return new Block(this.def)
+		return createBlock(this.def.id)
 	}
 
 	getData(): ItemData {

@@ -281,7 +281,7 @@ export function onClick(button: number) {
 		case 0:
 			if (!reachable) break
 			if (z < frontZ && frontBlock?.full) break // inaccessible
-			world.clearBlock(x, y, z)
+			world.clearBlock(x, y, z, false)
 			break
 		case 1:
 			if (!frontBlock || frontBlock.id == "tiny:air") break
@@ -295,8 +295,7 @@ export function onClick(button: number) {
 
 			const currentBlock = world.getBlock(x, y, z)
 			if (currentBlock && !currentBlock.isSolid() && stack.item.isBlock()) {
-				if (blockdefs.get(stack.item.id)?.type == "container") world.setBlock(x, y, z, new ContainerBlock(stack.item.id))
-				else world.setBlock(x, y, z, new Block(stack.item.id))
+				world.setBlock(x, y, z, stack.item.getBlock(), {}, false)
 			} else {
 				openInventory()
 			}

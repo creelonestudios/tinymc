@@ -114,7 +114,7 @@ export default class World {
 		return Array.from(this.blocks.values())
 	}
 
-	setBlock(x: number, y: number, z: number, block: Block | NamespacedId, data?: Partial<BlockData>) {
+	setBlock(x: number, y: number, z: number, block: Block | NamespacedId, data?: Partial<BlockData>, silent = true) {
 		const pos = this.validBlockPosition(x, y, z)
 		if (!pos) return
 		[x, y, z] = pos
@@ -125,6 +125,7 @@ export default class World {
 
 		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) throw new Error(`Tried to set block outside the world: ${x},${y},${z}; ${block.id}`)
 		this.blocks.set(`${x},${y},${z}`, block)
+		if (!silent) block.playSound("place")
 
 		this.scheduleBlockUpdate(x, y, z)
 		this.scheduleBlockUpdate(x-1, y, z)
@@ -135,13 +136,14 @@ export default class World {
 		this.scheduleBlockUpdate(x, y, z+1)
 	}
 
-	clearBlock(x: number, y: number, z: number) {
+	clearBlock(x: number, y: number, z: number, silent = true) {
 		const pos = this.validBlockPosition(x, y, z)
 		if (!pos) return
 		[x, y, z] = pos
 
 		const oldBlock = this.getBlock(x, y, z)
-		if (oldBlock?.id == "tiny:air") return
+		if (!oldBlock || oldBlock.id == "tiny:air") return
+		if (!silent) oldBlock?.playSound("break")
 
 		const block = new Block("tiny:air")
 		this.blocks.set(`${x},${y},${z}`, block)

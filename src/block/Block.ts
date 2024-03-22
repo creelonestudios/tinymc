@@ -76,6 +76,11 @@ export default class Block implements HasData {
 		return this.def.mainLayerOnly()
 	}
 
+	playSound(sound: keyof BlockDef["sounds"]) {
+		//console.log("playSound", sound, this.def.sounds[sound])
+		this.def.sounds[sound]?.play()
+	}
+
 	getBoundingBox(x: number, y: number) {
 		x = Math.floor(x)
 		y = Math.floor(y)

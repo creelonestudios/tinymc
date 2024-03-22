@@ -1,10 +1,10 @@
 {
 	tiny: {
-		dirt: {},
-		stone: {},
-		water: { type: "fluid" },
-		grass_block: {},
-		chest: { type: "container" },
-		torch: { full: false, lightLevel: 15 }
+		dirt: { sound_material: "gravel" },
+		stone: { sound_material: "stone" },
+		water: { type: "fluid", sound_material: "water" },
+		grass_block: { sound_material: "grass" },
+		chest: { type: "container", sound_material: "wood" },
+		torch: { full: false, lightLevel: 15, sound_material: "wood" }
 	}
 }

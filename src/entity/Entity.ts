@@ -2,17 +2,30 @@ import BoundingBox from "../util/BoundingBox.js"
 import Dim2 from "../dim/Dim2.js"
 import Dim3 from "../dim/Dim3.js"
 import EntityDef from "../defs/EntityDef.js"
-import { entitydefs } from "../main.js"
+import { entitydefs, getSound } from "../main.js"
 import World from "../world/World.js"
 import Graphics from "../Graphics.js"
 import { type Flatten, type BaseData, type HasData, type NamespacedId } from "../util/interfaces.js"
 import AttributeList from "../AttributeList.js"
+import Sound from "../sound/Sound.js"
+
+let sounds: {
+	splash: Sound,
+	swim: Sound
+}
 
 export default class Entity implements HasData {
 
 	static readonly TERMINAL_VELOCITY = 3
 	static readonly TERMINAL_FLUID_VELOCITY = 0.15
 	static readonly GRAVITY = 0.045
+
+	static loadAssets() {
+		sounds = {
+			splash: getSound("entity.generic.splash"),
+			swim:   getSound("entity.generic.swim")
+		} as const
+	}
 
 	static applyGravity(motion: Dim3, inFluid: boolean) {
 		if (inFluid) {
@@ -36,6 +49,9 @@ export default class Entity implements HasData {
 	onGround: boolean
 	inFluid: boolean
 
+	airTime: number // ticks since last time ground or water was touched
+	swimTicks: number
+
 	constructor(def: EntityDef | NamespacedId, spawnTime: number, data: Partial<EntityData> = {}) {
 		if (def instanceof EntityDef) this.def = def
 		else {
@@ -55,6 +71,8 @@ export default class Entity implements HasData {
 		this.noGravity = typeof data.noGravity == "undefined" ? false : data.noGravity
 		this.onGround  = typeof data.onGround == "undefined" ? false : data.onGround
 		this.inFluid   = false
+		this.airTime   = 0
+		this.swimTicks = 0
 	}
 
 	get id() {
@@ -143,6 +161,22 @@ export default class Entity implements HasData {
 		if ((onGround || inFluid) && this.def.hasFriction) {
 			this.motion.x *= 0.75
 			if (Math.abs(this.motion.x) <= 0.5 ** 5) this.motion.x = 0
+		}
+
+		// sounds
+		if (!this.inFluid && inFluid && this.airTime >= 10) { // just entered fluid
+			sounds.splash.play()
+		}
+
+		if (inFluid) {
+			if (this.motion.sqMag() > 0 && this.swimTicks == 0) sounds.swim.play()
+			this.swimTicks = (this.swimTicks + 1) % 22
+		}
+
+		if (onGround || inFluid) { 
+			this.airTime = 0
+		} else {
+			this.airTime++
 		}
 
 		this.onGround = onGround
