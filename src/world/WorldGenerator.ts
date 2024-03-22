@@ -10,9 +10,9 @@ export default class WorldGenerator {
         for (let y = world.minY; y <= world.maxY && y <= 0; y++) {
             for (let x = world.minX; x <= world.maxX; x++) {
 				let blockId: NamespacedId
-                if (y <= -3) blockId = "tiny:stone"
-                else if(y < 0) blockId = "tiny:dirt"
-                else if(y == 0) blockId = "tiny:grass_block"
+                if (y < -3) blockId = "tiny:stone"
+                else if(y < -1) blockId = "tiny:dirt"
+                else if(y == -1) blockId = "tiny:grass_block"
 				else continue
 
 				for (let z = world.minZ; z <= 0; z++) {

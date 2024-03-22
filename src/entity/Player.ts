@@ -4,11 +4,12 @@ import Inventory, { InventoryData } from "../Inventory.js"
 import Item from "../Item.js"
 import { ItemEntityData } from "./ItemEntity.js"
 import ItemStack, { ItemStackData } from "../ItemStack.js"
-import { getMousePos, getTexture, world } from "../main.js"
+import { getTexture } from "../main.js"
 import PlayerDef from "../defs/PlayerDef.js"
 import Texture from "../texture/Texture.js"
 import World from "../world/World.js"
 import { type Flatten } from "../util/interfaces.js"
+import { world, getMousePos } from "../gui/state/ingame.js"
 import Dim2 from "../dim/Dim2.js"
 
 const playerDef = new PlayerDef()
@@ -22,7 +23,7 @@ export default class Player extends Entity {
 	readonly hotbar: Inventory
 	
 	constructor(skin: string, name: string, spawnTime: number, data: Partial<PlayerData> = {}) {
-		super(playerDef, spawnTime, { ...data, position: [0, 1, 0] })
+		super(playerDef, spawnTime, data)
 		this.name = name
 		this.hotbar = data.hotbar ? new Inventory(5, 5, data.hotbar) : new Inventory(5)
 		this.skin = skin

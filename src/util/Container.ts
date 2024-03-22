@@ -3,7 +3,8 @@ import Graphics from "../Graphics.js"
 import Inventory from "../Inventory.js"
 import ItemStack from "../ItemStack.js"
 import Dim2 from "../dim/Dim2.js"
-import { game, getTexture, input, player } from "../main.js"
+import { player } from "../gui/state/ingame.js"
+import { game, getTexture, input } from "../main.js"
 import Texture from "../texture/Texture.js"
 
 let slot: Texture
