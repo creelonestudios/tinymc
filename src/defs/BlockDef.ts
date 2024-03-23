@@ -1,6 +1,7 @@
-import { equalsAny, isIntInRange, isObject, isPosInt, validateProperty } from "../util/typecheck.js"
+import { equalsAny, isIntInRange, isObject, isPosInt, validateArray, validateProperty } from "../util/typecheck.js"
 import Base from "./Base.js"
 import { type Flatten } from "../util/interfaces.js"
+import LightColor from "../util/LightColor.js"
 import Sound from "../sound/Sound.js"
 import TinyError from "../TinyError.js"
 import { getSound } from "../main.js"
@@ -11,7 +12,7 @@ export default class BlockDef extends Base {
 	readonly maxItemStack: number
 	readonly full: boolean
 	readonly soundMaterial: string
-	readonly lightLevel: number
+	readonly light: LightColor | null
 	readonly inventorySlots: number | null
 	readonly inventoryColumns: number | null
 
@@ -46,8 +47,8 @@ export default class BlockDef extends Base {
 			this.inventoryColumns = data.inventoryColumns
 		} else this.inventorySlots = this.inventoryColumns = null
 
-		if (data.type == "block") this.lightLevel = data.lightLevel
-		 else this.lightLevel = 0
+		if (data.type == "block") this.light = new LightColor(...data.light)
+		else this.light = null
 	}
 
 	get assetsPath() {
@@ -77,7 +78,7 @@ type BlockDefData = Flatten<{
 	full: boolean
 } & ({
 	type: "block",
-	lightLevel: number
+	light: [number, number, number]
 } | {
 	type: "container",
 	inventorySlots: number
@@ -101,7 +102,7 @@ function validate(data: unknown): data is BlockDefData {
 	}
 
 	if (data.type == "block") {
-		validateProperty(data, "lightLevel", isIntInRange(0, 16), 0)
+		validateProperty(data, "light", validateArray(isIntInRange(0, 16)), [0, 0, 0])
 	}
 
 	if (data.type == "container") {

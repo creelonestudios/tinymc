@@ -5,6 +5,7 @@ import BoundingBox from "../util/BoundingBox.js"
 import Dim2 from "../dim/Dim2.js"
 import Dim3 from "../dim/Dim3.js"
 import Graphics from "../Graphics.js"
+import LightColor from "../util/LightColor.js"
 import World from "../world/World.js"
 
 export default class Block implements HasData {
@@ -18,7 +19,7 @@ export default class Block implements HasData {
 
 	protected readonly def: BlockDef
 
-	private readonly light: { sky: number, block: number }
+	private readonly light: { sky: number, block: LightColor }
 
 	constructor(def: BlockDef | NamespacedId) {
 		if (def instanceof BlockDef) this.def = def
@@ -31,7 +32,7 @@ export default class Block implements HasData {
 			}
 		}
 
-		this.light = { sky: 0, block: 0 }
+		this.light = { sky: 0, block: new LightColor(0, 0, 0) }
 	}
 
 	get id() {
@@ -59,11 +60,17 @@ export default class Block implements HasData {
 	}
 
 	get blockLight() {
-		return Math.max(this.light.block, this.def.lightLevel)
+		if (this.def.light) return this.light.block.max(this.def.light)
+
+		return this.light.block
 	}
 
 	get lightLevel() {
-		return Math.max(this.skyLight, this.blockLight)
+		return Math.max(this.skyLight, this.blockLight.level)
+	}
+
+	lightColor(world: World) {
+		return this.light.block.max(world.skyLight.scale(this.light.sky))
 	}
 
 	hasInventory() {
@@ -95,7 +102,8 @@ export default class Block implements HasData {
 		this.light.block = updateBlockLight(world, this, x, y, z, this.light.block)
 	}
 
-	draw(g: Graphics, x: number, y: number, z: number) {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	draw(g: Graphics, world: World, x: number, y: number, z: number) {
 		if (this.def.id == "tiny:air") {
 			if (debug.showDebugScreen && debug.showAirLightLevel) overlayLightLevel(g, x, y, this.lightLevel)
 
@@ -105,17 +113,21 @@ export default class Block implements HasData {
 		g.save()
 		g.translate(x, y)
 
-		let light = this.lightLevel / 15
+		/* let light = this.lightLevel / 15
 
 		const FLUID_TRANSLUCENCY = 0.35
 
 		if (this.type == "fluid") g.globalAlpha = 1 - (1 - FLUID_TRANSLUCENCY) * light
 		if (z < 0) light *= 0.75
 
+		*/
+
+		let light = this.lightColor(world)
+		if (z < 0) light = light.scale(12)
 
 		// console.log(light)
-		g.brightness(light)
-		this.texture?.draw(g)
+		// g.brightness(light)
+		this.texture?.draw(g, 1, 1, false, light)
 
 		g.restore()
 	}
@@ -180,9 +192,8 @@ function updateSkyLight(world: World, block: Block, x: number, y: number, z: num
 	return skyLight
 }
 
-function updateBlockLight(world: World, block: Block, x: number, y: number, z: number, blockLightBefore: number) {
-	const derivLight = []
-	let blockLight: number = blockLightBefore
+function updateBlockLight(world: World, block: Block, x: number, y: number, z: number, blockLightBefore: LightColor) {
+	const derivLight: LightColor[] = []
 
 	derivLight.push(deriveBlockLight(world, x-1, y, z))
 	derivLight.push(deriveBlockLight(world, x+1, y, z))
@@ -194,8 +205,9 @@ function updateBlockLight(world: World, block: Block, x: number, y: number, z: n
 		derivLight.push(deriveBlockLight(world, x, y, z-1))
 	}
 
-	blockLight = Math.floor(Math.max(...derivLight, 0))
-	if (blockLight != blockLightBefore) {
+	const blockLight = LightColor.max(derivLight)
+
+	if (!blockLight.equals(blockLightBefore)) {
 		world.scheduleBlockUpdate(x-1, y, z)
 		world.scheduleBlockUpdate(x+1, y, z)
 		world.scheduleBlockUpdate(x, y-1, z)
@@ -217,12 +229,12 @@ function deriveSkyLight(world: World, x: number, y: number, z: number) {
 	return other.skyLight - 1 // water
 }
 
-function deriveBlockLight(world: World, x: number, y: number, z: number) {
+function deriveBlockLight(world: World, x: number, y: number, z: number): LightColor {
 	const other = world.getBlock(x, y, z)
 
-	if (!other || (other.isSolid() && other.full)) return 0
+	if (!other || (other.isSolid() && other.full)) return new LightColor(0, 0, 0)
 
-	return other.blockLight - 1
+	return other.blockLight.decrement()
 }
 
 function overlayLightLevel(g: Graphics, x: number, y: number, level: number) {

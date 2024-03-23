@@ -1,3 +1,4 @@
+import LightColor from "./util/LightColor.js"
 import TextRenderer, { type TextRenderingOptions } from "./util/TextRenderer.js"
 
 export default class Graphics {
@@ -15,7 +16,7 @@ export default class Graphics {
 	})[]
 
 	constructor(readonly canvas: HTMLCanvasElement | OffscreenCanvas, private readonly blockSize: number) {
-		this.ctx = canvas.getContext("2d")!
+		this.ctx = canvas.getContext("2d", { alpha: false })!
 		this.filters = {}
 		this.filterSaves = []
 	}
@@ -87,8 +88,17 @@ export default class Graphics {
 		return TextRenderer.drawText(this.ctx, text, 0, 0, options)
 	}
 
-	drawImage(image: CanvasImageSource, w: number = 1, h: number = 1) {
+	drawImage(image: CanvasImageSource, w: number = 1, h: number = 1, light?: LightColor) {
+		this.ctx.save()
+
+		if (light) {
+			this.ctx.fillStyle = light.toString()
+			this.ctx.fillRect(0, 0, w * this.blockSize, -h * this.blockSize)
+			this.ctx.globalCompositeOperation = "multiply"
+		}
+
 		this.ctx.drawImage(image, 0, 0, w * this.blockSize, -h * this.blockSize)
+		this.ctx.restore()
 	}
 
 	drawPartialImage(image: CanvasImageSource, sx: number, sy: number, sWidth: number, sHeight: number, dWidth: number = 1, dHeight: number = 1) {

@@ -5,6 +5,9 @@
 		water: { type: "fluid", soundMaterial: "water" },
 		grass_block: { soundMaterial: "grass" },
 		chest: { type: "container", soundMaterial: "wood" },
-		torch: { full: false, lightLevel: 15, soundMaterial: "wood" }
+		torch: { full: false, light: [15, 13, 0], soundMaterial: "wood" },
+		ochre_froglight: { full: false, light: [13, 12, 8], soundMaterial: "wood" },
+		verdant_froglight: { full: false, light: [9, 12, 9], soundMaterial: "wood" },
+		pearlescent_froglight: { full: false, light: [15, 8, 11], soundMaterial: "wood" }
 	}
 }

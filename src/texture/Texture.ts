@@ -1,4 +1,5 @@
 import Graphics from "../Graphics.js"
+import LightColor from "../util/LightColor.js"
 import Subtexture from "./Subtexture.js"
 
 export default class Texture {
@@ -44,10 +45,10 @@ export default class Texture {
 		return this.#state == Texture.LOADED
 	}
 
-	draw(g: Graphics, w?: number, h?: number, global: boolean = false) {
+	draw(g: Graphics, w?: number, h?: number, global: boolean = false, light?: LightColor) {
 		if (!this.ready) return
 		if (global) g.globalDrawImage(this.image, w, h)
-		else g.drawImage(this.image, w, h)
+		else g.drawImage(this.image, w, h, light)
 	}
 
 	getSubtexture(x: number, y: number, w: number, h: number) {

@@ -4,6 +4,7 @@ import Player, { type PlayerData } from "../entity/Player.js"
 import { blockSize, cam, createBlock, createEntity, gameOffset, getFirstBlock } from "../gui/state/ingame.js"
 import Dim2 from "../dim/Dim2.js"
 import Graphics from "../Graphics.js"
+import LightColor from "../util/LightColor.js"
 import { type NamespacedId } from "../util/interfaces.js"
 import { game } from "../main.js"
 import { isNamespacedId } from "../util/typecheck.js"
@@ -77,6 +78,7 @@ export default class World {
 	private blocks: Map<`${number},${number},${number}`, Block>
 	private entities: Set<Entity>
 	private tickCount: number
+	private skyLightColor: LightColor
 	readonly minX: number
 	readonly maxX: number
 	readonly minY: number
@@ -92,6 +94,7 @@ export default class World {
 		this.blocks = new Map()
 		this.entities = new Set()
 		this.tickCount = 0
+		this.skyLightColor = new LightColor(0, 2, 3)
 
 		for (let x = this.minX; x <= this.maxX; x++) {
 			for (let y = this.minY; y <= this.maxY; y++) {
@@ -107,6 +110,10 @@ export default class World {
 
 	get tickTime() {
 		return this.tickCount
+	}
+
+	get skyLight() {
+		return this.skyLightColor
 	}
 
 	validBlockPosition(x: number, y: number, z: number) {
@@ -236,7 +243,7 @@ export default class World {
 				for (let x = Math.max(this.minX, left); x <= Math.min(this.maxX, right); x++) {
 					const frontBlock = getFirstBlock(this, x, y, undefined, block => block.full)
 
-					if (z >= frontBlock.z) this.getBlock(x, y, z)?.draw(g, x, y, z)
+					if (z >= frontBlock.z) this.getBlock(x, y, z)?.draw(g, this, x, y, z)
 				}
 			}
 		}

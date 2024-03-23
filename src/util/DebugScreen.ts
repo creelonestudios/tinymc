@@ -48,14 +48,14 @@ function gameInfo(g: Graphics, world: World, player: Player) {
 		lines.push(``)
 		lines.push(`looking at block: ${mouseBlock.x}, ${mouseBlock.y}, ${lookingAt.z}`)
 		lines.push(`${lookingAt.block.id}`)
-		lines.push(`light: ${lookingAt.block.lightLevel} (${lookingAt.block.skyLight} sky, ${lookingAt.block.blockLight} block)`)
+		lines.push(`light: ${lookingAt.block.lightColor(world).debug} (${lookingAt.block.skyLight} sky, ${lookingAt.block.blockLight.debug} block)`)
 	}
 
 	if (lookingAtFluid.block && lookingAtFluid.block.type == "fluid") {
 		lines.push(``)
 		lines.push(`looking at fluid: ${mouseBlock.x}, ${mouseBlock.y}, ${lookingAtFluid.z}`)
 		lines.push(`${lookingAtFluid.block.id}`)
-		lines.push(`light: ${lookingAtFluid.block.lightLevel} (${lookingAtFluid.block.skyLight} sky, ${lookingAtFluid.block.blockLight} block)`)
+		lines.push(`light: ${lookingAtFluid.block.lightColor(world).debug} (${lookingAtFluid.block.skyLight} sky, ${lookingAtFluid.block.blockLight.debug} block)`)
 	}
 
 	const offset = g.drawText(lines[0], { drawBg: true, padding: 3, font: { size: 20 }, shadow: false })
