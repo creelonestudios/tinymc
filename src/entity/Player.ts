@@ -1,16 +1,16 @@
-import Block from "../block/Block.js"
 import Entity, { EntityData } from "./Entity.js"
 import Inventory, { InventoryData } from "../Inventory.js"
+import ItemStack, { ItemStackData } from "../ItemStack.js"
+import { getMousePos, world } from "../gui/state/ingame.js"
+import Block from "../block/Block.js"
+import Dim2 from "../dim/Dim2.js"
+import { type Flatten } from "../util/interfaces.js"
 import Item from "../Item.js"
 import { ItemEntityData } from "./ItemEntity.js"
-import ItemStack, { ItemStackData } from "../ItemStack.js"
-import { getTexture } from "../main.js"
 import PlayerDef from "../defs/PlayerDef.js"
 import Texture from "../texture/Texture.js"
 import World from "../world/World.js"
-import { type Flatten } from "../util/interfaces.js"
-import { world, getMousePos } from "../gui/state/ingame.js"
-import Dim2 from "../dim/Dim2.js"
+import { getTexture } from "../main.js"
 
 const playerDef = new PlayerDef()
 
@@ -21,7 +21,7 @@ export default class Player extends Entity {
 	#texture: Texture
 	#selectedItemSlot: number
 	readonly hotbar: Inventory
-	
+
 	constructor(skin: string, name: string, spawnTime: number, data: Partial<PlayerData> = {}) {
 		super(playerDef, spawnTime, data)
 		this.name = name
@@ -41,9 +41,7 @@ export default class Player extends Entity {
 	}
 
 	set selectedItemSlot(x: number) {
-		if (x >= 0 && x < this.hotbar.size) {
-			this.#selectedItemSlot = Math.floor(x)
-		}
+		if (x >= 0 && x < this.hotbar.size) this.#selectedItemSlot = Math.floor(x)
 	}
 
 	get selectedItem() {
@@ -51,13 +49,16 @@ export default class Player extends Entity {
 	}
 
 	addItems(stack: ItemStack) {
-		let leftover = this.hotbar.addItems(stack)
+		const leftover = this.hotbar.addItems(stack)
+
 		if (leftover) world.spawn<ItemEntityData>("tiny:item", { item: new ItemStack(this.selectedItem.item.id), position: this.position.asArray() })
 	}
 
 	pickBlock(block: Block) {
-		let blockItem = new Item(block.id)
+		const blockItem = new Item(block.id)
+
 		if (this.selectedItem.item.id == block.id || block.id == "tiny:air") return
+
 		let index = this.hotbar.find(blockItem)
 		if (index >= 0) this.#selectedItemSlot = index
 		else { // TODO: creative mode only
@@ -65,10 +66,7 @@ export default class Player extends Entity {
 			if (index >= 0) {
 				this.#selectedItemSlot = index
 				this.hotbar.set(index, new ItemStack(blockItem))
-			}
-			else {
-				this.hotbar.set(this.#selectedItemSlot, new ItemStack(blockItem))
-			}
+			} else this.hotbar.set(this.#selectedItemSlot, new ItemStack(blockItem))
 		}
 	}
 
@@ -78,19 +76,20 @@ export default class Player extends Entity {
 		this.rotation = 0
 	}
 
-	tick(world: World) {
-		super.tick(world)
+	tick(w: World) {
+		super.tick(w)
 		const eyes = this.position.copy().add(new Dim2(0, this.eyeHeight))
+
 		this.rotation = getMousePos().sub(eyes).angle()
 	}
 
 	getData(): PlayerData {
 		return {
 			...super.getData(),
-			selectedItem: this.selectedItem.getData(),
+			selectedItem:     this.selectedItem.getData(),
 			selectedItemSlot: this.selectedItemSlot,
-			playerName: this.name,
-			hotbar: this.hotbar.getData()
+			playerName:       this.name,
+			hotbar:           this.hotbar.getData()
 		}
 	}
 

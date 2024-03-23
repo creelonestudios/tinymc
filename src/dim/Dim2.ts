@@ -6,7 +6,7 @@ export default class Dim2 implements Dim {
 	static polar(theta: number, scale: number = 1) {
 		return new Dim2(Math.cos(theta) * scale, Math.sin(theta) * scale)
 	}
-	
+
 	x: number
 	y: number
 
@@ -18,18 +18,21 @@ export default class Dim2 implements Dim {
 	add(dim: Dim2 | Dim3): Dim2 {
 		this.x += dim.x
 		this.y += dim.y
+
 		return this
 	}
 
 	sub(dim: Dim2 | Dim3): Dim2 {
 		this.x -= dim.x
 		this.y -= dim.y
+
 		return this
 	}
 
 	mult(dim: Dim2): Dim2 {
 		this.x = this.x * dim.x - this.y * dim.y
 		this.y = this.x * dim.y + this.x * dim.x
+
 		return this
 	}
 
@@ -41,19 +44,22 @@ export default class Dim2 implements Dim {
 			this.x = dim
 			this.y = y || 0
 		}
+
 		return this
 	}
 
 	scale(x: number): Dim2 {
 		this.x *= x
 		this.y *= x
+
 		return this
 	}
 
 	rotate(theta: number): Dim2 {
-		const {x, y} = this
 		const vec = Dim2.polar(theta)
+
 		this.mult(vec)
+
 		return this
 	}
 
@@ -75,7 +81,9 @@ export default class Dim2 implements Dim {
 
 	normalize(): Dim2 {
 		const mag = this.mag()
+
 		if (mag == 0) return this
+
 		return this.scale(1/mag)
 	}
 
@@ -86,6 +94,7 @@ export default class Dim2 implements Dim {
 	floor(): Dim2 {
 		this.x = Math.floor(this.x)
 		this.y = Math.floor(this.y)
+
 		return this
 	}
 

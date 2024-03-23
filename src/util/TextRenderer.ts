@@ -14,11 +14,12 @@ export default class TextRenderer {
 			strikethrough = false
 		} = options || {}
 		const { padding = drawBg ? 1 : 0 } = options || {}
-		font.family  = font.family  || "tinymc"
-		font.size    = font.size    || 16
-		font.weight  = font.weight  || "normal"
-		font.style   = font.style   || "normal"
-		font.variant = font.variant || ""
+
+		font.family  ||= "tinymc"
+		font.size    ||= 16
+		font.weight  ||= "normal"
+		font.style   ||= "normal"
+		font.variant ||= ""
 		if (text.trim() == "") return font.size + 2 * padding
 
 		ctx.save()
@@ -28,17 +29,19 @@ export default class TextRenderer {
 		if (drawBg) {
 			if (!["left", "right"].includes(ctx.textAlign)) ctx.textAlign = "left" // required or bg is off
 			if (!["top", "bottom"].includes(ctx.textAlign)) ctx.textBaseline = "top" // required or bg is off
+
 			ctx.fillStyle = "black"
 			ctx.globalAlpha = opacity * bgOpacity
 
-			let x = 0, y = 0
-			let width = textWidth + 2 * padding
-			let height = font.size + 2 * padding
-			if (ctx.textAlign == "right") {
-				x -= textWidth + 2 * padding
-			}
+			let bgX = 0
+			const bgY = 0
+			const width = textWidth + 2 * padding
+			const height = font.size + 2 * padding
 
-			ctx.fillRect(x, y, width, height)
+			if (ctx.textAlign == "right") bgX -= textWidth + 2 * padding
+
+
+			ctx.fillRect(bgX, bgY, width, height)
 		}
 
 		ctx.globalAlpha = opacity
@@ -83,7 +86,17 @@ export type TextRenderingOptions = {
 	strikethrough?: boolean
 }
 
-function drawDecoratedText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, unit: number, textWidth: number, underline: boolean, overline: boolean, strikethrough: boolean) {
+function drawDecoratedText(
+	ctx: CanvasRenderingContext2D,
+	text: string,
+	x: number,
+	y: number,
+	unit: number,
+	textWidth: number,
+	underline: boolean,
+	overline: boolean,
+	strikethrough: boolean
+) {
 	ctx.fillText(text, x, y)
 
 	if (underline) drawLine(ctx, x, y, textWidth, unit)
@@ -92,21 +105,15 @@ function drawDecoratedText(ctx: CanvasRenderingContext2D, text: string, x: numbe
 }
 
 function drawLine(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
-	if (ctx.textAlign == "right") {
-		x -= width
-	} else if (ctx.textAlign == "center") {
-		x -= width / 2
-	}
+	if (ctx.textAlign == "right") x -= width
+	 else if (ctx.textAlign == "center") x -= width / 2
 
-	if (ctx.textBaseline == "top") {
-		y += height * 9
-	} else if (ctx.textBaseline == "middle") {
-		y += height * 4
-	} else if (ctx.textBaseline == "alphabetic") {
-		y += height
-	} else if (ctx.textBaseline == "bottom" || ctx.textBaseline == "ideographic") {
-		y -= height
-	}
+
+	if (ctx.textBaseline == "top") y += height * 9
+	 else if (ctx.textBaseline == "middle") y += height * 4
+	 else if (ctx.textBaseline == "alphabetic") y += height
+	 else if (ctx.textBaseline == "bottom" || ctx.textBaseline == "ideographic") y -= height
+
 
 	ctx.fillRect(x, y, width, height)
 }

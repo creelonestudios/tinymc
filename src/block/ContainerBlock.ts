@@ -1,7 +1,7 @@
+import Block, { type BlockData } from "./Block.js"
+import { type Flatten, type HasInventory, type NamespacedId } from "../util/interfaces.js"
 import Inventory, { type InventoryData } from "../Inventory.js"
 import BlockDef from "../defs/BlockDef.js"
-import { type NamespacedId, type Flatten, type HasInventory } from "../util/interfaces.js"
-import Block, { type BlockData } from "./Block.js"
 
 export default class ContainerBlock extends Block implements HasInventory {
 

@@ -24,7 +24,7 @@ export default class Graphics {
 
 	save() { this.ctx.save() }
 	restore() { this.ctx.restore() }
-	
+
 	reset() {
 		this.ctx.reset()
 		this.ctx.imageSmoothingEnabled = false

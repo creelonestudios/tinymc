@@ -1,5 +1,5 @@
-import EntityDef from "./defs/EntityDef";
-import { type ArrayElement, type HasData } from "./util/interfaces";
+import { type ArrayElement, type HasData } from "./util/interfaces"
+import EntityDef from "./defs/EntityDef"
 
 const AttributeNames = [
 	"generic.movement_speed",
@@ -16,10 +16,13 @@ export type Attribute = {
 	base: number
 }
 
-export function isAttribute(data: any): data is Attribute {
+export function isAttribute(data: unknown): data is Attribute {
 	if (typeof data != "object" || data == null) return false
+
+	// @ts-expect-error ts is being stupid here (AttributeNames.includes() should accept any string)
 	if (!("name" in data) || typeof data.name != "string" || !AttributeNames.includes(data.name)) return false
 	if (!("base" in data) || typeof data.base != "number") return false
+
 	return true
 }
 
@@ -44,12 +47,14 @@ export default class AttributeList implements HasData {
 
 	set(name: AttributeName, base: number) {
 		let allowed = false
-		for (let attr of this.def.attributes) {
+		for (const attr of this.def.attributes) {
 			if (attr.name == name) {
 				allowed = true
+
 				break
 			}
 		}
+
 		if (!allowed) return // TODO: error
 
 		this.list.set(name, base)

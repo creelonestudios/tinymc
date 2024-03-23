@@ -1,8 +1,8 @@
+import BlockDef from "./defs/BlockDef.js"
 import Inventory from "./Inventory.js"
 import Item from "./Item.js"
-import ItemStack from "./ItemStack.js"
-import BlockDef from "./defs/BlockDef.js"
 import ItemDef from "./defs/ItemDef.js"
+import ItemStack from "./ItemStack.js"
 
 export default class CreativeInventory extends Inventory {
 
@@ -19,7 +19,9 @@ export default class CreativeInventory extends Inventory {
 
 	get(index: number) {
 		if (index >= this.defs.length) return new ItemStack("tiny:air")
+
 		const def = this.defs[index]
+
 		return new ItemStack(new Item(def), def.maxItemStack)
 	}
 

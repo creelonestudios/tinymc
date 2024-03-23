@@ -1,16 +1,18 @@
+import { type BaseData, type Flatten, type HasData, type NamespacedId } from "../util/interfaces.js"
+import { blockdefs, debug } from "../main.js"
 import BlockDef from "../defs/BlockDef.js"
 import BoundingBox from "../util/BoundingBox.js"
 import Dim2 from "../dim/Dim2.js"
 import Dim3 from "../dim/Dim3.js"
-import { blockdefs, debug } from "../main.js"
 import Graphics from "../Graphics.js"
-import { type HasData, type BaseData, type Flatten, type NamespacedId } from "../util/interfaces.js"
 import World from "../world/World.js"
 
 export default class Block implements HasData {
 
+	// eslint-disable-next-line
 	static fromYSON(data: any) {
 		if (!(data instanceof Object) || typeof data.id != "string") throw new Error("Could not parse Block:", data)
+
 		return new Block(data.id)
 	}
 
@@ -21,11 +23,11 @@ export default class Block implements HasData {
 	constructor(def: BlockDef | NamespacedId) {
 		if (def instanceof BlockDef) this.def = def
 		else {
-			let blockdef = blockdefs.get(def)
+			const blockdef = blockdefs.get(def)
+
 			if (blockdef) this.def = blockdef
 			else {
-				console.trace()
-				throw "Block definition not found: " + def
+				throw new Error(`Block definition not found: ${def}`)
 			}
 		}
 
@@ -77,13 +79,14 @@ export default class Block implements HasData {
 	}
 
 	playSound(sound: keyof BlockDef["sounds"]) {
-		//console.log("playSound", sound, this.def.sounds[sound])
+		// console.log("playSound", sound, this.def.sounds[sound])
 		this.def.sounds[sound]?.play()
 	}
 
 	getBoundingBox(x: number, y: number) {
 		x = Math.floor(x)
 		y = Math.floor(y)
+
 		return new BoundingBox(new Dim3(x, y), new Dim2(1, 1))
 	}
 
@@ -94,9 +97,8 @@ export default class Block implements HasData {
 
 	draw(g: Graphics, x: number, y: number, z: number) {
 		if (this.def.id == "tiny:air") {
-			if (debug.showDebugScreen && debug.showAirLightLevel) {
-				overlayLightLevel(g, x, y, this.lightLevel)
-			}
+			if (debug.showDebugScreen && debug.showAirLightLevel) overlayLightLevel(g, x, y, this.lightLevel)
+
 			return
 		}
 
@@ -106,9 +108,12 @@ export default class Block implements HasData {
 		let light = this.lightLevel / 15
 
 		const FLUID_TRANSLUCENCY = 0.35
+
 		if (this.type == "fluid") g.globalAlpha = 1 - (1 - FLUID_TRANSLUCENCY) * light
 		if (z < 0) light *= 0.75
-		//console.log(light)
+
+
+		// console.log(light)
 		g.brightness(light)
 		this.texture?.draw(g)
 
@@ -118,7 +123,9 @@ export default class Block implements HasData {
 	getData(x: number, y: number, z: number): BlockData {
 		return {
 			id: this.id,
-			x, y, z
+			x,
+			y,
+			z
 		}
 	}
 
@@ -137,18 +144,23 @@ function updateSkyLight(world: World, x: number, y: number, z: number, skyLightB
 	// from above
 	const leftBlock = world.getBlock(x-1, y, z)
 	const rightBlock = world.getBlock(x+1, y, z)
+
 	if (!leftBlock?.isSolid() || !leftBlock.full) derivLight.push(deriveSkyLight(world, x-1, y+1, z))
+
 	derivLight.push(deriveSkyLight(world, x, y+1, z))
 	if (!rightBlock?.isSolid() || !rightBlock.full) derivLight.push(deriveSkyLight(world, x+1, y+1, z))
+
+
 	// from right/left
 	derivLight.push(deriveSkyLight(world, x-1, y, z)/2)
 	derivLight.push(deriveSkyLight(world, x+1, y, z)/2)
-	
+
 	skyLight = Math.floor(Math.max(...derivLight, 0))
 	if (skyLight != skyLightBefore) {
 		// right/left
 		world.scheduleBlockUpdate(x-1, y,   z)
 		world.scheduleBlockUpdate(x+1, y,   z)
+
 		// below
 		world.scheduleBlockUpdate(x-1, y-1, z)
 		world.scheduleBlockUpdate(x,   y-1, z)
@@ -168,6 +180,7 @@ function updateBlockLight(world: World, x: number, y: number, z: number, blockLi
 		derivLight.push(deriveBlockLight(world, x, y-1, z))
 		derivLight.push(deriveBlockLight(world, x, y+1, z))
 	}
+
 	derivLight.push(deriveBlockLight(world, x, y, z-1))
 	derivLight.push(deriveBlockLight(world, x, y, z+1))
 
@@ -179,6 +192,7 @@ function updateBlockLight(world: World, x: number, y: number, z: number, blockLi
 			world.scheduleBlockUpdate(x, y-1, z)
 			world.scheduleBlockUpdate(x, y+1, z)
 		}
+
 		world.scheduleBlockUpdate(x, y, z-1)
 		world.scheduleBlockUpdate(x, y, z+1)
 	}
@@ -188,24 +202,20 @@ function updateBlockLight(world: World, x: number, y: number, z: number, blockLi
 
 function deriveSkyLight(world: World, x: number, y: number, z: number) {
 	const other = world.getBlock(x, y, z)
-	if (!other) {
-		return 15
-	} else if (other.id == "tiny:air" || !other.full) {
-		return other.skyLight
-	} else if (other.isSolid()) {
-		return 0 // Math.floor(other.skyLight * 0.5)
-	} else {
-		return other.skyLight - 1
-	}
+
+	if (!other) return 15
+	 else if (other.id == "tiny:air" || !other.full) return other.skyLight
+	 else if (other.isSolid()) return 0 // Math.floor(other.skyLight * 0.5)
+
+	return other.skyLight - 1
 }
 
 function deriveBlockLight(world: World, x: number, y: number, z: number) {
 	const other = world.getBlock(x, y, z)
-	if (!other || (other.isSolid() && other.full)) {
-		return 0
-	} else {
-		return other.blockLight - 1
-	}
+
+	if (!other || (other.isSolid() && other.full)) return 0
+
+	return other.blockLight - 1
 }
 
 function overlayLightLevel(g: Graphics, x: number, y: number, level: number) {

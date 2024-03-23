@@ -1,14 +1,15 @@
+import * as ingameState from "./ingame.js"
+import { game, getTexture, menuState, saveNewWorld, setMenuState } from "../../main.js"
+import { Button } from "../Button.js"
 import type Graphics from "../../Graphics.js"
 import MenuState from "../../enums/MenuState.js"
-import { game, getTexture, menuState, saveNewWorld, setMenuState } from "../../main.js"
 import TextRenderer from "../../util/TextRenderer.js"
-import { Button } from "../Button.js"
-import * as ingame_state from "../../gui/state/ingame.js"
-import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
-import World from "../../world/World.js"
 import Texture from "../../texture/Texture.js"
+import World from "../../world/World.js"
 
-let widgetsTex: Texture
+
+// import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
+
 let logoTex: Texture
 const singleplayerButton = new Button(0, 200, 800, 80, "Singleplayer")
 const optionsButton = new Button(0, 300, 800, 80, "Options")
@@ -18,27 +19,33 @@ const createWorldButton = new Button(0, 100, 800, 80, "Create World")
 
 singleplayerButton.on("click", () => {
 	worldButtons = []
-	const worldSaves = JSON.parse(localStorage.getItem("worlds") || "[]");
+	const worldSaves = JSON.parse(localStorage.getItem("worlds") || "[]")
+
 	for (let i = 0; i < worldSaves.length; i++) {
 		const worldSave = worldSaves[i]
 		const button = new Button(0, 200 + i * 100, 800, 80, worldSave.name)
+
 		button.on("click", () => {
 			const world = World.load(worldSave.name, worldSave.stringBlocks, worldSave.blockData, worldSave.dims, worldSave.entities)
-			if(!world) {
-				alert("Failed to load world!")
+
+			if (!world) {
+				console.warn("Failed to load world!", worldSave)
+
 				return
 			}
-			ingame_state.loadWorld(world, worldSave.players[0])
+
+			ingameState.loadWorld(world, worldSave.players[0])
 			setMenuState(MenuState.INGAME)
-			world.spawn(ingame_state.player)
+			world.spawn(ingameState.player)
 		})
 		worldButtons.push(button)
 	}
-	setMenuState(MenuState.WORLDSELECTION);
+
+	setMenuState(MenuState.WORLDSELECTION)
 })
 
 optionsButton.on("click", () => {
-	console.log("button 2 clicked")
+	console.debug("button 2 clicked")
 })
 
 quitButton.on("click", () => {
@@ -50,14 +57,14 @@ quitButton.on("click", () => {
 })
 
 createWorldButton.on("click", () => {
-	console.log("creating new world")
-	const world = ingame_state.createWorld(prompt("World name") || "New World")
+	// eslint-disable-next-line no-alert
+	const world = ingameState.createWorld(prompt("World name") || "New World")
+
 	saveNewWorld(world)
 	setMenuState(MenuState.INGAME)
 })
 
 export function loadTexture() {
-	widgetsTex = getTexture("tiny/textures/gui/widgets.png")
 	logoTex = getTexture("tiny/textures/gui/title/logo.png")
 }
 
@@ -70,7 +77,8 @@ export function draw(g: Graphics) {
 	// graphics.ctx.fillRect(0, 0, game.width, game.height)
 	// graphics.ctx.imageSmoothingEnabled = false
 
-	const ctx = g.ctx
+	const { ctx } = g
+
 	ctx.reset()
 	ctx.imageSmoothingEnabled = false
 
@@ -80,8 +88,8 @@ export function draw(g: Graphics) {
 
 	ctx.translate(game.width/2, 0)
 	drawLogo(g)
-	if(menuState == MenuState.MENU) drawMainMenu(g)
-	else if(menuState == MenuState.WORLDSELECTION) drawWorldSelection(g)
+	if (menuState == MenuState.MENU) drawMainMenu(g)
+	else if (menuState == MenuState.WORLDSELECTION) drawWorldSelection(g)
 }
 
 function drawLogo(g: Graphics) {
@@ -103,27 +111,25 @@ function drawMainMenu(g: Graphics) {
 
 function drawWorldSelection(g: Graphics) {
 	createWorldButton.draw(g)
-	if(worldButtons.length == 0) {
+	if (worldButtons.length == 0) {
 		TextRenderer.drawText(g.ctx, "No worlds found", 0, 400, {
-			font: { size: 40 },
+			font:  { size: 40 },
 			color: "white"
 		})
+
 		return
 	}
-	for (let button of worldButtons) {
-		button.draw(g)
-	}
+
+	for (const button of worldButtons) button.draw(g)
 }
 
 export function onClick(button: number) {
-	if(menuState == MenuState.MENU) {
+	if (menuState == MenuState.MENU) {
 		singleplayerButton.click(button)
 		optionsButton.click(button)
 		quitButton.click(button)
-	} else if(menuState == MenuState.WORLDSELECTION) {
+	} else if (menuState == MenuState.WORLDSELECTION) {
 		createWorldButton.click(button)
-		for (let btn of worldButtons) {
-			btn.click(button)
-		}
+		for (const btn of worldButtons) btn.click(button)
 	}
 }

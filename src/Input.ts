@@ -21,8 +21,10 @@ export default class Input extends EventEmitter {
 			}
 
 			const before = this.keys.has(e.code)
+
 			this.keys.add(e.code)
 			if (!before) this.emit("keydown", e.code)
+
 			this.emit("keypress", e.code)
 			e.preventDefault()
 		})
@@ -54,8 +56,8 @@ export default class Input extends EventEmitter {
 			e.preventDefault()
 		})
 
-		window.addEventListener("wheel", e => {
-			//e.preventDefault()
+		window.addEventListener("wheel", () => {
+			// e.preventDefault()
 		})
 	}
 

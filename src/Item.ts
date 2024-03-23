@@ -1,14 +1,15 @@
-import ItemDef from "./defs/ItemDef.js"
+import { type BaseData, type Flatten, type HasData, type NamespacedId } from "./util/interfaces.js"
+import { blockdefs, itemdefs } from "./main.js"
 import BlockDef from "./defs/BlockDef.js"
-import { itemdefs, blockdefs } from "./main.js"
-import Block from "./block/Block.js"
-import { type HasData, type BaseData, type Flatten, type NamespacedId } from "./util/interfaces.js"
+import ItemDef from "./defs/ItemDef.js"
 import { createBlock } from "./gui/state/ingame.js"
 
 export default class Item implements HasData {
 
+	// eslint-disable-next-line
 	static fromYSON(data: any) {
 		if (!(data instanceof Object) || typeof data.id != "string") throw new Error("Could not parse Block:", data)
+
 		return new Item(data.id)
 	}
 
@@ -17,11 +18,11 @@ export default class Item implements HasData {
 	constructor(def: ItemDef | BlockDef | NamespacedId) {
 		if (def instanceof ItemDef || def instanceof BlockDef) this.def = def
 		else {
-			let itemdef = itemdefs.get(def) || blockdefs.get(def)
+			const itemdef = itemdefs.get(def) || blockdefs.get(def)
+
 			if (itemdef) this.def = itemdef
 			else {
-				console.trace()
-				throw "Item definition not found: " + def
+				throw new Error(`Item definition not found: ${def}`)
 			}
 		}
 	}
@@ -48,13 +49,12 @@ export default class Item implements HasData {
 
 	getBlock() {
 		if (!(this.def instanceof BlockDef)) throw new Error("Item is not a Block!")
+
 		return createBlock(this.def.id)
 	}
 
 	getData(): ItemData {
-		return {
-			id: this.id
-		}
+		return { id: this.id }
 	}
 
 }

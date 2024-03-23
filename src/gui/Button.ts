@@ -1,18 +1,17 @@
-import Graphics from "../Graphics.js"
+import { game, getSound, getTexture, input } from "../main.js"
+import BoundingBox from "../util/BoundingBox.js"
 import Dim2 from "../dim/Dim2.js"
 import Dim3 from "../dim/Dim3.js"
-import { game, getSound, getTexture, input } from "../main.js"
+import EventEmitter from "../util/EventEmitter.js"
+import Graphics from "../Graphics.js"
 import Sound from "../sound/Sound.js"
 import Subtexture from "../texture/Subtexture.js"
-import Texture from "../texture/Texture.js"
-import BoundingBox from "../util/BoundingBox.js"
-import EventEmitter from "../util/EventEmitter.js"
 import TextRenderer from "../util/TextRenderer.js"
+import Texture from "../texture/Texture.js"
 
 let widgetsTex: Texture
 let buttonTex: Subtexture
 let hoverButtonTex: Subtexture
-let clickButtonTex: Subtexture
 let clickSound: Sound
 
 export class Button extends EventEmitter {
@@ -28,13 +27,12 @@ export class Button extends EventEmitter {
 		widgetsTex = getTexture("tiny/textures/gui/widgets.png")
 		buttonTex = widgetsTex.getSubtexture(0, 66, 200, 20)
 		hoverButtonTex = widgetsTex.getSubtexture(0, 86, 200, 20)
-		clickButtonTex = widgetsTex.getSubtexture(0, 86, 200, 20)
 		clickSound = getSound("gui.click")
 	}
 
 	draw(g: Graphics) {
 		const touching = this.isHovered()
-		const tex = touching ? (false ? clickButtonTex : hoverButtonTex) : buttonTex
+		const tex = touching ? hoverButtonTex : buttonTex
 
 		g.save()
 		g.ctx.translate(this.x - this.w/2, this.y + this.h/2)
@@ -42,16 +40,19 @@ export class Button extends EventEmitter {
 		g.ctx.textAlign = "center"
 		g.ctx.textBaseline = "middle"
 		TextRenderer.drawText(g.ctx, this.text, this.w/2, this.h/2, {
-			font: { size: 40 },
+			font:  { size: 40 },
 			color: "white"
 		})
-		//g.ctx.fillText(this.text, 400, 100)
+
+		// g.ctx.fillText(this.text, 400, 100)
 		g.restore()
 	}
 
 	isHovered() {
-		const mouse = input.mouse
+		const { mouse } = input
+
 		mouse.x -= game.width/2
+
 		return this.boundingBox.touch(mouse)
 	}
 
@@ -61,4 +62,5 @@ export class Button extends EventEmitter {
 			this.emit("click")
 		}
 	}
+
 }

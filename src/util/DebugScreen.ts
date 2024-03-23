@@ -1,13 +1,14 @@
+import { GAME_NAME, GAME_VERSION, GAME_VERSION_BRANCH, drawTarget, game, input, perf, tickTarget } from "../main.js"
+import { getFirstBlock, getFirstFluid, getMouseBlock } from "../gui/state/ingame.js"
 import Graphics from "../Graphics.js"
 import Player from "../entity/Player.js"
-import { getFirstBlock, getFirstFluid, getMouseBlock } from "../gui/state/ingame.js"
-import { GAME_NAME, GAME_VERSION, GAME_VERSION_BRANCH, drawTarget, game, input, perf, tickTarget } from "../main.js"
 import World from "../world/World.js"
 
 export default class DebugScreen {
 
 	static draw(g: Graphics, world: World, player: Player) {
-		const ctx = g.ctx
+		const { ctx } = g
+
 		ctx.save()
 		ctx.fillStyle = "lime"
 		ctx.textBaseline = "top"
@@ -19,10 +20,9 @@ export default class DebugScreen {
 }
 
 function gameInfo(g: Graphics, world: World, player: Player) {
-	const ctx = g.ctx
+	const { ctx } = g
 	const mouseBlock = getMouseBlock()
 	const lookingAt = getFirstBlock(world, mouseBlock.x, mouseBlock.y, undefined, block => block.type != "fluid")
-	lookingAt.block = lookingAt.block
 	const lookingAtFluid = getFirstFluid(world, mouseBlock.x, mouseBlock.y)
 
 	ctx.save()
@@ -41,7 +41,7 @@ function gameInfo(g: Graphics, world: World, player: Player) {
 
 	lines.push(``)
 	lines.push(`pos: ${Math.floor(player.position.x * 1000) / 1000}, ${Math.floor(player.position.y * 1000) / 1000}`)
-	lines.push(`motion: ${player.motion.x.toFixed(3)}, ${player.motion.y.toFixed(3) } (${player.motion.mag().toFixed(2)}/s)`)
+	lines.push(`motion: ${player.motion.x.toFixed(3)}, ${player.motion.y.toFixed(3)} (${player.motion.mag().toFixed(2)}/s)`)
 	lines.push(`rotation: ${player.rotationAngle.toFixed(3)} (${(player.rotationAngle * 180 / Math.PI).toFixed(1)}°)`)
 	lines.push(`mouse: ${mouseBlock.x}, ${mouseBlock.y}`)
 
@@ -60,6 +60,7 @@ function gameInfo(g: Graphics, world: World, player: Player) {
 	}
 
 	const offset = g.drawText(lines[0], { drawBg: true, padding: 3, font: { size: 20 }, shadow: false })
+
 	for (let i = 1; i < lines.length; i++) {
 		ctx.translate(0, offset)
 		g.drawText(lines[i], { drawBg: true, padding: 3, font: { size: 20 }, shadow: false })
@@ -72,7 +73,7 @@ function gameInfo(g: Graphics, world: World, player: Player) {
 // - performance.measureUserAgentSpecificMemory()
 // - performance.memory
 function envInfo(g: Graphics) { // some of this might break
-	const ctx = g.ctx
+	const { ctx } = g
 
 	ctx.save()
 	ctx.translate(game.width/2, -game.height/2) // uncenter (-> top right corner)
@@ -81,17 +82,19 @@ function envInfo(g: Graphics) { // some of this might break
 
 	const lines = []
 
-	// @ts-expect-error
-	const browser = navigator.userAgent.split(" ").at(-1).split("/") || {} // navigator.userAgentData?.brands.find(b => b.brand != "Not A(Brand") || 
-	// @ts-expect-error
+	// @ts-expect-error ik it's using non-standard functionality
+	const browser = navigator.userAgent.split(" ").at(-1).split("/") || {} // navigator.userAgentData?.brands.find(b => b.brand != "Not A(Brand") ||
+	// @ts-expect-error ik it's using non-standard functionality
 	const memTotal =  (navigator.deviceMemory*1000) || (performance.memory?.jsHeapSizeLimit/1_000_000) || 0
-	// @ts-expect-error
+
+	// @ts-expect-error ik it's using non-standard functionality
 	const memUsage = performance.memory?.usedJSHeapSize / 1_000_000
-	// @ts-expect-error
+
+	// @ts-expect-error ik it's using non-standard functionality
 	const memAllocated = performance.memory?.totalJSHeapSize / 1_000_000
 
-	lines.push(`${browser[0] || "Unknown"} ${browser[1]?.split(".")[0] || "??"}`) // browser.brand ||; browser.version || 
-	// @ts-expect-error
+	lines.push(`${browser[0] || "Unknown"} ${browser[1]?.split(".")[0] || "??"}`) // browser.brand ||; browser.version ||
+	// @ts-expect-error ik it's using non-standard functionality
 	lines.push(navigator.platform || navigator.userAgentData?.platform || navigator.oscpu || "Unknown")
 
 	if (memUsage) lines.push(`Mem: ${(memUsage / memTotal * 100).toFixed(1)}% ${memUsage.toFixed(1)}/${memTotal}MiB`)
@@ -101,6 +104,7 @@ function envInfo(g: Graphics) { // some of this might break
 	lines.push(`Display: ${game.width}x${game.height}`)
 
 	const offset = g.drawText(lines[0], { drawBg: true, padding: 3, font: { size: 20 }, shadow: false })
+
 	for (let i = 1; i < lines.length; i++) {
 		ctx.translate(0, offset)
 		g.drawText(lines[i], { drawBg: true, padding: 3, font: { size: 20 }, shadow: false })

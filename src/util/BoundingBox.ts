@@ -1,6 +1,6 @@
-import Graphics from "../Graphics.js"
 import Dim2 from "../dim/Dim2.js"
 import Dim3 from "../dim/Dim3.js"
+import Graphics from "../Graphics.js"
 
 export default class BoundingBox {
 
@@ -22,6 +22,8 @@ export default class BoundingBox {
 
 	touch(point: Dim2 | Dim3) {
 		const t = point.x >= this.pos.x && point.x <= this.corner.x && point.y >= this.pos.y && point.y <= this.corner.y
+
+
 		// if (t) console.log(this, point, point.x >= this.pos.x, point.x <= this.corner.x, point.y >= this.pos.y, point.y <= this.corner.y)
 		return t
 	}

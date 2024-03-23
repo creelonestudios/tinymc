@@ -1,9 +1,9 @@
-import Entity, { type EntityData } from "./Entity.js";
-import EntityDef from "../defs/EntityDef.js";
-import ItemStack, { type ItemStackData } from "../ItemStack.js";
-import World from "../world/World.js";
+import Entity, { type EntityData } from "./Entity.js"
+import ItemStack, { type ItemStackData } from "../ItemStack.js"
+import EntityDef from "../defs/EntityDef.js"
+import { type Flatten } from "../util/interfaces.js"
 import Player from "./Player.js"
-import { type Flatten } from "../util/interfaces.js";
+import World from "../world/World.js"
 
 export default class ItemEntity extends Entity {
 
@@ -23,22 +23,26 @@ export default class ItemEntity extends Entity {
 
 	tick(world: World) {
 		if (this.inFluid) this.motion.y = Entity.TERMINAL_FLUID_VELOCITY
+
 		super.tick(world)
 		if (this.motion.sqMag() > 0) this.rotation = this.motion.angle()
 		else if (isNaN(this.rotation)) this.rotation = 0
-    
+
 		const pickupDelay = Math.max(this.spawnTime + ItemEntity.PICKUP_TIME - world.tickTime, 0)
 		const boundingBox = this.getBoundingBox()
 
 		// player collision
 		if (pickupDelay <= 0) {
 			const players = world.getAllEntities<Player>("tiny:player")
-			for (let p of players) {
+
+			for (const p of players) {
 				if (boundingBox.intersect(p.getBoundingBox())) {
 					const leftover = p.hotbar.addItems(this.itemstack)
+
 					if (leftover) this.itemstack.amount = leftover.amount
 					else {
 						world.removeEntity(this)
+
 						return
 					}
 				}
@@ -46,17 +50,19 @@ export default class ItemEntity extends Entity {
 		}
 
 		// combine item entities
-		const items = world.getAllEntities<ItemEntity>(entity => {
-			return entity.id == "tiny:item" && (entity as ItemEntity).itemstack.match(this.itemstack)
-		})
-		for (let item of items) {
+		const items = world.getAllEntities<ItemEntity>(entity => entity.id == "tiny:item" && (entity as ItemEntity).itemstack.match(this.itemstack))
+
+		for (const item of items) {
 			if (item == this) continue
+
 			const stack = item.itemstack
+
 			if (boundingBox.intersect(item.getBoundingBox())) {
 				if (stack.amount + this.itemstack.amount < this.itemstack.item.maxItemStack) {
 					stack.amount += this.itemstack.amount
 					item.motion.add(this.motion)
 					world.removeEntity(this)
+
 					return
 				}
 			}
@@ -66,7 +72,7 @@ export default class ItemEntity extends Entity {
 	getData(world: World) {
 		return {
 			...super.getData(),
-			item: this.itemstack.getData(),
+			item:        this.itemstack.getData(),
 			pickupDelay: Math.max(this.spawnTime + ItemEntity.PICKUP_TIME - world.tickTime, 0)
 		}
 	}

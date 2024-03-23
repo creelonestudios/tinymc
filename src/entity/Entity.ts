@@ -1,13 +1,13 @@
+import { type BaseData, type Flatten, type HasData, type NamespacedId } from "../util/interfaces.js"
+import { entitydefs, getSound } from "../main.js"
+import AttributeList from "../AttributeList.js"
 import BoundingBox from "../util/BoundingBox.js"
 import Dim2 from "../dim/Dim2.js"
 import Dim3 from "../dim/Dim3.js"
 import EntityDef from "../defs/EntityDef.js"
-import { entitydefs, getSound } from "../main.js"
-import World from "../world/World.js"
 import Graphics from "../Graphics.js"
-import { type Flatten, type BaseData, type HasData, type NamespacedId } from "../util/interfaces.js"
-import AttributeList from "../AttributeList.js"
 import Sound from "../sound/Sound.js"
+import World from "../world/World.js"
 
 let sounds: {
 	splash: Sound,
@@ -55,13 +55,14 @@ export default class Entity implements HasData {
 	constructor(def: EntityDef | NamespacedId, spawnTime: number, data: Partial<EntityData> = {}) {
 		if (def instanceof EntityDef) this.def = def
 		else {
-			let entitydef = entitydefs.get(def)
+			const entitydef = entitydefs.get(def)
+
 			if (entitydef) this.def = entitydef
 			else {
-				console.trace()
-				throw "Entity definition not found: " + def
+				throw new Error(`Entity definition not found: ${def}`)
 			}
 		}
+
 		this.position = new Dim3(...(data.position || [0, 0, 0]))
 		this.rotation = data.rotation || 0
 		this.motion   = new Dim3(...(data.motion   || [0, 0, 0]))
@@ -106,12 +107,16 @@ export default class Entity implements HasData {
 	getBoundingBox() {
 		const size = this.size.copy().scale(this.attributes.get("generic.scale", 1)!)
 		const pos = this.position.copy()
+
 		pos.x -= size.x/2
+
 		return new BoundingBox(pos, size)
 	}
 
+	// eslint-disable-next-line complexity
 	tick(world: World) {
-		const {x: pX, y: pY, z: pZ} = this.position // p -> present
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { x: pX, y: pY, z: pZ } = this.position // p -> present
 		const box = this.getBoundingBox()
 		let onGround = false
 		let inFluid = false
@@ -120,17 +125,21 @@ export default class Entity implements HasData {
 		loop: for (let y = Math.floor(box.pos.y); y <= Math.ceil(box.corner.y); y++) {
 			for (let x = Math.floor(box.pos.x); x <= Math.ceil(box.corner.x); x++) {
 				const block = world.getBlock(x, y, pZ)
+
 				if (block && block.type == "fluid") {
 					if (box.intersect(block?.getBoundingBox(x, y))) {
 						inFluid = true
+
 						break loop
 					}
 				}
 			}
 		}
-		//console.log("inFluid:", inFluid)
+
+		// console.log("inFluid:", inFluid)
 
 		const motion = this.motion.copy()
+
 		Entity.applyGravity(motion, inFluid)
 		const fY = pY + motion.y // f -> future
 
@@ -139,11 +148,13 @@ export default class Entity implements HasData {
 			for (let x = Math.floor(box.pos.x); x <= Math.ceil(box.corner.x); x++) {
 				box.pos.y = y
 				const blockBelow = world.getBlock(x, y, pZ)
+
 				if (blockBelow && blockBelow.isSolid()) {
 					if (box.intersect(blockBelow?.getBoundingBox(x, y))) {
 						onGround = true
 						this.motion.y = 0
 						this.position.y = y + 1
+
 						break loop
 					}
 				}
@@ -153,9 +164,8 @@ export default class Entity implements HasData {
 		if (onGround && this.motion.y < 0) this.motion.y = 0
 
 		// apply gravity
-		if (!onGround && !this.noGravity) {
-			Entity.applyGravity(this.motion, inFluid)
-		}
+		if (!onGround && !this.noGravity) Entity.applyGravity(this.motion, inFluid)
+
 
 		// ground friction
 		if ((onGround || inFluid) && this.def.hasFriction) {
@@ -170,12 +180,12 @@ export default class Entity implements HasData {
 
 		if (inFluid) {
 			if (this.motion.sqMag() > 0 && this.swimTicks == 0) sounds.swim.play()
+
 			this.swimTicks = (this.swimTicks + 1) % 22
 		}
 
-		if (onGround || inFluid) { 
-			this.airTime = 0
-		} else {
+		if (onGround || inFluid) this.airTime = 0
+		 else {
 			this.airTime++
 		}
 
@@ -194,7 +204,8 @@ export default class Entity implements HasData {
 
 		g.save()
 		g.translate(box.pos.x, box.pos.y)
-		//g.translate(-box.size.x/2, 0) // to center (x)
+
+		// g.translate(-box.size.x/2, 0) // to center (x)
 
 		g.brightness(light / 15)
 		this.texture?.draw(g, box.size.x, box.size.y)
@@ -206,14 +217,15 @@ export default class Entity implements HasData {
 		world.removeEntity(this)
 	}
 
-	getData(world?: World): EntityData {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	getData(w?: World): EntityData {
 		return {
-			id: this.id,
-			motion: this.motion.asArray(),
-			position: this.position.asArray(), // TODO: "pos" alias for compatibility
-			rotation: this.rotation,
+			id:        this.id,
+			motion:    this.motion.asArray(),
+			position:  this.position.asArray(), // TODO: "pos" alias for compatibility
+			rotation:  this.rotation,
 			noGravity: this.noGravity,
-			onGround: this.onGround,
+			onGround:  this.onGround,
 			spawnTime: this.spawnTime
 		}
 	}

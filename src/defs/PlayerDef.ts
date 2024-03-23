@@ -4,22 +4,24 @@ export default class PlayerDef extends EntityDef {
 
 	constructor() {
 		super("tiny", "player", {
-			attributes: [{
-				name: "generic.movement_speed",
-				base: 1
-			}, {
-				name: "generic.jump_strength",
-				base: 0.35
-			}, {
-				name: "generic.scale",
-				base: 1
-			}, {
-				name: "player.block_interaction_range",
-				base: 4.5
-			}, {
-				name: "player.entity_interaction_range",
-				base: 5
-			}],
+			attributes: [
+				{
+					name: "generic.movement_speed",
+					base: 1
+				}, {
+					name: "generic.jump_strength",
+					base: 0.35
+				}, {
+					name: "generic.scale",
+					base: 1
+				}, {
+					name: "player.block_interaction_range",
+					base: 4.5
+				}, {
+					name: "player.entity_interaction_range",
+					base: 5
+				}
+			],
 			eyeHeight:  0.6
 		} satisfies Partial<EntityDefData>)
 	}

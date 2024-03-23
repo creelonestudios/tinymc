@@ -1,5 +1,7 @@
 import { Attribute, isAttribute } from "../AttributeList.js"
+import { isInRangeIncl, isObject, validateArray, validateProperty } from "../util/typecheck.js"
 import Base from "./Base.js"
+import TinyError from "../TinyError.js"
 
 export default class EntityDef extends Base {
 
@@ -7,9 +9,14 @@ export default class EntityDef extends Base {
 	readonly attributes: Attribute[]
 	readonly eyeHeight: number
 
-	constructor(namespace: string, idname: string, data: any) {
+	constructor(namespace: string, idname: string, data: unknown) {
 		super(namespace, idname)
-		if (!validate(data)) throw new Error(`Invalid entitydef for ${namespace}:${idname}: ${JSON.stringify(data)}`)
+		try {
+			if (!validate(data)) throw new Error(`Invalid entitydef for ${namespace}:${idname}: ${JSON.stringify(data)}`)
+		} catch (e) {
+			// @ts-expect-error e should be an Error
+			throw new TinyError(`Invalid entitydef for ${namespace}:${idname}`, e)
+		}
 
 		this.hasFriction = data.hasFriction
 		this.attributes = data.attributes
@@ -28,28 +35,12 @@ export type EntityDefData = {
 	eyeHeight: number
 }
 
-function validate(data: any): data is EntityDefData {
-	if (typeof data != "object" || data == null) return false
-	if ("hasFriction" in data) {
-		if (typeof data.hasFriction != "boolean") return false
-	} else {
-		data.hasFriction = false
-	}
+function validate(data: unknown): data is EntityDefData {
+	if (!isObject(data)) throw new Error(`expected an object but got${data}`)
 
-	if ("attributes" in data) {
-		if (!(data.attributes instanceof Array)) return false
-		for (let attr of data.attributes) {
-			if (!isAttribute(attr)) return false
-		}
-	} else {
-		data.attributes = []
-	}
-
-	if ("eyeHeight" in data) {
-		if (typeof data.eyeHeight != "number" || data.eyeHeight < 0 || data.eyeHeight > 1) return false
-	} else {
-		data.eyeHeight = 0.5
-	}
+	validateProperty(data, "hasFriction", "boolean", false)
+	validateProperty(data, "attributes", validateArray(isAttribute), [])
+	validateProperty(data, "eyeHeight", isInRangeIncl(0, 1), 0.5)
 
 	return true
 }

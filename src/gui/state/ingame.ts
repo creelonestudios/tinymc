@@ -1,18 +1,18 @@
-import Cam from "../../Cam.js"
-import CreativeInventory from "../../CreativeInventory.js"
-import type Graphics from "../../Graphics.js"
-import ItemStack from "../../ItemStack.js"
 import Block, { BlockData } from "../../block/Block.js"
-import ContainerBlock from "../../block/ContainerBlock.js"
-import Dim2 from "../../dim/Dim2.js"
 import Entity, { EntityData } from "../../entity/Entity.js"
 import ItemEntity, { ItemEntityData, isItemEntityData } from "../../entity/ItemEntity.js"
 import Player, { PlayerData } from "../../entity/Player.js"
-import MenuState from "../../enums/MenuState.js"
 import { blockdefs, cursors, debug, game, input, menuState } from "../../main.js"
+import Cam from "../../Cam.js"
 import Container from "../../util/Container.js"
+import ContainerBlock from "../../block/ContainerBlock.js"
+import CreativeInventory from "../../CreativeInventory.js"
 import DebugScreen from "../../util/DebugScreen.js"
+import Dim2 from "../../dim/Dim2.js"
+import type Graphics from "../../Graphics.js"
 import Hotbar from "../../util/Hotbar.js"
+import ItemStack from "../../ItemStack.js"
+import MenuState from "../../enums/MenuState.js"
 import { NamespacedId } from "../../util/interfaces.js"
 import World from "../../world/World.js"
 import WorldGenerator from "../../world/WorldGenerator.js"
@@ -32,11 +32,12 @@ export function createWorld(name: string): World {
 	cam = new Cam(player)
 	WorldGenerator.flat(world)
 	world.spawn(player)
+
 	return world
 }
 
 export function loadWorld(newWorld: World, playerData: PlayerData) {
-	//console.log(playerData)
+	// console.log(playerData)
 	world  = newWorld
 	player = new Player("jens", "TinyJens", playerData.spawnTime, playerData)
 	cam = new Cam(player)
@@ -65,9 +66,8 @@ export function draw(g: Graphics) {
 	world.draw(g)
 
 	// hitboxes
-	if (debug.showDebugScreen && debug.showHitboxes) {
-		world.drawBoundingBoxes(g)
-	}
+	if (debug.showDebugScreen && debug.showHitboxes) world.drawBoundingBoxes(g)
+
 
 	// origin / axis
 	if (debug.showDebugScreen && debug.showOrigin) {
@@ -84,7 +84,7 @@ export function draw(g: Graphics) {
 	const reachable = isBlockReachable(mouseBlock)
 
 	// block highlight
-	if(menuState == MenuState.INGAME) {
+	if (menuState == MenuState.INGAME) {
 		g.save()
 		g.translate(mouseBlock.x, mouseBlock.y)
 
@@ -99,6 +99,7 @@ export function draw(g: Graphics) {
 	// distance and player range (debug)
 	if (debug.showDebugScreen && debug.showRange) {
 		const range  = (player.attributes.get("player.block_interaction_range", 0)!) * blockSize
+
 		g.lineWidth = 2
 		g.strokeStyle = "white"
 		g.fillStyle = "white"
@@ -113,7 +114,7 @@ export function draw(g: Graphics) {
 
 		blockpos.scale(blockSize)
 		playerpos.scale(blockSize)
-		const {x, y} = playerpos
+		const { x, y } = playerpos
 
 		g.ctx.beginPath()
 		g.ctx.ellipse(x, -y, range, range, 0, 0, 2 * Math.PI)
@@ -130,26 +131,23 @@ export function draw(g: Graphics) {
 	g.restore()
 
 	// hotbar
-	{
-		Hotbar.drawHotbar(g)
-	}
+	Hotbar.drawHotbar(g)
 
 	// container
-	{
-		Container.drawContainer(g)
-	}
+	Container.drawContainer(g)
 
 	// cursor
-	if(menuState == MenuState.INGAME) {
-		const {x, y} = getMousePos()
+	if (menuState == MenuState.INGAME) {
+		const { x, y } = getMousePos()
 		const size = blockSize/2
+
 		g.save()
 		g.translate(gameOffset.x, gameOffset.y) // move game by offset
 		g.translate(-cam.x, -cam.y) // move game into view
 		g.translate(x, y)
 
 		const floatingStack = Container.floatingStack()
-		const {block: frontBlock, z: frontZ} = getFirstBlock(world, x, y)
+		const { block: frontBlock, z: frontZ } = getFirstBlock(world, x, y)
 		const z = input.keyPressed("ShiftLeft") ? -1 : 0
 		const targetBlock = world.getBlock(x, y, z)
 		const inaccessible = z < frontZ && frontBlock?.full
@@ -163,7 +161,7 @@ export function draw(g: Graphics) {
 			player.selectedItem.item.texture?.draw(g, size, size, true)
 		} else if (targetBlock?.type == "container") {
 			g.ctx.translate(-size/2, -size)
-			cursors.open_container.draw(g, size, size, true)
+			cursors.openContainer.draw(g, size, size, true)
 		} else {
 			g.strokeStyle = reachable ? "white" : "#707070"
 			g.lineWidth = 2
@@ -171,24 +169,20 @@ export function draw(g: Graphics) {
 			g.ctx.moveTo(0, -size/3)
 			g.ctx.lineTo(0,  size/3)
 			g.ctx.moveTo(-size/3, 0)
-			g.ctx.lineTo( size/3, 0)
+			g.ctx.lineTo(size/3, 0)
 			g.ctx.stroke()
 		}
-		
+
 		g.restore()
 	}
 
 	// debug screen
-	if (debug.showDebugScreen) {
-		DebugScreen.draw(g, world, player)
-	}
-
+	if (debug.showDebugScreen) DebugScreen.draw(g, world, player)
 }
 
 export function onKey(key: string) {
-	if (Container.showingInventory()) {
-		if (Container.onKey(key)) return
-	}
+	if (Container.showingInventory()) if (Container.onKey(key)) return
+
 
 	if (key == "Digit1") player.selectedItemSlot = 0
 	if (key == "Digit2") player.selectedItemSlot = 1
@@ -199,40 +193,38 @@ export function onKey(key: string) {
 	inv: if (key == "KeyE") { // open inventory under mouse
 		if (Container.showingInventory()) {
 			Container.setInventory()
+
 			break inv
 		}
+
 		openInventory()
 	}
 
 	if (key == "KeyC") { // temp creative inv
 		const items = Array.from(blockdefs.values())
+
 		items.pop()
 		const inv = new CreativeInventory(items)
+
 		Container.setInventory(inv)
 	}
 
-	if (key == "F3") {
-		debug.showDebugScreen = !debug.showDebugScreen
-	}
+	if (key == "F3") debug.showDebugScreen = !debug.showDebugScreen
+
 
 	if (input.keyPressed("F3") && debug.showDebugScreen) {
+		if (key == "KeyN") debug.showRange = !debug.showRange
 
-		if (key == "KeyN") {
-			debug.showRange = !debug.showRange
-		}
 
 		if (key == "KeyM") {
 			debug.showHitboxes = !debug.showHitboxes
 			debug.showOrigin = debug.showHitboxes
 		}
 
-		if (key == "KeyK") {
-			debug.showAirLightLevel = !debug.showAirLightLevel
-		}
-
+		if (key == "KeyK") debug.showAirLightLevel = !debug.showAirLightLevel
 	}
 
-	/*if (key == "KeyZ") {
+	/* if (key == "KeyZ") {
 		const worldSave = world.save()
 		console.log("entities:", worldSave.entities)
 		console.log("players:", worldSave.players)
@@ -243,75 +235,82 @@ export function onKey(key: string) {
 }
 
 export function whileKey(key: string) {
-	if (input.keyPressed("KeyQ")) {
+	if (key == "KeyQ") {
 		const stack = player.selectedItem
 		const index = player.selectedItemSlot
+
 		if (stack.item.id == "tiny:air") return
 
 		const entityData = {
 			position: player.eyes.asArray(),
-			motion: Dim2.polar(player.rotationAngle, 0.6).asArray()
+			motion:   Dim2.polar(player.rotationAngle, 0.6).asArray()
 		}
 		let dropStack = stack
 
-		if (!input.keyPressed("ControlLeft")) {
-			dropStack = new ItemStack(stack.item.id)
-		}
+		if (!input.keyPressed("ControlLeft")) dropStack = new ItemStack(stack.item.id)
 
-		if (input.keyPressed("ControlLeft") || stack.amount <= 1) {
-			player.hotbar.set(index, new ItemStack("tiny:air"))
-		} else stack.amount--
+
+		if (input.keyPressed("ControlLeft") || stack.amount <= 1) player.hotbar.set(index, new ItemStack("tiny:air"))
+		 else stack.amount--
 
 		world.spawn<ItemEntityData>("tiny:item", { ...entityData, item: dropStack })
 	}
 }
 
 export function onClick(button: number) {
-	if (Container.showingInventory()) {
-		if (Container.onClick(button)) return
-	}
+	if (Container.showingInventory()) if (Container.onClick(button)) return
+
 
 	const mouseBlock = getMouseBlock()
-	const {x, y} = mouseBlock
+	const { x, y } = mouseBlock
 	let z = input.keyPressed("ShiftLeft") ? -1 : 0
-	const {block: frontBlock, z: frontZ} = getFirstBlock(world, x, y)
+	const { block: frontBlock, z: frontZ } = getFirstBlock(world, x, y)
 	const reachable = isBlockReachable(mouseBlock)
 
 	switch (button) {
-		case 0:
-			if (!reachable) break
-			if (z < frontZ && frontBlock?.full) break // inaccessible
-			world.clearBlock(x, y, z, false)
-			break
-		case 1:
-			if (!frontBlock || frontBlock.id == "tiny:air") break
-			player.pickBlock(frontBlock)
-			break
-		case 2:
-			if (!reachable) break
-			const stack = player.selectedItem
-			if (z != 0 && stack.item.getBlock().mainLayerOnly()) z = 0
-			if (z < frontZ && frontBlock?.full) break // inaccessible
+	case 0:
+		if (!reachable) break
+		if (z < frontZ && frontBlock?.full) break // inaccessible
 
-			const currentBlock = world.getBlock(x, y, z)
-			if (currentBlock && !currentBlock.isSolid() && stack.item.isBlock()) {
-				world.setBlock(x, y, z, stack.item.getBlock(), {}, false)
-			} else {
-				openInventory()
-			}
-			break
+		world.clearBlock(x, y, z, false)
+
+		break
+	case 1:
+		if (!frontBlock || frontBlock.id == "tiny:air") break
+
+		player.pickBlock(frontBlock)
+
+		break
+	case 2: {
+		if (!reachable) break
+
+		const stack = player.selectedItem
+
+		if (z != 0 && stack.item.getBlock().mainLayerOnly()) z = 0
+		if (z < frontZ && frontBlock?.full) break // inaccessible
+
+		const currentBlock = world.getBlock(x, y, z)
+
+		if (currentBlock && !currentBlock.isSolid() && stack.item.isBlock()) world.setBlock(x, y, z, stack.item.getBlock(), {}, false)
+			 else openInventory()
+
+		break
+	}
 	}
 }
 
 export function onMouseMove() {
 	const mouse = getMousePos()
 	const items = world.getAllEntities<ItemEntity>("tiny:item")
-	for (let item of items) {
+
+	for (const item of items) {
 		if (item.getBoundingBox().touch(mouse)) {
 			const reachable = item.position.distanceTo(player.position) <= player.attributes.get("player.entity_interaction_range")!
+
 			if (!reachable) continue
 
 			const leftover = player.hotbar.addItems(item.itemstack)
+
 			world.removeEntity(item)
 			if (leftover) world.spawn<ItemEntityData>("tiny:item", { item: leftover.getData(), position: player.position.asArray() })
 		}
@@ -324,56 +323,68 @@ export function getMouseBlock() {
 
 export function getMousePos() {
 	return new Dim2(
-		 (input.mouseX - game.width/2  + cam.x*blockSize) / blockSize - gameOffset.x,
+		(input.mouseX - game.width/2  + cam.x*blockSize) / blockSize - gameOffset.x,
 		-(input.mouseY - game.height/2 - cam.y*blockSize) / blockSize - gameOffset.y
 	)
 }
 
 function isBlockReachable(pos: Dim2) {
-	return pos.copy().add(new Dim2(0.5, 0.5)).distanceTo(player.position.copy().add(new Dim2(0, player.eyeHeight))) <= player.attributes.get("player.block_interaction_range", 0)!
+	return pos.copy().add(new Dim2(0.5, 0.5))
+		.distanceTo(player.position.copy()
+			.add(new Dim2(0, player.eyeHeight))) <= player.attributes.get("player.block_interaction_range", 0)!
 }
 
 function openInventory() {
-	const {x, y} = getMouseBlock()
+	const { x, y } = getMouseBlock()
 	const block = world.getBlock(x, y, 0)
+
 	if (!block?.hasInventory()) return
+
 	Container.setInventory((block as ContainerBlock).inventory)
 }
 
-export function getFirstBlock(world: World, x: number, y: number, startZ: number = world.maxZ, predicate?: (block: Block) => boolean) {
-	startZ = Math.min(startZ, world.maxZ)
-	for (let z = startZ; z >= world.minZ; z--) {
-		const block = world.getBlock(x, y, z)
+export function getFirstBlock(w: World, x: number, y: number, startZ: number = w.maxZ, predicate?: (block: Block) => boolean) {
+	startZ = Math.min(startZ, w.maxZ)
+	for (let z = startZ; z >= w.minZ; z--) {
+		const block = w.getBlock(x, y, z)
+
 		if (!block || !block.isSolid()) continue
 		if (predicate && !predicate(block)) continue
+
 		return { block, z }
 	}
-	return { block: undefined, z: world.minZ }
+
+	return { block: undefined, z: w.minZ }
 }
 
-export function getFirstFluid(world: World, x: number, y: number, startZ: number = world.maxZ) {
-	startZ = Math.min(startZ, world.maxZ)
-	for (let z = startZ; z >= world.minZ; z--) {
-		const block = world.getBlock(x, y, z)
+export function getFirstFluid(w: World, x: number, y: number, startZ: number = w.maxZ) {
+	startZ = Math.min(startZ, w.maxZ)
+	for (let z = startZ; z >= w.minZ; z--) {
+		const block = w.getBlock(x, y, z)
+
 		if (!block || block.id == "tiny:air") continue
+
 		return { block, z }
 	}
-	return { block: undefined, z: world.minZ }
+
+	return { block: undefined, z: w.minZ }
 }
 
 export function createBlock<T extends BlockData = BlockData>(id: NamespacedId, data: Partial<T> = {}) {
 	const blockdef = blockdefs.get(id)
+
 	if (!blockdef) {
-		console.trace()
-		throw "Block definition not found: " + id
+		throw new Error(`Block definition not found: ${id}`)
 	}
 
 	if (blockdef.type == "container") return new ContainerBlock(blockdef, data)
-	else return new Block(blockdef)
+
+	return new Block(blockdef)
 }
 
 export function createEntity<T extends EntityData = EntityData>(id: NamespacedId, spawnTime: number, data: Partial<T> = {}) {
 	data.id = id
 	if (isItemEntityData(data, id)) return new ItemEntity(null, spawnTime, data)
-	else return new Entity(id, spawnTime, data)
+
+	return new Entity(id, spawnTime, data)
 }

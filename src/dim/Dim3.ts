@@ -2,7 +2,7 @@ import Dim from "./Dim.js"
 import Dim2 from "./Dim2.js"
 
 export default class Dim3 implements Dim {
-	
+
 	x: number
 	y: number
 	z: number
@@ -17,16 +17,19 @@ export default class Dim3 implements Dim {
 		this.x += dim.x
 		this.y += dim.y
 		if (dim instanceof Dim3) this.z += dim.z
+
 		return this
 	}
-	
+
 	sub(dim: Dim2 | Dim3): Dim3 {
 		this.x -= dim.x
 		this.y -= dim.y
 		if (dim instanceof Dim3) this.z -= dim.z
+
 		return this
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	mult(dim: Dim3): Dim3 {
 		return this
 	}
@@ -41,6 +44,7 @@ export default class Dim3 implements Dim {
 			this.y = y || 0
 			this.z = z || 0
 		}
+
 		return this
 	}
 
@@ -48,11 +52,13 @@ export default class Dim3 implements Dim {
 		this.x *= x
 		this.y *= x
 		this.z *= x
+
 		return this
 	}
 
 	dot(dim: Dim2 | Dim3): number {
 		if (dim instanceof Dim2) return this.x * dim.x + this.y * dim.y
+
 		return this.x * dim.x + this.y * dim.y + this.z * dim.z
 	}
 
@@ -70,7 +76,9 @@ export default class Dim3 implements Dim {
 
 	normalize(): Dim3 {
 		const mag = this.mag()
+
 		if (mag == 0) return this
+
 		return this.scale(1/mag)
 	}
 
@@ -82,6 +90,7 @@ export default class Dim3 implements Dim {
 		this.x = Math.floor(this.x)
 		this.y = Math.floor(this.y)
 		this.z = Math.floor(this.z)
+
 		return this
 	}
 

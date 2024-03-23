@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-shadow
 enum MenuState {
 
 	MENU,
@@ -9,4 +10,4 @@ enum MenuState {
 
 }
 
-export default MenuState;
+export default MenuState

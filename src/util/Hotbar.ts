@@ -1,8 +1,8 @@
+import { game, getTexture } from "../main.js"
 import Graphics from "../Graphics.js"
-import { player } from "../gui/state/ingame.js";
-import { game, getTexture } from "../main.js";
-import Subtexture from "../texture/Subtexture.js";
-import Texture from "../texture/Texture.js";
+import Subtexture from "../texture/Subtexture.js"
+import Texture from "../texture/Texture.js"
+import { player } from "../gui/state/ingame.js"
 
 let widgets: Texture
 let leftSlot: Subtexture
@@ -24,8 +24,8 @@ export default class Hotbar {
 	}
 
 	static drawHotbar(g: Graphics) {
-		const ctx = g.ctx
-		let hotbar = player.hotbar
+		const { ctx } = g
+		const { hotbar } = player
 
 		ctx.save()
 		ctx.translate(-204, game.height/2 - 100)
@@ -38,7 +38,7 @@ export default class Hotbar {
 		ctx.scale(21, 22)
 		leftSlot.draw(g, 1, 1, true)
 		ctx.restore()
-		
+
 		ctx.save()
 		ctx.translate(21, 0)
 		ctx.scale(20, 22)
@@ -46,6 +46,7 @@ export default class Hotbar {
 			middleSlot.draw(g, 1, 1, true)
 			ctx.translate(1, 0)
 		}
+
 		ctx.restore()
 
 		ctx.save()
@@ -66,12 +67,13 @@ export default class Hotbar {
 		ctx.restore()
 
 		for (let i = 0; i < hotbar.size; i++) {
-			let stack = hotbar.get(i)
+			const stack = hotbar.get(i)
+
 			if (stack.item.id == "tiny:air") continue
 			if (!stack.item.texture) continue
 
-			let cx = 22/2 * scale - itemSize/2 + i * 20 * scale
-			let cy = 22/2 * scale - itemSize/2
+			const cx = 22/2 * scale - itemSize/2 + i * 20 * scale
+			const cy = 22/2 * scale - itemSize/2
 
 			ctx.save()
 			ctx.translate(cx, cy)
@@ -87,7 +89,7 @@ export default class Hotbar {
 		ctx.scale(24, 24)
 		selector.draw(g, 1, 1, true)
 		ctx.restore()
-	
+
 		ctx.restore()
 	}
 

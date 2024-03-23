@@ -1,3 +1,5 @@
+import TinyError from "../TinyError.js"
+
 export default class AudioFile {
 
 	static LOADING = 0
@@ -12,12 +14,14 @@ export default class AudioFile {
 	constructor(path: string) {
 		this.path = path
 		const audio = new Audio(`./assets/tiny/sounds/${path}`)
+
 		audio.addEventListener("canplaythrough", () => {
 			this.#state = AudioFile.LOADED
 		})
 		audio.addEventListener("error", e => {
 			this.#state = AudioFile.FAILED
-			console.error(`Audio "${path}" failed to load:`, e)
+
+			throw new TinyError(`Audio "${path}" failed to load:`, e.error)
 		})
 
 		this.audio = audio
@@ -35,7 +39,9 @@ export default class AudioFile {
 
 	play() {
 		if (!this.ready()) return
+
 		const node = (this.audio.cloneNode(true) as HTMLAudioElement)
+
 		node.play()
 		this.nodes.add(node)
 		node.addEventListener("ended", () => this.nodes.delete(node))

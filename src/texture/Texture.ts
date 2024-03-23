@@ -1,5 +1,5 @@
 import Graphics from "../Graphics.js"
-import Subtexture from "./Subtexture.js";
+import Subtexture from "./Subtexture.js"
 
 export default class Texture {
 
@@ -14,14 +14,15 @@ export default class Texture {
 	constructor(path: string) {
 		this.path = path
 		const img = new Image()
+
 		img.addEventListener("load", () => {
 			this.#state = Texture.LOADED
 		})
 		img.addEventListener("error", e => {
 			this.#state = Texture.FAILED
-			console.error(`Texture "${path}" failed to load:`, e)
+			console.warn(`Texture "${path}" failed to load:`, e)
 		})
-		img.src = "./assets/" + path
+		img.src = `./assets/${path}`
 
 		this.image = img
 		this.#state = Texture.LOADING

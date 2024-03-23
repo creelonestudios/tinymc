@@ -1,5 +1,5 @@
-import Dim3 from "./dim/Dim3.js";
-import Entity from "./entity/Entity.js";
+import Dim3 from "./dim/Dim3.js"
+import Entity from "./entity/Entity.js"
 
 export default class Cam {
 
@@ -10,8 +10,10 @@ export default class Cam {
 		if (!entity) {
 			this.entity = null
 			this.pos = new Dim3(0, 0, 0)
+
 			return
 		}
+
 		this.entity = entity
 		this.pos = entity.position
 	}
