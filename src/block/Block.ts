@@ -104,8 +104,11 @@ export default class Block implements HasData {
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	draw(g: Graphics, world: World, x: number, y: number, z: number) {
-		if (this.def.id == "tiny:air") {
-			if (debug.showDebugScreen && debug.showAirLightLevel) overlayLightLevel(g, x, y, this.lightLevel)
+		let light = this.lightColor(world)
+		if (z < 0) light = light.scale(12)
+
+		if (this.def.id == "tiny:air" && z <= 0) {
+			if (debug.showDebugScreen && debug.showAirLightLevel) overlayLight(g, x, y, light)
 
 			return
 		}
@@ -237,11 +240,11 @@ function deriveBlockLight(world: World, x: number, y: number, z: number): LightC
 	return other.blockLight.decrement()
 }
 
-function overlayLightLevel(g: Graphics, x: number, y: number, level: number) {
+function overlayLight(g: Graphics, x: number, y: number, light: LightColor) {
 	g.save()
 	g.translate(x, y)
-	g.ctx.fillStyle = "black"
-	g.ctx.globalAlpha = 1 - level / 15
-	g.ctx.fillRect(0, 0, 80, -80)
+	g.fillStyle = light.toString()
+	g.globalAlpha = 0.4
+	g.fillRect()
 	g.restore()
 }

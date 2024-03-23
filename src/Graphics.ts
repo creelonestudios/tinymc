@@ -86,6 +86,10 @@ export default class Graphics {
 		return TextRenderer.drawText(this.ctx, text, 0, 0, options)
 	}
 
+	fillRect(w: number = 1, h: number = 1) {
+		this.ctx.fillRect(0, 0, w * this.blockSize, -h * this.blockSize)
+	}
+
 	drawImage(image: CanvasImageSource, w: number = 1, h: number = 1, light?: LightColor) {
 		this.ctx.save()
 
