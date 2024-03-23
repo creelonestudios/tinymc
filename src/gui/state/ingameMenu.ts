@@ -1,12 +1,12 @@
-import { game, setMenuState } from "../../main.js"
 import { Button } from "../Button.js"
 import Graphics from "../../Graphics.js"
 import MenuState from "../../enums/MenuState.js"
 import TextRenderer from "../../util/TextRenderer.js"
+import { setMenuState } from "../../main.js"
 
-const continueButton = new Button(0, 300, 800, 80, "Continue")
-const optionsButton = new Button(0, 400, 800, 80, "Options")
-const quitButton = new Button(0, 500, 800, 80, "Quit")
+const continueButton = new Button(0, -100, 800, 80, "Continue")
+const optionsButton = new Button(0, 0, 800, 80, "Options")
+const quitButton = new Button(0, 100, 800, 80, "Quit")
 
 continueButton.on("click", () => {
 	setMenuState(MenuState.INGAME)
@@ -17,21 +17,10 @@ quitButton.on("click", () => {
 })
 
 export function draw(g: Graphics) {
-	// Reset
 	const { ctx } = g
 
-	ctx.reset()
-	ctx.imageSmoothingEnabled = false
-
-	ctx.fillStyle = "#78A7FF"
-	ctx.fillRect(0, 0, game.width, game.height)
-
-	ctx.translate(game.width/2, 0)
-
-	//
-
 	ctx.textAlign = "center"
-	TextRenderer.drawText(ctx, "Saved game!", 0, 90, {
+	TextRenderer.drawText(ctx, "Saved game!", 0, -280, {
 		font:  { size: 50 },
 		color: "white"
 	})

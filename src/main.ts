@@ -186,7 +186,7 @@ function draw() {
 	if (menuState == MenuState.MENU || menuState == MenuState.WORLDSELECTION) gameMenuState.draw(g)
 	else if (menuState == MenuState.INGAME) ingameState.draw(g)
 	else if (menuState == MenuState.INGAME_MENU) {
-		// ingameState.draw(g)
+		ingameState.draw(g)
 		ingameMenuState.draw(g)
 	} else throw new Error("unknown menu state")
 }

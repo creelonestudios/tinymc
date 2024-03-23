@@ -20,7 +20,7 @@ export class Button extends EventEmitter {
 
 	constructor(readonly x: number, readonly y: number, readonly w: number, readonly h: number, readonly text: string) {
 		super()
-		this.boundingBox = new BoundingBox(new Dim3(x - w/2, y + h/2, 0), new Dim2(w, h))
+		this.boundingBox = new BoundingBox(new Dim3(x - w/2, y - h/2, 0), new Dim2(w, h))
 	}
 
 	static loadAssets() {
@@ -35,12 +35,12 @@ export class Button extends EventEmitter {
 		const tex = touching ? hoverButtonTex : buttonTex
 
 		g.save()
-		g.ctx.translate(this.x - this.w/2, this.y + this.h/2)
+		g.ctx.translate(this.x - this.w/2, this.y - this.h/2)
 		tex.draw(g, this.w, this.h, true)
 		g.ctx.textAlign = "center"
 		g.ctx.textBaseline = "middle"
 		TextRenderer.drawText(g.ctx, this.text, this.w/2, this.h/2, {
-			font:  { size: 40 },
+			font:  { size: this.h/2 },
 			color: "white"
 		})
 
@@ -52,6 +52,7 @@ export class Button extends EventEmitter {
 		const { mouse } = input
 
 		mouse.x -= game.width/2
+		mouse.y -= game.height/2
 
 		return this.boundingBox.touch(mouse)
 	}

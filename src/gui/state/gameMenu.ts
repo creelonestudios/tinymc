@@ -11,11 +11,11 @@ import World from "../../world/World.js"
 // import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 
 let logoTex: Texture
-const singleplayerButton = new Button(0, 200, 800, 80, "Singleplayer")
-const optionsButton = new Button(0, 300, 800, 80, "Options")
-const quitButton = new Button(0, 400, 800, 80, "Quit")
+const singleplayerButton = new Button(0, -100, 800, 80, "Singleplayer")
+const optionsButton = new Button(0, 0, 800, 80, "Options")
+const quitButton = new Button(0, 100, 800, 80, "Quit")
 let worldButtons: Button[]
-const createWorldButton = new Button(0, 100, 800, 80, "Create World")
+const createWorldButton = new Button(600, 400, 300, 60, "Create World")
 
 singleplayerButton.on("click", () => {
 	worldButtons = []
@@ -23,7 +23,7 @@ singleplayerButton.on("click", () => {
 
 	for (let i = 0; i < worldSaves.length; i++) {
 		const worldSave = worldSaves[i]
-		const button = new Button(0, 200 + i * 100, 800, 80, worldSave.name)
+		const button = new Button(0, -160 + i * 100, 800, 80, worldSave.name)
 
 		button.on("click", () => {
 			const world = World.load(worldSave.name, worldSave.stringBlocks, worldSave.blockData, worldSave.dims, worldSave.entities)
@@ -86,7 +86,15 @@ export function draw(g: Graphics) {
 	ctx.fillStyle = "#78A7FF"
 	ctx.fillRect(0, 0, game.width, game.height)
 
-	ctx.translate(game.width/2, 0)
+	ctx.translate(game.width/2, game.height/2)
+
+	// ctx.strokeStyle = "red"
+	// ctx.beginPath()
+	// ctx.moveTo(-game.width/2, 0)
+	// ctx.lineTo(game.width/2, 0)
+	// ctx.moveTo(0, -game.height/2)
+	// ctx.lineTo(0, game.height/2)
+	// ctx.stroke()
 	drawLogo(g)
 	if (menuState == MenuState.MENU) drawMainMenu(g)
 	else if (menuState == MenuState.WORLDSELECTION) drawWorldSelection(g)
@@ -98,9 +106,10 @@ function drawLogo(g: Graphics) {
 	// 	font: { size: 80 },
 	// 	color: "white"
 	// })
-	g.ctx.translate(-(424/2), 40)
-	logoTex.draw(g, 424, 120, true)
-	g.ctx.translate(424/2, -40)
+	g.ctx.save()
+	g.ctx.translate(-(logoTex.width), -300 -(logoTex.height))
+	logoTex.draw(g, logoTex.width*2, logoTex.height*2, true)
+	g.ctx.restore()
 }
 
 function drawMainMenu(g: Graphics) {
