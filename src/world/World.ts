@@ -78,7 +78,7 @@ export default class World {
 	private blocks: Map<`${number},${number},${number}`, Block>
 	private entities: Set<Entity>
 	private tickCount: number
-	private skyLightColor: LightColor
+	skyLightColor: LightColor
 	readonly minX: number
 	readonly maxX: number
 	readonly minY: number

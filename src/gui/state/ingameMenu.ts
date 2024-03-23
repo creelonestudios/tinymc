@@ -1,5 +1,7 @@
+import * as ingameState from "./ingame.js"
 import { Button } from "../Button.js"
 import Graphics from "../../Graphics.js"
+import LightColor from "../../util/LightColor.js"
 import MenuState from "../../enums/MenuState.js"
 import TextRenderer from "../../util/TextRenderer.js"
 import { setMenuState } from "../../main.js"
@@ -14,6 +16,13 @@ continueButton.on("click", () => {
 
 quitButton.on("click", () => {
 	setMenuState(MenuState.MENU)
+})
+
+let day = true
+
+optionsButton.on("click", () => { // temp
+	day = !day
+	ingameState.world.skyLightColor = day ? new LightColor(15, 15, 15) : new LightColor(4, 4, 5)
 })
 
 export function draw(g: Graphics) {
