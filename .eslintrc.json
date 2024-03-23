@@ -244,7 +244,7 @@
 		}],
 		"lines-between-class-members":  ["error", "always", {"exceptAfterSingleLine": true}],
 		"max-len":                      ["warn", {
-			"code": 160, "tabWidth": 2, "comments": 160, "ignoreUrls": true
+			"code": 180, "tabWidth": 2, "comments": 160, "ignoreUrls": true
 		}],
 		"max-statements-per-line":      ["error", {"max": 1}],
 		"multiline-ternary":            ["warn", "never"],

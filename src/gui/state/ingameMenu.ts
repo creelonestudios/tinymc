@@ -19,6 +19,8 @@ quitButton.on("click", () => {
 export function draw(g: Graphics) {
 	const { ctx } = g
 
+	ctx.translate(g.canvas.width/2, g.canvas.height/2) // center game
+
 	ctx.textAlign = "center"
 	TextRenderer.drawText(ctx, "Saved game!", 0, -280, {
 		font:  { size: 50 },

@@ -26,7 +26,6 @@ function gameInfo(g: Graphics, world: World, player: Player) {
 	const lookingAtFluid = getFirstFluid(world, mouseBlock.x, mouseBlock.y)
 
 	ctx.save()
-	ctx.translate(-game.width/2, -game.height/2) // uncenter
 	ctx.translate(2, 2)
 	ctx.textAlign = "left"
 
@@ -76,7 +75,7 @@ function envInfo(g: Graphics) { // some of this might break
 	const { ctx } = g
 
 	ctx.save()
-	ctx.translate(game.width/2, -game.height/2) // uncenter (-> top right corner)
+	ctx.translate(game.width, 0) // -> top right corner
 	ctx.translate(-2, 2)
 	ctx.textAlign = "right"
 

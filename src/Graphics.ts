@@ -2,10 +2,22 @@ import TextRenderer, { type TextRenderingOptions } from "./util/TextRenderer.js"
 
 export default class Graphics {
 
-	readonly ctx: CanvasRenderingContext2D
+	readonly ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 
-	constructor(private readonly canvas: HTMLCanvasElement, private readonly blockSize: number) {
+	private filters: {
+		brightness?: number,
+		blur?: number
+	}
+
+	private filterSaves: ({
+		brightness?: number,
+		blur?: number
+	})[]
+
+	constructor(readonly canvas: HTMLCanvasElement | OffscreenCanvas, private readonly blockSize: number) {
 		this.ctx = canvas.getContext("2d")!
+		this.filters = {}
+		this.filterSaves = []
 	}
 
 	get fillStyle()   { return this.ctx.fillStyle }
@@ -18,20 +30,48 @@ export default class Graphics {
 	set lineWidth(x)   { this.ctx.lineWidth = x }
 	set globalAlpha(x) { this.ctx.globalAlpha = x }
 
-	brightness(x: number)  {
-		this.ctx.filter = `brightness(${x})`
+	brightness(x?: number)  {
+		this.filters.brightness = x
+		this.applyFilters()
 	}
 
-	save() { this.ctx.save() }
-	restore() { this.ctx.restore() }
+	blur(x?: number)  {
+		this.filters.blur = x
+		this.applyFilters()
+	}
+
+	private applyFilters() {
+		const filter: string[] = []
+
+		if (this.filters.brightness != undefined) {
+			filter.push(`brightness(${this.filters.brightness})`)
+		}
+		if (this.filters.blur != undefined) {
+			filter.push(`blur(${this.filters.blur}px)`)
+		}
+
+		this.ctx.filter = filter.join(" ")
+	}
+
+	save() {
+		this.ctx.save()
+		this.filterSaves.push(structuredClone(this.filters))
+	}
+
+	restore() {
+		this.ctx.restore()
+		this.filters = this.filterSaves.pop() || {}
+		this.applyFilters()
+	}
 
 	reset() {
 		this.ctx.reset()
+		this.filters = {}
+		this.filterSaves = []
+		this.applyFilters()
 		this.ctx.imageSmoothingEnabled = false
 		this.ctx.fillStyle = "#78A7FF"
 		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
-
-		this.ctx.translate(this.canvas.width/2, this.canvas.height/2) // center game
 	}
 
 

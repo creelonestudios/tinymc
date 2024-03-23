@@ -9,7 +9,7 @@ import ContainerBlock from "../../block/ContainerBlock.js"
 import CreativeInventory from "../../CreativeInventory.js"
 import DebugScreen from "../../util/DebugScreen.js"
 import Dim2 from "../../dim/Dim2.js"
-import type Graphics from "../../Graphics.js"
+import Graphics from "../../Graphics.js"
 import Hotbar from "../../util/Hotbar.js"
 import ItemStack from "../../ItemStack.js"
 import MenuState from "../../enums/MenuState.js"
@@ -25,6 +25,13 @@ const gameOffset = new Dim2(0, -2)
 export let world: World
 export let player: Player
 export let cam: Cam
+
+// offscreen graphics
+let og: Graphics
+
+export function init() {
+	og = new Graphics(new OffscreenCanvas(game.width, game.height), blockSize)
+}
 
 export function createWorld(name: string): World {
 	world = new World(name, [-20, 20, -20, 20, -1, 1])
@@ -56,85 +63,18 @@ export function tick() {
 }
 
 export function draw(g: Graphics) {
+	if (menuState == MenuState.INGAME) drawGame()
+
 	g.reset()
 
-	g.save()
-	g.translate(gameOffset.x, gameOffset.y) // move game by offset
-	g.translate(-cam.x, -cam.y) // move game into view
-
-	// world
-	world.draw(g)
-
-	// hitboxes
-	if (debug.showDebugScreen && debug.showHitboxes) world.drawBoundingBoxes(g)
-
-
-	// origin / axis
-	if (debug.showDebugScreen && debug.showOrigin) {
-		g.ctx.strokeStyle = "lime"
-		g.ctx.beginPath()
-		g.ctx.moveTo(0, -100)
-		g.ctx.lineTo(0, 100)
-		g.ctx.moveTo(-100, 0)
-		g.ctx.lineTo(100, 0)
-		g.ctx.stroke()
-	}
-
-	const mouseBlock = getMouseBlock()
-	const reachable = isBlockReachable(mouseBlock)
-
-	// block highlight
-	if (menuState == MenuState.INGAME) {
+	if (menuState == MenuState.INGAME_MENU) {
 		g.save()
-		g.translate(mouseBlock.x, mouseBlock.y)
-
-		g.fillStyle = "transparent"
-		g.strokeStyle = reachable ? "white" : "#707070"
-		g.lineWidth = reachable ? 2 : 1
-		g.strokeRect(1, 1)
-
+		g.blur(4)
+		g.ctx.drawImage(og.canvas, 0, 0)
 		g.restore()
+	} else {
+		g.ctx.drawImage(og.canvas, 0, 0)
 	}
-
-	// distance and player range (debug)
-	if (debug.showDebugScreen && debug.showRange) {
-		const range  = (player.attributes.get("player.block_interaction_range", 0)!) * blockSize
-
-		g.lineWidth = 2
-		g.strokeStyle = "white"
-		g.fillStyle = "white"
-
-		const blockpos  = mouseBlock.add(new Dim2(0.5, 0.5))
-		const playerpos = player.position.copy().add(new Dim2(0, player.eyeHeight))
-
-		g.save()
-		g.translate(blockpos.x + 0.2, blockpos.y)
-		g.drawText(blockpos.distanceTo(playerpos).toFixed(2))
-		g.restore()
-
-		blockpos.scale(blockSize)
-		playerpos.scale(blockSize)
-		const { x, y } = playerpos
-
-		g.ctx.beginPath()
-		g.ctx.ellipse(x, -y, range, range, 0, 0, 2 * Math.PI)
-		g.ctx.stroke()
-
-		g.ctx.beginPath()
-		g.ctx.ellipse(blockpos.x,  -blockpos.y,  10, 10, 0, 0, 2 * Math.PI)
-		g.ctx.moveTo(blockpos.x,  -blockpos.y)
-		g.ctx.lineTo(playerpos.x, -playerpos.y)
-		g.ctx.ellipse(playerpos.x, -playerpos.y, 10, 10, 0, 0, 2 * Math.PI)
-		g.ctx.stroke()
-	}
-
-	g.restore()
-
-	// hotbar
-	Hotbar.drawHotbar(g)
-
-	// container
-	Container.drawContainer(g)
 
 	// cursor
 	if (menuState == MenuState.INGAME) {
@@ -142,6 +82,7 @@ export function draw(g: Graphics) {
 		const size = blockSize/2
 
 		g.save()
+		g.ctx.translate(game.width/2, game.height/2) // center game
 		g.translate(gameOffset.x, gameOffset.y) // move game by offset
 		g.translate(-cam.x, -cam.y) // move game into view
 		g.translate(x, y)
@@ -151,6 +92,9 @@ export function draw(g: Graphics) {
 		const z = input.keyPressed("ShiftLeft") ? -1 : 0
 		const targetBlock = world.getBlock(x, y, z)
 		const inaccessible = z < frontZ && frontBlock?.full
+
+		const mouseBlock = getMouseBlock()
+		const reachable = isBlockReachable(mouseBlock)
 
 		if (!reachable) {
 			drawCrosshair(g, size, "#707070")
@@ -173,6 +117,91 @@ export function draw(g: Graphics) {
 
 	// debug screen
 	if (debug.showDebugScreen) DebugScreen.draw(g, world, player)
+}
+
+function drawGame() {
+	og.canvas.width  = game.width
+	og.canvas.height = game.height
+	og.reset()
+	og.ctx.translate(og.canvas.width/2, og.canvas.height/2) // center game
+
+	og.save()
+	og.translate(gameOffset.x, gameOffset.y) // move game by offset
+	og.translate(-cam.x, -cam.y) // move game into view
+
+	// world
+	world.draw(og)
+
+	// hitboxes
+	if (debug.showDebugScreen && debug.showHitboxes) world.drawBoundingBoxes(og)
+
+
+	// origin / axis
+	if (debug.showDebugScreen && debug.showOrigin) {
+		og.ctx.strokeStyle = "lime"
+		og.ctx.beginPath()
+		og.ctx.moveTo(0, -100)
+		og.ctx.lineTo(0, 100)
+		og.ctx.moveTo(-100, 0)
+		og.ctx.lineTo(100, 0)
+		og.ctx.stroke()
+	}
+
+	const mouseBlock = getMouseBlock()
+	const reachable = isBlockReachable(mouseBlock)
+
+	// block highlight
+	if (menuState == MenuState.INGAME) {
+		og.save()
+		og.translate(mouseBlock.x, mouseBlock.y)
+
+		og.fillStyle = "transparent"
+		og.strokeStyle = reachable ? "white" : "#707070"
+		og.lineWidth = reachable ? 2 : 1
+		og.strokeRect(1, 1)
+
+		og.restore()
+	}
+
+	// distance and player range (debug)
+	if (debug.showDebugScreen && debug.showRange) {
+		const range  = (player.attributes.get("player.block_interaction_range", 0)!) * blockSize
+
+		og.lineWidth = 2
+		og.strokeStyle = "white"
+		og.fillStyle = "white"
+
+		const blockpos  = mouseBlock.add(new Dim2(0.5, 0.5))
+		const playerpos = player.position.copy().add(new Dim2(0, player.eyeHeight))
+
+		og.save()
+		og.translate(blockpos.x + 0.2, blockpos.y)
+		og.drawText(blockpos.distanceTo(playerpos).toFixed(2))
+		og.restore()
+
+		blockpos.scale(blockSize)
+		playerpos.scale(blockSize)
+		const { x, y } = playerpos
+
+		og.ctx.beginPath()
+		og.ctx.ellipse(x, -y, range, range, 0, 0, 2 * Math.PI)
+		og.ctx.stroke()
+
+		og.ctx.beginPath()
+		og.ctx.ellipse(blockpos.x,  -blockpos.y,  10, 10, 0, 0, 2 * Math.PI)
+		og.ctx.moveTo(blockpos.x,  -blockpos.y)
+		og.ctx.lineTo(playerpos.x, -playerpos.y)
+		og.ctx.ellipse(playerpos.x, -playerpos.y, 10, 10, 0, 0, 2 * Math.PI)
+		og.ctx.stroke()
+	}
+
+	og.restore()
+
+	// hotbar
+	Hotbar.drawHotbar(og)
+
+	// container
+	Container.drawContainer(og)
 }
 
 export function onKey(key: string) {

@@ -2,7 +2,7 @@ const SHADOW_BRIGHTNESS = "0.314"
 
 export default class TextRenderer {
 
-	static drawText(ctx: CanvasRenderingContext2D, text: string, x: number = 0, y: number = 0, options?: TextRenderingOptions) {
+	static drawText(ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, text: string, x: number = 0, y: number = 0, options?: TextRenderingOptions) {
 		const {
 			color = ctx.fillStyle || "white",
 			opacity = 1, bgOpacity = 0.35,
@@ -87,7 +87,7 @@ export type TextRenderingOptions = {
 }
 
 function drawDecoratedText(
-	ctx: CanvasRenderingContext2D,
+	ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D,
 	text: string,
 	x: number,
 	y: number,
@@ -104,7 +104,7 @@ function drawDecoratedText(
 	if (strikethrough) drawLine(ctx, x, y - unit * 5, textWidth, unit)
 }
 
-function drawLine(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
+function drawLine(ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, x: number, y: number, width: number, height: number) {
 	if (ctx.textAlign == "right") x -= width
 	 else if (ctx.textAlign == "center") x -= width / 2
 

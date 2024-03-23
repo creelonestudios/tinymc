@@ -68,6 +68,7 @@ Button.loadAssets()
 Hotbar.loadTexture()
 Container.loadAssets()
 Entity.loadAssets()
+ingameState.init()
 
 export const perf = {
 	tick: [] as number[],
