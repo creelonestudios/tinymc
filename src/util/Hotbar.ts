@@ -81,15 +81,6 @@ export default class Hotbar {
 			ctx.restore()
 		}
 
-		// selected slot
-		ctx.save()
-		ctx.scale(scale, scale)
-		ctx.translate(-1, -1)
-		ctx.translate(player.selectedItemSlot * 20, 0)
-		ctx.scale(24, 24)
-		selector.draw(g, 1, 1, true)
-		ctx.restore()
-
 		ctx.restore()
 	}
 

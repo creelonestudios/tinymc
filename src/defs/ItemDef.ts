@@ -1,4 +1,4 @@
-import { isInteger, isObject, safeValidateProperty } from "../util/typecheck.js"
+import { isIntInRange, isObject, safeValidateProperty } from "../util/typecheck.js"
 import Base from "./Base.js"
 
 export default class ItemDef extends Base {
@@ -7,7 +7,7 @@ export default class ItemDef extends Base {
 
 	constructor(namespace: string, idname: string, data: unknown) {
 		super(namespace, idname)
-		if (!isObject(data) || !safeValidateProperty(data, "maxItemStack", isInteger, 128)) {
+		if (!isObject(data) || !safeValidateProperty(data, "maxItemStack", isIntInRange(1, 9999), 128)) {
 			throw new Error(`Invalid itemdef for ${namespace}:${idname}: ${JSON.stringify(data)}`)
 		}
 

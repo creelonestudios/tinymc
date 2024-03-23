@@ -35,8 +35,8 @@ export default class ItemStack implements HasData {
 
 		if (this.amount != 1 && !hideAmount) {
 			g.save()
-			g.ctx.translate(size * 0.95, size * 0.95)
-			g.ctx.textAlign = "center"
+			g.ctx.translate(size * 1.125, size * 0.95)
+			g.ctx.textAlign = "right"
 			g.ctx.textBaseline = "middle"
 			g.drawText(`${this.amount}`, { color: "white", font: { size: size/2 } })
 			g.restore()
