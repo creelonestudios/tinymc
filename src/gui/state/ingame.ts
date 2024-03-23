@@ -19,7 +19,7 @@ import WorldGenerator from "../../world/WorldGenerator.js"
 
 // constants
 export const blockSize = 80
-const gameOffset = new Dim2(0, -2)
+export const gameOffset = new Dim2(0, -2)
 
 // other
 export let world: World
@@ -63,7 +63,7 @@ export function tick() {
 }
 
 export function draw(g: Graphics) {
-	if (menuState == MenuState.INGAME) drawGame()
+	if (menuState == MenuState.INGAME || og.canvas.width != game.width || og.canvas.height != game.height) drawGame()
 
 	g.reset()
 

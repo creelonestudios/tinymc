@@ -1,10 +1,11 @@
 import Block, { BlockData } from "../block/Block.js"
 import Entity, { EntityData } from "../entity/Entity.js"
 import Player, { type PlayerData } from "../entity/Player.js"
-import { createBlock, createEntity, getFirstBlock } from "../gui/state/ingame.js"
+import { blockSize, cam, createBlock, createEntity, gameOffset, getFirstBlock } from "../gui/state/ingame.js"
 import Dim2 from "../dim/Dim2.js"
 import Graphics from "../Graphics.js"
 import { type NamespacedId } from "../util/interfaces.js"
+import { game } from "../main.js"
 import { isNamespacedId } from "../util/typecheck.js"
 
 // import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
@@ -220,13 +221,19 @@ export default class World {
 	}
 
 	draw(g: Graphics) {
+		// screen edges
+		const left   = Math.floor((-game.width /2  + cam.x*blockSize) / blockSize - gameOffset.x)
+		const top    = Math.ceil(-(-game.height/2  - cam.y*blockSize) / blockSize - gameOffset.y)
+		const right  = Math.ceil((game.width   /2  + cam.x*blockSize) / blockSize - gameOffset.x)
+		const bottom = Math.floor(-(game.height/2  - cam.y*blockSize) / blockSize - gameOffset.y)
+
 		for (let z = this.minZ; z <= this.maxZ; z++) {
 			if (z == 0) { // draw entities behind blocks (e.g. water)
 				for (const entity of this.getAllEntities()) entity.draw(g, this)
 			}
 
-			for (let y = this.minY; y <= this.maxY; y++) {
-				for (let x = this.minX; x <= this.maxX; x++) {
+			for (let y = Math.max(this.minY, bottom); y <= Math.min(this.maxY, top); y++) {
+				for (let x = Math.max(this.minX, left); x <= Math.min(this.maxX, right); x++) {
 					const frontBlock = getFirstBlock(this, x, y, undefined, block => block.full)
 
 					if (z >= frontBlock.z) this.getBlock(x, y, z)?.draw(g, x, y, z)
