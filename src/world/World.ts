@@ -146,7 +146,7 @@ export default class World {
 		}
 
 		this.blocks.set(`${x},${y},${z}`, block)
-		if (!silent) block.playSound("place")
+		if (!silent && block.id != "tiny:air") block.playSound("place")
 
 		this.scheduleBlockUpdate(x, y, z)
 		this.scheduleBlockUpdate(x-1, y, z)
