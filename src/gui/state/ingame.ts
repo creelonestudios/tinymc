@@ -152,10 +152,12 @@ export function draw(g: Graphics) {
 		const targetBlock = world.getBlock(x, y, z)
 		const inaccessible = z < frontZ && frontBlock?.full
 
-		if (floatingStack) {
+		if (!reachable) {
+			drawCrosshair(g, size, "#707070")
+		} else if (floatingStack) {
 			g.ctx.translate(-size/2, -size/2)
 			floatingStack.draw(g, size)
-		} else if (reachable && player.selectedItem.item.id != "tiny:air" && !inaccessible && targetBlock?.id == "tiny:air") {
+		} else if (player.selectedItem.item.id != "tiny:air" && !inaccessible && targetBlock?.id == "tiny:air") {
 			g.ctx.translate(-size/2, -size/2)
 			g.globalAlpha = 0.8
 			player.selectedItem.item.texture?.draw(g, size, size, true)
@@ -163,14 +165,7 @@ export function draw(g: Graphics) {
 			g.ctx.translate(-size/2, -size)
 			cursors.openContainer.draw(g, size, size, true)
 		} else {
-			g.strokeStyle = reachable ? "white" : "#707070"
-			g.lineWidth = 2
-			g.ctx.beginPath()
-			g.ctx.moveTo(0, -size/3)
-			g.ctx.lineTo(0,  size/3)
-			g.ctx.moveTo(-size/3, 0)
-			g.ctx.lineTo(size/3, 0)
-			g.ctx.stroke()
+			drawCrosshair(g, size, "white")
 		}
 
 		g.restore()
@@ -332,6 +327,17 @@ function isBlockReachable(pos: Dim2) {
 	return pos.copy().add(new Dim2(0.5, 0.5))
 		.distanceTo(player.position.copy()
 			.add(new Dim2(0, player.eyeHeight))) <= player.attributes.get("player.block_interaction_range", 0)!
+}
+
+function drawCrosshair(g: Graphics, size: number, color: string) {
+	g.strokeStyle = color
+	g.lineWidth = 2
+	g.ctx.beginPath()
+	g.ctx.moveTo(0, -size/3)
+	g.ctx.lineTo(0,  size/3)
+	g.ctx.moveTo(-size/3, 0)
+	g.ctx.lineTo(size/3, 0)
+	g.ctx.stroke()
 }
 
 function openInventory() {
