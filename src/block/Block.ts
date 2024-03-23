@@ -125,12 +125,16 @@ export default class Block implements HasData {
 
 		*/
 
-		let light = this.lightColor(world)
-		if (z < 0) light = light.scale(12)
+		if (light.level == 0) {
+			g.fillStyle = "black"
+			g.fillRect()
+		} else {
+			this.texture?.draw(g, 1, 1, false, light)
+		}
 
 		// console.log(light)
 		// g.brightness(light)
-		this.texture?.draw(g, 1, 1, false, light)
+
 
 		g.restore()
 	}
