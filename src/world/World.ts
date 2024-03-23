@@ -94,7 +94,7 @@ export default class World {
 		this.blocks = new Map()
 		this.entities = new Set()
 		this.tickCount = 0
-		this.skyLightColor = new LightColor(0, 2, 3)
+		this.skyLightColor = new LightColor(15, 15, 15)
 
 		for (let x = this.minX; x <= this.maxX; x++) {
 			for (let y = this.minY; y <= this.maxY; y++) {

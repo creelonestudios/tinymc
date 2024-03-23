@@ -12,6 +12,7 @@ import Dim2 from "../../dim/Dim2.js"
 import Graphics from "../../Graphics.js"
 import Hotbar from "../../util/Hotbar.js"
 import ItemStack from "../../ItemStack.js"
+import LightColor from "../../util/LightColor.js"
 import MenuState from "../../enums/MenuState.js"
 import { NamespacedId } from "../../util/interfaces.js"
 import World from "../../world/World.js"
@@ -20,6 +21,7 @@ import WorldGenerator from "../../world/WorldGenerator.js"
 // constants
 export const blockSize = 80
 export const gameOffset = new Dim2(0, -2)
+const skyColor = new LightColor(7, 10, 15) // "#78A7FF"
 
 // other
 export let world: World
@@ -123,6 +125,8 @@ function drawGame() {
 	og.canvas.width  = game.width
 	og.canvas.height = game.height
 	og.reset()
+	og.fillStyle = skyColor.multiply(world.skyLight).toString()
+	og.ctx.fillRect(0, 0, og.canvas.width, og.canvas.height)
 	og.ctx.translate(og.canvas.width/2, og.canvas.height/2) // center game
 
 	og.save()

@@ -1,5 +1,5 @@
-import LightColor from "./util/LightColor.js"
 import TextRenderer, { type TextRenderingOptions } from "./util/TextRenderer.js"
+import LightColor from "./util/LightColor.js"
 
 export default class Graphics {
 
@@ -67,12 +67,10 @@ export default class Graphics {
 
 	reset() {
 		this.ctx.reset()
+		this.ctx.imageSmoothingEnabled = false
 		this.filters = {}
 		this.filterSaves = []
 		this.applyFilters()
-		this.ctx.imageSmoothingEnabled = false
-		this.ctx.fillStyle = "#78A7FF"
-		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
 	}
 
 
