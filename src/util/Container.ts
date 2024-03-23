@@ -118,7 +118,7 @@ export default class Container {
 		if (!mouseSlot) return false
 
 		if (button == 0) {
-			if (input.keyPressed("ShiftLeft")) {
+			if (input.keyPressed("ShiftLeft")) { // move stack to hotbar
 				const stack = inventory.get(mouseSlot.slotIndex)
 
 				if (stack.item.id == "tiny:air") return false
@@ -138,6 +138,23 @@ export default class Container {
 
 				if (floatingStackIndex == undefined && stack.item.id != "tiny:air") floatingStackIndex = mouseSlot.slotIndex
 				else if (stack.item.id == "tiny:air" || floatingStackIndex == mouseSlot.slotIndex) floatingStackIndex = undefined
+			}
+		} else if (button == 2) {
+			if (floatingStackIndex == undefined) {
+				// TODO: pick up half stack
+			} else {
+				const stack = inventory.get(mouseSlot.slotIndex)
+				const floating = Container.floatingStack()!
+
+				if (stack.item.id == "tiny:air") {
+					inventory.set(mouseSlot.slotIndex, new ItemStack(floating.item, 1))
+					if (floating.amount > 1) floating.amount--
+					else inventory.set(floatingStackIndex, new ItemStack("tiny:air", 1))
+				} else if (stack.match(floating)) {
+					stack.amount++
+					if (floating.amount > 1) floating.amount--
+					else inventory.set(floatingStackIndex, new ItemStack("tiny:air", 1))
+				}
 			}
 		}
 
