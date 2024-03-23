@@ -91,8 +91,8 @@ export default class Block implements HasData {
 	}
 
 	update(world: World, x: number, y: number, z: number) {
-		this.light.sky = updateSkyLight(world, x, y, z, this.light.sky)
-		this.light.block = updateBlockLight(world, x, y, z, this.light.block)
+		this.light.sky = updateSkyLight(world, this, x, y, z, this.light.sky)
+		this.light.block = updateBlockLight(world, this, x, y, z, this.light.block)
 	}
 
 	draw(g: Graphics, x: number, y: number, z: number) {
@@ -137,7 +137,7 @@ export type BlockData = Flatten<BaseData & {
 	z: number
 }>
 
-function updateSkyLight(world: World, x: number, y: number, z: number, skyLightBefore: number) {
+function updateSkyLight(world: World, block: Block, x: number, y: number, z: number, skyLightBefore: number) {
 	const derivLight = []
 	let skyLight: number = skyLightBefore
 
@@ -145,15 +145,21 @@ function updateSkyLight(world: World, x: number, y: number, z: number, skyLightB
 	const leftBlock = world.getBlock(x-1, y, z)
 	const rightBlock = world.getBlock(x+1, y, z)
 
-	if (!leftBlock?.isSolid() || !leftBlock.full) derivLight.push(deriveSkyLight(world, x-1, y+1, z))
-
 	derivLight.push(deriveSkyLight(world, x, y+1, z))
-	if (!rightBlock?.isSolid() || !rightBlock.full) derivLight.push(deriveSkyLight(world, x+1, y+1, z))
 
+	// diagonal
+	if (!leftBlock?.isSolid()  || !leftBlock.full)  derivLight.push(deriveSkyLight(world, x-1, y+1, z))
+	if (!rightBlock?.isSolid() || !rightBlock.full) derivLight.push(deriveSkyLight(world, x+1, y+1, z))
 
 	// from right/left
 	derivLight.push(deriveSkyLight(world, x-1, y, z)/2)
 	derivLight.push(deriveSkyLight(world, x+1, y, z)/2)
+
+	// from front / back
+	if (z < 0) derivLight.push(deriveSkyLight(world, x, y, z+1))
+	if (!block.isSolid() || !block.full) {
+		derivLight.push(deriveSkyLight(world, x, y, z-1))
+	}
 
 	skyLight = Math.floor(Math.max(...derivLight, 0))
 	if (skyLight != skyLightBefore) {
@@ -165,34 +171,35 @@ function updateSkyLight(world: World, x: number, y: number, z: number, skyLightB
 		world.scheduleBlockUpdate(x-1, y-1, z)
 		world.scheduleBlockUpdate(x,   y-1, z)
 		world.scheduleBlockUpdate(x+1, y-1, z)
+
+		// front / back
+		world.scheduleBlockUpdate(x, y, z-1)
+		world.scheduleBlockUpdate(x, y, z+1)
 	}
 
 	return skyLight
 }
 
-function updateBlockLight(world: World, x: number, y: number, z: number, blockLightBefore: number) {
+function updateBlockLight(world: World, block: Block, x: number, y: number, z: number, blockLightBefore: number) {
 	const derivLight = []
 	let blockLight: number = blockLightBefore
 
-	if (z == 0) {
-		derivLight.push(deriveBlockLight(world, x-1, y, z))
-		derivLight.push(deriveBlockLight(world, x+1, y, z))
-		derivLight.push(deriveBlockLight(world, x, y-1, z))
-		derivLight.push(deriveBlockLight(world, x, y+1, z))
-	}
+	derivLight.push(deriveBlockLight(world, x-1, y, z))
+	derivLight.push(deriveBlockLight(world, x+1, y, z))
+	derivLight.push(deriveBlockLight(world, x, y-1, z))
+	derivLight.push(deriveBlockLight(world, x, y+1, z))
 
-	derivLight.push(deriveBlockLight(world, x, y, z-1))
-	derivLight.push(deriveBlockLight(world, x, y, z+1))
+	if (z < 0) derivLight.push(deriveBlockLight(world, x, y, z+1))
+	if (!block.isSolid() || !block.full) {
+		derivLight.push(deriveBlockLight(world, x, y, z-1))
+	}
 
 	blockLight = Math.floor(Math.max(...derivLight, 0))
 	if (blockLight != blockLightBefore) {
-		if (z == 0) {
-			world.scheduleBlockUpdate(x-1, y, z)
-			world.scheduleBlockUpdate(x+1, y, z)
-			world.scheduleBlockUpdate(x, y-1, z)
-			world.scheduleBlockUpdate(x, y+1, z)
-		}
-
+		world.scheduleBlockUpdate(x-1, y, z)
+		world.scheduleBlockUpdate(x+1, y, z)
+		world.scheduleBlockUpdate(x, y-1, z)
+		world.scheduleBlockUpdate(x, y+1, z)
 		world.scheduleBlockUpdate(x, y, z-1)
 		world.scheduleBlockUpdate(x, y, z+1)
 	}
@@ -204,10 +211,10 @@ function deriveSkyLight(world: World, x: number, y: number, z: number) {
 	const other = world.getBlock(x, y, z)
 
 	if (!other) return 15
-	 else if (other.id == "tiny:air" || !other.full) return other.skyLight
-	 else if (other.isSolid()) return 0 // Math.floor(other.skyLight * 0.5)
+	else if (other.id == "tiny:air" || !other.full) return other.skyLight
+	else if (other.isSolid()) return 0 // Math.floor(other.skyLight * 0.5)
 
-	return other.skyLight - 1
+	return other.skyLight - 1 // water
 }
 
 function deriveBlockLight(world: World, x: number, y: number, z: number) {
