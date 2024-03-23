@@ -107,7 +107,7 @@ export const perf = {
 	}
 }
 export const tickTarget = 20
-export const drawTarget = 20
+export const drawTarget = 60
 const perfTick = perfRun("tick", tick, 1000/tickTarget)
 const perfDraw = perfRun("draw", draw, 1000/drawTarget)
 
