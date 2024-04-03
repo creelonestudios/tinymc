@@ -6,9 +6,7 @@ import MenuState from "../../enums/MenuState.js"
 import TextRenderer from "../../util/TextRenderer.js"
 import Texture from "../../texture/Texture.js"
 import World from "../../world/World.js"
-
-
-// import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
+import YSON from "https://j0code.github.io/yson/main.js"
 
 let logoTex: Texture
 const singleplayerButton = new Button(0, -100, 800, 80, "Singleplayer")
@@ -19,7 +17,7 @@ const createWorldButton = new Button(600, 400, 300, 60, "Create World")
 
 singleplayerButton.on("click", () => {
 	worldButtons = []
-	const worldSaves = JSON.parse(localStorage.getItem("worlds") || "[]")
+	const worldSaves = YSON.parse(localStorage.getItem("worlds") || "[]")
 
 	for (let i = 0; i < worldSaves.length; i++) {
 		const worldSave = worldSaves[i]

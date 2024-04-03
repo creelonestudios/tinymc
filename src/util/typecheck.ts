@@ -1,5 +1,5 @@
 import { type NamespacedId } from "./interfaces"
-import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
+import YSON from "https://j0code.github.io/yson/main.js"
 
 export const namespacedIdRegex = /^([a-z_]+):([a-z_]+)$/
 export function isNamespacedId(s: string): s is NamespacedId {

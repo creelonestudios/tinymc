@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/creelonestudios/tinymc#readme",
   "dependencies": {
-    "@j0code/yson": "^1.0.4",
+    "@j0code/yson": "npm:@jsr/j0code__yson@^1.1.1",
     "typescript": "^5.4.2"
   },
   "devDependencies": {

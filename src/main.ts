@@ -18,7 +18,7 @@ import MenuState from "./enums/MenuState.js"
 import Sound from "./sound/Sound.js"
 import Texture from "./texture/Texture.js"
 import World from "./world/World.js"
-import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
+import YSON from "https://j0code.github.io/yson/main.js"
 
 // eslint-disable-next-line no-console
 console.log("Never Gonna Give You Up")
@@ -130,7 +130,7 @@ function perfRun(name: "tick" | "draw", fn: () => void, target: number) {
 }
 
 async function loadDefs<T>(path: string, cls: { new(ns: string, id: string, data: unknown): T }): Promise<Map<NamespacedId, T>> {
-	const data = await YSON.load(path)
+	const data = await YSON.load(`./${path}`)
 	const defs = new Map<NamespacedId, T>()
 	const namespaces = Object.keys(data)
 
@@ -196,21 +196,21 @@ export function saveGame() {
 	if (menuState != MenuState.INGAME && menuState != MenuState.INGAME_MENU) return
 	if (!ingameState.world) return
 
-	const currentWorlds = JSON.parse(localStorage.getItem("worlds") || "[]")
+	const currentWorlds = YSON.parse(localStorage.getItem("worlds") || "[]")
 	const currentWorldIndex = currentWorlds.findIndex((worldSave: { name: string, data: unknown }) => worldSave.name == ingameState.world.name)
 
 	currentWorlds[currentWorldIndex] = {
 		...currentWorlds[currentWorldIndex],
 		...ingameState.world.save()
 	}
-	localStorage.setItem("worlds", JSON.stringify(currentWorlds))
+	localStorage.setItem("worlds", YSON.stringify(currentWorlds))
 }
 
 export function saveNewWorld(world: World) {
-	const currentWorlds = JSON.parse(localStorage.getItem("worlds") || "[]")
+	const currentWorlds = YSON.parse(localStorage.getItem("worlds") || "[]")
 
 	currentWorlds.push({ ...world.save() })
-	localStorage.setItem("worlds", JSON.stringify(currentWorlds))
+	localStorage.setItem("worlds", YSON.stringify(currentWorlds))
 }
 
 window.addEventListener("beforeunload", () => {

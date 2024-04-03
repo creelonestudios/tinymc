@@ -3,8 +3,6 @@ import { NamespacedId } from "../util/interfaces.js"
 import World from "./World.js"
 import { blockdefs } from "../main.js"
 
-// import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
-
 export default class WorldGenerator {
 
 	static flat(world: World) {
