@@ -23,15 +23,15 @@ export default class Input extends EventEmitter {
 			const before = this.keys.has(e.code)
 
 			this.keys.add(e.code)
-			if (!before) this.emit("keydown", e.code)
+			if (!before) this.emit("keydown", e.code, e.key)
 
-			this.emit("keypress", e.code)
+			this.emit("keypress", e.code, e.key)
 			e.preventDefault()
 		})
 
 		window.addEventListener("keyup", e => {
 			this.keys.delete(e.code)
-			this.emit("keyup", e.code)
+			this.emit("keyup", e.code, e.key)
 			e.preventDefault()
 		})
 

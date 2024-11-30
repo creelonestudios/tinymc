@@ -1,9 +1,10 @@
 import Block, { BlockData } from "../../block/Block.js"
-import { blockdefs, cursors, debug, game, input, menuState } from "../../main.js"
+import { blockdefs, cursors, debug, game, input, menuState, saveGame, setMenuState } from "../../main.js"
 import Entity, { EntityData } from "../../entity/Entity.js"
 import ItemEntity, { isItemEntityData, ItemEntityData } from "../../entity/ItemEntity.js"
 import Player, { PlayerData } from "../../entity/Player.js"
 import Cam from "../../Cam.js"
+import Chat from "../../Chat.js"
 import Container from "../../util/Container.js"
 import ContainerBlock from "../../block/ContainerBlock.js"
 import CreativeInventory from "../../CreativeInventory.js"
@@ -27,6 +28,7 @@ const skyColor = new LightColor(7, 10, 15) // "#78A7FF"
 export let world: World
 export let player: Player
 export let cam: Cam
+const chat: Chat = new Chat()
 
 // offscreen graphics
 let og: Graphics
@@ -54,12 +56,14 @@ export function loadWorld(newWorld: World, playerData: PlayerData) {
 }
 
 export function tick() {
-	if (input.keyPressed("Space")) {
-		if (player.inFluid) player.motion.y = Entity.TERMINAL_FLUID_VELOCITY
-		else if (player.onGround) player.motion.y = player.attributes.get("tiny:jump_strength")
-	}
+	if (!chat.open) {
+		if (input.keyPressed("Space")) {
+			if (player.inFluid) player.motion.y = Entity.TERMINAL_FLUID_VELOCITY
+			else if (player.onGround) player.motion.y = player.attributes.get("tiny:jump_strength")
+		}
 
-	player.motion.x = (Number(input.keyPressed("KeyD")) - Number(input.keyPressed("KeyA"))) * 0.15
+		player.motion.x = (Number(input.keyPressed("KeyD")) - Number(input.keyPressed("KeyA"))) * 0.15
+	}
 
 	world.tick()
 }
@@ -116,6 +120,9 @@ export function draw(g: Graphics) {
 
 		g.restore()
 	}
+
+	// chat
+	if (chat.open) chat.draw(g)
 
 	// debug screen
 	if (debug.showDebugScreen) DebugScreen.draw(g, world, player)
@@ -208,17 +215,18 @@ function drawGame() {
 	Container.drawContainer(og)
 }
 
-export function onKey(key: string) {
-	if (Container.showingInventory()) if (Container.onKey(key)) return
+export function onKey(code: string, _key: string) {
+	if (Container.showingInventory()) if (Container.onKey(code)) return
+	if (chat.open) return
 
 
-	if (key == "Digit1") player.selectedItemSlot = 0
-	if (key == "Digit2") player.selectedItemSlot = 1
-	if (key == "Digit3") player.selectedItemSlot = 2
-	if (key == "Digit4") player.selectedItemSlot = 3
-	if (key == "Digit5") player.selectedItemSlot = 4
+	if (code == "Digit1") player.selectedItemSlot = 0
+	if (code == "Digit2") player.selectedItemSlot = 1
+	if (code == "Digit3") player.selectedItemSlot = 2
+	if (code == "Digit4") player.selectedItemSlot = 3
+	if (code == "Digit5") player.selectedItemSlot = 4
 
-	inv: if (key == "KeyE") { // open inventory under mouse
+	inv: if (code == "KeyE") { // open inventory under mouse
 		if (Container.showingInventory()) {
 			Container.setInventory()
 
@@ -228,7 +236,7 @@ export function onKey(key: string) {
 		openInventory()
 	}
 
-	if (key == "KeyC") { // temp creative inv
+	if (code == "KeyC") { // temp creative inv
 		const items = Array.from(blockdefs.values())
 
 		items.pop()
@@ -237,19 +245,28 @@ export function onKey(key: string) {
 		Container.setInventory(inv)
 	}
 
-	if (key == "F3") debug.showDebugScreen = !debug.showDebugScreen
+	if (code == "KeyT") {
+		chat.open = true
+		chat.block = true
+	}
 
+	if (code == "F3") debug.showDebugScreen = !debug.showDebugScreen
 
 	if (input.keyPressed("F3") && debug.showDebugScreen) {
-		if (key == "KeyN") debug.showRange = !debug.showRange
+		if (code == "KeyN") debug.showRange = !debug.showRange
 
 
-		if (key == "KeyM") {
+		if (code == "KeyM") {
 			debug.showHitboxes = !debug.showHitboxes
 			debug.showOrigin = debug.showHitboxes
 		}
 
-		if (key == "KeyK") debug.showAirLightLevel = !debug.showAirLightLevel
+		if (code == "KeyK") debug.showAirLightLevel = !debug.showAirLightLevel
+	}
+
+	if (code == "Escape") {
+		setMenuState(MenuState.INGAME_MENU)
+		saveGame()
 	}
 
 	/* if (key == "KeyZ") {
@@ -262,8 +279,14 @@ export function onKey(key: string) {
 	}*/
 }
 
-export function whileKey(key: string) {
-	if (key == "KeyQ") {
+export function whileKey(code: string, key: string) {
+	if (chat.open) {
+		chat.whileKey(code, key)
+
+		return
+	}
+
+	if (code == "KeyQ") {
 		const stack = player.selectedItem
 		const index = player.selectedItemSlot
 
@@ -282,6 +305,14 @@ export function whileKey(key: string) {
 		 else stack.amount--
 
 		world.spawn<ItemEntityData>("tiny:item", { ...entityData, item: dropStack })
+	}
+}
+
+export function onKeyUp(code: string) {
+	if (chat.open) {
+		chat.onKeyUp(code)
+
+		return
 	}
 }
 

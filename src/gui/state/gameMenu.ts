@@ -140,3 +140,11 @@ export function onClick(button: number) {
 		for (const btn of worldButtons) btn.click(button)
 	}
 }
+
+export function onKey(code: string, _key: string) {
+	if (code == "Escape") {
+		if (menuState == MenuState.WORLDSELECTION) {
+			setMenuState(MenuState.MENU)
+		}
+	}
+}

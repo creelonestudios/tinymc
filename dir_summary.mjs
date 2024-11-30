@@ -1,5 +1,5 @@
-import YSON from "@j0code/yson"
 import fs from "fs/promises"
+import YSON from "@j0code/yson"
 
 /*
  * NOTE: This script is supposed to be executed server-side to generate directory summaries the game can fetch.

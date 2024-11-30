@@ -206,25 +206,26 @@ window.addEventListener("beforeunload", () => {
 	saveGame()
 })
 
-input.on("keydown", (key: string) => {
-	if (key == "F11") {
+input.on("keydown", (code: string, key: string) => {
+	if (code == "F11") {
 		if (document.fullscreenElement) document.exitFullscreen()
 		else game.requestFullscreen()
 
 		return
-	} else if (key == "Escape" && (menuState == MenuState.INGAME || menuState == MenuState.INGAME_MENU)) {
-		menuState = menuState == MenuState.INGAME ? MenuState.INGAME_MENU : MenuState.INGAME
-		if (menuState == MenuState.INGAME_MENU) saveGame()
-	} else if (key == "Escape" && menuState == MenuState.WORLDSELECTION) setMenuState(MenuState.MENU)
+	}
 
-
-	/* if (menuState == MenuState.MENU) gameMenuState.onKey(key)
-	else*/ if (menuState == MenuState.INGAME) ingameState.onKey(key)
+	if (menuState == MenuState.MENU || menuState == MenuState.WORLDSELECTION) gameMenuState.onKey(code, key)
+	else if (menuState == MenuState.INGAME) ingameState.onKey(code, key)
+	else if (menuState == MenuState.INGAME_MENU) ingameMenuState.onKey(code, key)
 })
 
-input.on("keypress", (key: string) => {
+input.on("keypress", (code: string, key: string) => {
 	/* if (menuState == MenuState.MENU) gameMenuState.whileKey(key)
-	else*/ if (menuState == MenuState.INGAME) ingameState.whileKey(key)
+	else*/ if (menuState == MenuState.INGAME) ingameState.whileKey(code, key)
+})
+
+input.on("keyup", (code: string) => {
+	if (menuState == MenuState.INGAME) ingameState.onKeyUp(code)
 })
 
 input.on("click", (button: number) => {

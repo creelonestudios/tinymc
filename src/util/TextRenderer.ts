@@ -28,18 +28,18 @@ export default class TextRenderer {
 
 		if (drawBg) {
 			if (!["left", "right"].includes(ctx.textAlign)) ctx.textAlign = "left" // required or bg is off
-			if (!["top", "bottom"].includes(ctx.textAlign)) ctx.textBaseline = "top" // required or bg is off
+			if (!["top", "bottom"].includes(ctx.textBaseline)) ctx.textBaseline = "top" // required or bg is off
 
 			ctx.fillStyle = "black"
 			ctx.globalAlpha = opacity * bgOpacity
 
 			let bgX = 0
-			const bgY = 0
+			let bgY = 0
 			const width = textWidth + 2 * padding
 			const height = font.size + 2 * padding
 
-			if (ctx.textAlign == "right") bgX -= textWidth + 2 * padding
-
+			if (ctx.textAlign == "right")     bgX -= textWidth + 2 * padding
+			if (ctx.textBaseline == "bottom") bgY -= font.size + 2 * padding
 
 			ctx.fillRect(bgX, bgY, width, height)
 		}

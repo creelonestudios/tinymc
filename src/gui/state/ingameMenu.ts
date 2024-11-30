@@ -45,3 +45,9 @@ export function onClick(button: number) {
 	optionsButton.click(button)
 	quitButton.click(button)
 }
+
+export function onKey(code: string, _key: string) {
+	if (code == "Escape") {
+		setMenuState(MenuState.INGAME)
+	}
+}

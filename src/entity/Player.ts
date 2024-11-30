@@ -14,9 +14,9 @@ import World from "../world/World.js"
 
 export default class Player extends Entity {
 
-	private name: string
-	private skin: string
-	#texture: Texture
+	readonly name: string
+	readonly skin: string
+	readonly #texture: Texture
 	#selectedItemSlot: number
 	readonly hotbar: Inventory
 
