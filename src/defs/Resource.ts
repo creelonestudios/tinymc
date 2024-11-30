@@ -1,17 +1,12 @@
-import { type NamespacedId } from "../util/interfaces.js"
+import { NamespacedId } from "../util/interfaces.js"
+import ResourceLocation from "../util/ResourceLocation.js"
 
 export default class Resource {
 
-	readonly namespace: string
-	readonly idname: string
+	readonly id: ResourceLocation
 
-	constructor(namespace: string, idname: string) {
-		this.namespace = namespace
-		this.idname = idname
-	}
-
-	get id(): NamespacedId {
-		return `${this.namespace}:${this.idname}`
+	constructor(id: NamespacedId) {
+		this.id = new ResourceLocation(id)
 	}
 
 }

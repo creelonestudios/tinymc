@@ -103,7 +103,7 @@ export function draw(g: Graphics) {
 		} else if (floatingStack) {
 			g.ctx.translate(-size/2, -size/2)
 			floatingStack.draw(g, size)
-		} else if (player.selectedItem.item.id != "tiny:air" && !inaccessible && targetBlock?.id == "tiny:air") {
+		} else if (!player.selectedItem.item.id.matches("tiny:air") && !inaccessible && targetBlock?.id.matches("tiny:air")) {
 			g.ctx.translate(-size/2, -size/2)
 			g.globalAlpha = 0.8
 			player.selectedItem.item.texture?.draw(g, size, size, true)
@@ -267,7 +267,7 @@ export function whileKey(key: string) {
 		const stack = player.selectedItem
 		const index = player.selectedItemSlot
 
-		if (stack.item.id == "tiny:air") return
+		if (stack.item.id.matches("tiny:air")) return
 
 		const entityData = {
 			position: player.eyes.asArray(),
@@ -304,7 +304,7 @@ export function onClick(button: number) {
 
 		break
 	case 1:
-		if (!frontBlock || frontBlock.id == "tiny:air") break
+		if (!frontBlock || frontBlock.id.matches("tiny:air")) break
 
 		player.pickBlock(frontBlock)
 
@@ -401,7 +401,7 @@ export function getFirstFluid(w: World, x: number, y: number, startZ: number = w
 	for (let z = startZ; z >= w.minZ; z--) {
 		const block = w.getBlock(x, y, z)
 
-		if (!block || block.id == "tiny:air") continue
+		if (!block || block.id.matches("tiny:air")) continue
 
 		return { block, z }
 	}

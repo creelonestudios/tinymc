@@ -1,6 +1,6 @@
 import { isInRangeIncl, isObject, validateProperty } from "../util/typecheck.js"
+import { type NamespacedId, type RawNamespacedId } from "../util/interfaces.js"
 import Attribute from "./Attribute.js"
-import { NamespacedId } from "../util/interfaces.js"
 import { recordToMap } from "../util/util.js"
 import { Registry } from "../Registry.js"
 import TexturedResource from "./TexturedResource.js"
@@ -13,13 +13,13 @@ export default class EntityDef extends TexturedResource {
 	readonly attributes: Map<NamespacedId, number>
 	readonly eyeHeight: number
 
-	constructor(namespace: string, idname: string, data: unknown, attributes: Registry<Attribute>) {
-		super(namespace, idname)
+	constructor(id: NamespacedId, data: unknown, attributes: Registry<Attribute>) {
+		super(id)
 		try {
-			if (!validate(data, attributes)) throw new Error(`Invalid entitydef for ${namespace}:${idname}: ${JSON.stringify(data)}`)
+			if (!validate(data, attributes)) throw new Error(`Invalid entitydef for ${id}: ${YSON.stringify(data)}`)
 		} catch (e) {
 			// @ts-expect-error e should be an Error
-			throw new TinyError(`Invalid entitydef for ${namespace}:${idname}`, e)
+			throw new TinyError(`Invalid entitydef for ${id}`, e)
 		}
 
 		this.hasFriction = data.hasFriction
@@ -28,14 +28,14 @@ export default class EntityDef extends TexturedResource {
 	}
 
 	get assetsPath() {
-		return `${this.namespace}/textures/entity/${this.idname}.png`
+		return `${this.id.namespace}/textures/entity/${this.id.path}.png`
 	}
 
 }
 
 export type EntityDefData = {
 	hasFriction: boolean,
-	attributes: Record<NamespacedId, number>,
+	attributes: Record<RawNamespacedId, number>,
 	eyeHeight: number
 }
 
@@ -47,7 +47,7 @@ function validate(data: unknown, attributes: Registry<Attribute>): data is Entit
 		if (!isObject(rec)) throw new Error(`Expected a Record at ${path} but got ${YSON.stringify(rec)}`)
 
 		for (const attr of attributes.values()) {
-			validateProperty(rec, attr.id, isInRangeIncl(attr.min, attr.max), attr.base, `${path}.${attr.id}`)
+			validateProperty(rec, attr.id.toString(), isInRangeIncl(attr.min, attr.max), attr.base, `${path}.${attr.id}`)
 		}
 
 		return true

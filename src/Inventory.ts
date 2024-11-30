@@ -46,7 +46,7 @@ export default class Inventory implements HasData {
 
 			if (amount <= 0) break
 
-			if (slot.item.id == "tiny:air") {
+			if (slot.item.id.matches("tiny:air")) {
 				this.slots[i] = new ItemStack(stack.item.id, amount)
 
 				return null
@@ -75,14 +75,14 @@ export default class Inventory implements HasData {
 	emptySlots(): number {
 		let count = 0
 		for (const slot of this.slots) {
-			if (slot.item.id == "tiny:air") count++
+			if (slot.item.id.matches("tiny:air")) count++
 		}
 
 		return count
 	}
 
 	firstEmptySlot(): number {
-		for (const i in this.slots) if (this.slots[i].item.id == "tiny:air") return Number(i)
+		for (const i in this.slots) if (this.slots[i].item.id.matches("tiny:air")) return Number(i)
 
 		return -1
 	}
@@ -91,7 +91,7 @@ export default class Inventory implements HasData {
 		const arr: (ReturnType<ItemStack["getData"]> & {slot: number})[] = []
 
 		this.slots.forEach((slot, index) => {
-			if (slot.item.id == "tiny:air") return
+			if (slot.item.id.matches("tiny:air")) return
 
 			arr.push({ ...slot.getData(), slot: index })
 		})

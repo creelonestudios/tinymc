@@ -5,7 +5,7 @@ import { Registry } from "../Registry.js"
 export default class PlayerDef extends EntityDef {
 
 	constructor(attributes: Registry<Attribute>) {
-		super("tiny", "player", {
+		super("tiny:player", {
 			attributes: {
 				"tiny:movement_speed":           1,
 				"tiny:jump_strength":            0.35,
@@ -18,11 +18,11 @@ export default class PlayerDef extends EntityDef {
 	}
 
 	get assetsPath() {
-		return `${this.namespace}/textures/entity/${this.idname}/${this.idname}.png`
+		return `${this.id.namespace}/textures/entity/${this.id.path}/${this.id.path}.png`
 	}
 
 	skinAssetsPath(skin: string, pose: string = skin) {
-		return `${this.namespace}/textures/skin/${skin}/${pose}.png`
+		return `${this.id.namespace}/textures/skin/${skin}/${pose}.png`
 	}
 
 }

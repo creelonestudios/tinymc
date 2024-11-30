@@ -1,15 +1,16 @@
 import Base from "./Resource.js"
 import { getTexture } from "../main.js"
+import { NamespacedId } from "../util/interfaces.js"
 import Texture from "../texture/Texture.js"
 
 export default class TexturedResource extends Base {
 
 	readonly texture: Texture | null
 
-	constructor(namespace: string, idname: string) {
-		super(namespace, idname)
+	constructor(id: NamespacedId) {
+		super(id)
 
-		if (["tiny:air", "tiny:player", "tiny:item"].includes(this.id)) this.texture = null
+		if (this.id.matches("tiny:air", "tiny:player", "tiny:item")) this.texture = null
 		else this.texture = getTexture(this.assetsPath)
 	}
 

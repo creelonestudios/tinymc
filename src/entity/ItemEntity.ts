@@ -1,8 +1,9 @@
 import Entity, { type EntityData } from "./Entity.js"
+import { type Flatten, NamespacedId } from "../util/interfaces.js"
 import ItemStack, { type ItemStackData } from "../ItemStack.js"
 import { entitydefs } from "../main.js"
-import { type Flatten } from "../util/interfaces.js"
 import Player from "./Player.js"
+import ResourceLocation from "../util/ResourceLocation.js"
 import World from "../world/World.js"
 
 export default class ItemEntity extends Entity {
@@ -50,7 +51,7 @@ export default class ItemEntity extends Entity {
 		}
 
 		// combine item entities
-		const items = world.getAllEntities<ItemEntity>(entity => entity.id == "tiny:item" && (entity as ItemEntity).itemstack.match(this.itemstack))
+		const items = world.getAllEntities<ItemEntity>(entity => entity.id.matches("tiny:item") && (entity as ItemEntity).itemstack.match(this.itemstack))
 
 		for (const item of items) {
 			if (item == this) continue
@@ -84,6 +85,8 @@ export type ItemEntityData = Flatten<EntityData & {
 	pickupDelay: number
 }>
 
-export function isItemEntityData(data: Partial<EntityData>, id: string = data.id || ""): data is ItemEntityData {
-	return id == "tiny:item"
+const itemEntityId = new ResourceLocation("tiny:item")
+
+export function isItemEntityData(data: Partial<EntityData>, id: NamespacedId = data.id || ":"): data is ItemEntityData {
+	return itemEntityId.matches(id)
 }

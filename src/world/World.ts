@@ -8,6 +8,7 @@ import Graphics from "../Graphics.js"
 import { isNamespacedId } from "../util/typecheck.js"
 import LightColor from "../util/LightColor.js"
 import { type NamespacedId } from "../util/interfaces.js"
+import ResourceLocation from "../util/ResourceLocation.js"
 
 // import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 
@@ -147,6 +148,7 @@ export default class World {
 		[x, y, z] = pos
 
 		if (typeof block == "string") block = createBlock(block, data)
+		if (block instanceof ResourceLocation) block = createBlock(block, data)
 
 
 		if (x < this.minX || x > this.maxX || y < this.minY || y > this.maxY || z < this.minZ || z > this.maxZ) {
@@ -154,7 +156,7 @@ export default class World {
 		}
 
 		this.blocks.set(`${x},${y},${z}`, block)
-		if (!silent && block.id != "tiny:air") block.playSound("place")
+		if (!silent && !block.id.matches("tiny:air")) block.playSound("place")
 
 		this.scheduleBlockUpdate(x, y, z)
 		this.scheduleBlockUpdate(x-1, y, z)
@@ -174,7 +176,7 @@ export default class World {
 
 		const oldBlock = this.getBlock(x, y, z)
 
-		if (!oldBlock || oldBlock.id == "tiny:air") return
+		if (!oldBlock || oldBlock.id.matches("tiny:air")) return
 		if (!silent) oldBlock?.playSound("break")
 
 		const block = new Block("tiny:air")
@@ -192,15 +194,15 @@ export default class World {
 
 	getAllEntities<E extends Entity = Entity>(filter?: string | ((entity: Entity, index: number) => boolean)): E[] {
 		let entities = Array.from(this.entities.values())
-		if      (typeof filter == "string")   entities = entities.filter(entity => entity.id == filter)
+		if      (typeof filter == "string")   entities = entities.filter(entity => entity.id.matches(filter))
 		else if (typeof filter == "function") entities = entities.filter(filter)
 
 		return entities as E[]
 	}
 
 	spawn<T extends EntityData = EntityData>(entity: Entity | NamespacedId, data?: Partial<T>) {
-		if (typeof entity == "string") this.entities.add(createEntity(entity, this.tickCount, data))
-		 else this.entities.add(entity)
+		if (typeof entity == "string" || entity instanceof ResourceLocation) this.entities.add(createEntity(entity, this.tickCount, data))
+		else this.entities.add(entity)
 	}
 
 	removeEntity(entity: Entity) {
@@ -255,7 +257,7 @@ export default class World {
 				for (let x = this.minX; x <= this.maxX; x++) {
 					const block = this.getBlock(x, y, z)
 
-					if (!block || block.id == "tiny:air") continue
+					if (!block || block.id.matches("tiny:air")) continue
 
 					block.getBoundingBox(x, y).draw(g, "blue")
 				}
@@ -313,11 +315,11 @@ export default class World {
 					}
 					if (block.type == "container") blockData.push(block.getData(x, y, z))
 
-					const idIndex = blockIds.indexOf(block.id)
+					const idIndex = blockIds.indexOf(block.id.toString())
 
 					if (idIndex >= 0) blocks[i] = idIndex
 					 else {
-						blockIds.push(block.id)
+						blockIds.push(block.id.toString())
 						blocks[i] = blockIds.length -1
 					}
 

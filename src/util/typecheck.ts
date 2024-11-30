@@ -1,8 +1,8 @@
-import { type NamespacedId } from "./interfaces"
+import { type RawNamespacedId } from "./interfaces"
 import YSON from "https://j0code.github.io/yson/YSON.js"
 
 export const namespacedIdRegex = /^([a-z_]+):([a-z_]+)$/
-export function isNamespacedId(s: string): s is NamespacedId {
+export function isNamespacedId(s: string): s is RawNamespacedId {
 	return namespacedIdRegex.test(s)
 }
 

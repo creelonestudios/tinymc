@@ -29,7 +29,7 @@ export default class ItemStack implements HasData {
 	}
 
 	draw(g: Graphics, size: number, hideAmount: boolean = false) {
-		if (this.item.id == "tiny:air") return
+		if (this.item.id.matches("tiny:air")) return
 
 		this.item.texture?.draw(g, size, size, true)
 

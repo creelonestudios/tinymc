@@ -107,7 +107,7 @@ export default class Block implements HasData {
 		let light = this.lightColor(world)
 		if (z < 0) light = light.scale(12)
 
-		if (this.def.id == "tiny:air" && z <= 0) {
+		if (this.def.id.matches("tiny:air") && z <= 0) {
 			if (debug.showDebugScreen && debug.showAirLightLevel) overlayLight(g, x, y, light)
 
 			return
@@ -230,7 +230,7 @@ function deriveSkyLight(world: World, x: number, y: number, z: number) {
 	const other = world.getBlock(x, y, z)
 
 	if (!other) return 15
-	else if (other.id == "tiny:air" || !other.full) return other.skyLight
+	else if (other.id.matches("tiny:air") || !other.full) return other.skyLight
 	else if (other.isSolid()) return 0 // Math.floor(other.skyLight * 0.5)
 
 	return other.skyLight - 1 // water

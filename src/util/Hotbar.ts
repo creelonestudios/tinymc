@@ -69,7 +69,7 @@ export default class Hotbar {
 		for (let i = 0; i < hotbar.size; i++) {
 			const stack = hotbar.get(i)
 
-			if (stack.item.id == "tiny:air") continue
+			if (stack.item.id.matches("tiny:air")) continue
 			if (!stack.item.texture) continue
 
 			const cx = 22/2 * scale - itemSize/2 + i * 20 * scale

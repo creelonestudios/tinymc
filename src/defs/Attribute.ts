@@ -1,4 +1,5 @@
 import { isInRangeIncl, isObject, validateProperty } from "../util/typecheck.js"
+import { NamespacedId } from "../util/interfaces.js"
 import Resource from "./Resource.js"
 import TinyError from "../TinyError.js"
 import YSON from "https://j0code.github.io/yson/YSON.js"
@@ -9,13 +10,13 @@ export default class Attribute extends Resource {
 	readonly min: number
 	readonly max: number
 
-	constructor(namespace: string, idname: string, data: unknown) {
-		super(namespace, idname)
+	constructor(id: NamespacedId, data: unknown) {
+		super(id)
 		try {
-			if (!isAttributeDef(data)) throw new Error(`Invalid attribute ${namespace}:${idname}: ${YSON.stringify(data)}`)
+			if (!isAttributeDef(data)) throw new Error(`Invalid attribute ${id}: ${YSON.stringify(data)}`)
 		} catch (e) {
 			// @ts-expect-error e should be an Error
-			throw new TinyError(`Invalid attribute ${namespace}:${idname}`, e)
+			throw new TinyError(`Invalid attribute ${id}`, e)
 		}
 
 		this.base = data.base

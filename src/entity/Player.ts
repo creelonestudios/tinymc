@@ -55,7 +55,7 @@ export default class Player extends Entity {
 	pickBlock(block: Block) {
 		const blockItem = new Item(block.id)
 
-		if (this.selectedItem.item.id == block.id || block.id == "tiny:air") return
+		if (this.selectedItem.item.id == block.id || block.id.matches("tiny:air")) return
 
 		let index = this.hotbar.find(blockItem)
 		if (index >= 0) this.#selectedItemSlot = index

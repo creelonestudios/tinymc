@@ -1,4 +1,5 @@
-import Inventory from "../Inventory"
+import type Inventory from "../Inventory"
+import type ResourceLocation from "./ResourceLocation"
 
 export type ArrayElement<A> = A extends readonly (infer T)[] ? T : never
 
@@ -20,7 +21,8 @@ export interface HasData {
 
 export type DataOf<T extends HasData> = ReturnType<T["getData"]>
 
-export type NamespacedId = `${string}:${string}`
+export type RawNamespacedId = `${string}:${string}`
+export type NamespacedId = RawNamespacedId | ResourceLocation
 
 export type SoundDef = {
 	sounds: Array<string | {

@@ -1,10 +1,11 @@
 import { equalsAny, isIntInRange, isObject, isPosInt, validateArray, validateProperty } from "../util/typecheck.js"
-import { type Flatten } from "../util/interfaces.js"
+import { type Flatten, NamespacedId } from "../util/interfaces.js"
 import { getSound } from "../main.js"
 import LightColor from "../util/LightColor.js"
 import Sound from "../sound/Sound.js"
 import TexturedResource from "./TexturedResource.js"
 import TinyError from "../TinyError.js"
+import YSON from "https://j0code.github.io/yson/YSON.js"
 
 export default class BlockDef extends TexturedResource {
 
@@ -21,13 +22,13 @@ export default class BlockDef extends TexturedResource {
 		place: Sound
 	}
 
-	constructor(namespace: string, idname: string, data: unknown) {
-		super(namespace, idname)
+	constructor(id: NamespacedId, data: unknown) {
+		super(id)
 		try {
-			if (!validate(data)) throw new Error(`Invalid blockdef for ${namespace}:${idname}: ${JSON.stringify(data)}`)
+			if (!validate(data)) throw new Error(`Invalid blockdef for ${id}: ${YSON.stringify(data)}`)
 		} catch (e) {
 			// @ts-expect-error e should be an Error
-			throw new TinyError(`Invalid blockdef for ${namespace}:${idname}`, e)
+			throw new TinyError(`Invalid blockdef for ${id}`, e)
 		}
 
 		this.type = data.type
@@ -52,7 +53,7 @@ export default class BlockDef extends TexturedResource {
 	}
 
 	get assetsPath() {
-		return `${this.namespace}/textures/block/${this.idname}.png`
+		return `${this.id.namespace}/textures/block/${this.id.path}.png`
 	}
 
 	hasInventory() {
@@ -60,7 +61,7 @@ export default class BlockDef extends TexturedResource {
 	}
 
 	isSolid() {
-		return (this.type == "block" || this.type == "container") && this.id != "tiny:air"
+		return (this.type == "block" || this.type == "container") && !this.id.matches("tiny:air")
 	}
 
 	mainLayerOnly() {

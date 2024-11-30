@@ -1,38 +1,45 @@
-import { BaseData, NamespacedId } from "./util/interfaces.js"
+import { NamespacedId, RawNamespacedId } from "./util/interfaces.js"
 import Attribute from "./defs/Attribute.js"
 import BlockDef from "./defs/BlockDef.js"
 import EntityDef from "./defs/EntityDef.js"
 import ItemDef from "./defs/ItemDef.js"
 import PlayerDef from "./defs/PlayerDef.js"
+import Resource from "./defs/Resource.js"
+import ResourceLocation from "./util/ResourceLocation.js"
 import YSON from "https://j0code.github.io/yson/YSON.js"
 import YSONSyntaxError from "https://j0code.github.io/yson/YSONSyntaxError.js"
 
-export class Registry<T extends BaseData = BaseData> implements BaseData {
+export class Registry<T extends Resource = Resource> extends Resource {
 
-	private entries: Map<NamespacedId, T>
+	private entries: Map<RawNamespacedId, T>
 
-	constructor(public readonly id: NamespacedId) {
+	constructor(id: NamespacedId) {
+		super(id)
 		this.entries = new Map()
 	}
 
 	register(entry: T) {
-		if (entry.id == this.id) {
+		if (entry.id.matches(this.id)) {
 			throw new Error("Entry may not have the same ID as registry")
 		}
 
-		if (this.entries.has(entry.id)) {
+		if (this.entries.has(entry.id.toString())) {
 			throw new Error("Duplicate entry")
 		}
 
-		this.entries.set(entry.id, entry)
+		this.entries.set(entry.id.toString(), entry)
 	}
 
 	get(id: NamespacedId): T | undefined {
+		if (id instanceof ResourceLocation) id = id.toString()
+
 		return this.entries.get(id)
 	}
 
-	query(...ids: NamespacedId[]): BaseData | undefined {
-		const entry = this.entries.get(ids[0])
+	query(...ids: NamespacedId[]): Resource | undefined {
+		const id = ids[0] instanceof ResourceLocation ? ids[0].toString() : ids[0]
+
+		const entry = this.entries.get(id)
 
 		if (ids.length == 0) return entry
 
@@ -44,6 +51,7 @@ export class Registry<T extends BaseData = BaseData> implements BaseData {
 	}
 
 	exists(id: NamespacedId, ...ids: NamespacedId[]): boolean {
+		if (id instanceof ResourceLocation) id = id.toString()
 		if (ids.length == 0) return this.entries.has(id)
 
 		const entry = this.entries.get(id)
@@ -74,8 +82,8 @@ export async function createRegistries() {
 	const items      = await loadDefs("tiny:item",      ItemDef)
 
 	// hardcoded entries
-	blocks.register(new BlockDef("tiny", "air", {}))
-	entities.register(new EntityDef("tiny", "item", { hasFriction: true }, attributes))
+	blocks.register(new BlockDef("tiny:air", {}))
+	entities.register(new EntityDef("tiny:item", { hasFriction: true }, attributes))
 	entities.register(new PlayerDef(attributes))
 
 	rootRegistry.register(attributes)
@@ -92,12 +100,13 @@ export async function createRegistries() {
 	return rootRegistry
 }
 
-type ResourceConstructor<T> = { new(ns: string, id: string, data: unknown, ...other: never[]): T }
+type ResourceConstructor<T> = { new(id: NamespacedId, data: unknown, ...other: never[]): T }
 type DirSummary = { directories: string[], files: string[], recursiveFiles: string[] }
 
-async function loadDefs<T extends BaseData>(regId: NamespacedId, cls: ResourceConstructor<T>): Promise<Registry<T>> {
+async function loadDefs<T extends Resource>(regId: NamespacedId, cls: ResourceConstructor<T>): Promise<Registry<T>> {
+	if (typeof regId == "string") regId = new ResourceLocation(regId)
+
 	const registry = new Registry<T>(regId)
-	const [_, idname] = regId.split(":")
 
 	let dir
 
@@ -110,7 +119,7 @@ async function loadDefs<T extends BaseData>(regId: NamespacedId, cls: ResourceCo
 	const promises: Promise<void>[] = []
 
 	for (const namespace of dir.directories) {
-		promises.push(loadDefsInNamespace(registry, namespace, `./data/${namespace}/${idname}`, cls))
+		promises.push(loadDefsInNamespace(registry, namespace, `./data/${namespace}/${regId.path}`, cls))
 	}
 
 	await Promise.all(promises)
@@ -118,7 +127,7 @@ async function loadDefs<T extends BaseData>(regId: NamespacedId, cls: ResourceCo
 	return registry
 }
 
-async function loadDefsInNamespace<T extends BaseData>(registry: Registry<T>, namespace: string, path: string, cls: ResourceConstructor<T>): Promise<void> {
+async function loadDefsInNamespace<T extends Resource>(registry: Registry<T>, namespace: string, path: string, cls: ResourceConstructor<T>): Promise<void> {
 	let dir
 
 	try {
@@ -132,16 +141,16 @@ async function loadDefsInNamespace<T extends BaseData>(registry: Registry<T>, na
 	const promises: Promise<void>[] = []
 
 	for (const file of dir.recursiveFiles) {
-		const entryIdname = file.substring(0, file.lastIndexOf("."))
+		const idpath = file.substring(0, file.lastIndexOf("."))
 		const promise = YSON.load(`${path}/${file}`)
 			.then(data => {
-				registry.register(new cls(namespace, entryIdname, data))
+				registry.register(new cls(`${namespace}:${idpath}`, data))
 			})
 			.catch(e => {
 				if (e instanceof YSONSyntaxError) {
-					console.warn(`Malformed def ${registry.id}#${namespace}:${entryIdname}:`, e.message)
+					console.warn(`Malformed def ${registry.id}#${namespace}:${idpath}:`, e.message)
 				} else {
-					console.warn(`Error loading def ${registry.id}#${namespace}:${entryIdname}:`, e)
+					console.warn(`Error loading def ${registry.id}#${namespace}:${idpath}:`, e)
 				}
 			})
 
