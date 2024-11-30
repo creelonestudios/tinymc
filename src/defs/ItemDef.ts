@@ -1,7 +1,7 @@
 import { isIntInRange, isObject, safeValidateProperty } from "../util/typecheck.js"
-import Base from "./Base.js"
+import TexturedResource from "./TexturedResource.js"
 
-export default class ItemDef extends Base {
+export default class ItemDef extends TexturedResource {
 
 	readonly maxItemStack: number
 

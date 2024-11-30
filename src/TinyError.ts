@@ -9,9 +9,9 @@ export default class TinyError extends Error {
 	}
 
 	toString() {
-		const causeMsg = this.cause instanceof Error ? this.cause?.message : this.cause
+		// const causeMsg = this.cause instanceof Error ? this.cause?.message : this.cause
 
-		return `${this.cause ? `${this.plainMessage}\nCause: ${causeMsg}` : this.plainMessage}`
+		return this.plainMessage // `${this.cause ? `${this.plainMessage}\nCause: ${causeMsg}` : this.plainMessage}`
 	}
 
 }

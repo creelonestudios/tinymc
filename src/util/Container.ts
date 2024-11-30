@@ -4,8 +4,8 @@ import Dim2 from "../dim/Dim2.js"
 import Graphics from "../Graphics.js"
 import Inventory from "../Inventory.js"
 import ItemStack from "../ItemStack.js"
-import Texture from "../texture/Texture.js"
 import { player } from "../gui/state/ingame.js"
+import Texture from "../texture/Texture.js"
 
 let slot: Texture
 let inventory: Inventory | undefined

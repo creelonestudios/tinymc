@@ -1,10 +1,10 @@
 import * as ingameState from "./ingame.js"
-import { Button } from "../Button.js"
+import Button from "../Button.js"
 import Graphics from "../../Graphics.js"
 import LightColor from "../../util/LightColor.js"
 import MenuState from "../../enums/MenuState.js"
-import TextRenderer from "../../util/TextRenderer.js"
 import { setMenuState } from "../../main.js"
+import TextRenderer from "../../util/TextRenderer.js"
 
 const continueButton = new Button(0, -100, 800, 80, "Continue")
 const optionsButton = new Button(0, 0, 800, 80, "Options")

@@ -1,12 +1,14 @@
 import * as gameMenuState from "./gui/state/gameMenu.js"
 import * as ingameMenuState from "./gui/state/ingameMenu.js"
 import * as ingameState from "./gui/state/ingame.js"
-import { type NamespacedId, SoundDef } from "./util/interfaces.js"
+import { createRegistries, Registry } from "./Registry.js"
 import { isObject, validateArray, validateProperty, validateRecord } from "./util/typecheck.js"
+import World, { WorldSave } from "./world/World.js"
 import { $ } from "./util/util.js"
+import Attribute from "./defs/Attribute.js"
 import AudioFile from "./sound/AudioFile.js"
 import BlockDef from "./defs/BlockDef.js"
-import { Button } from "./gui/Button.js"
+import Button from "./gui/Button.js"
 import Container from "./util/Container.js"
 import Entity from "./entity/Entity.js"
 import EntityDef from "./defs/EntityDef.js"
@@ -16,9 +18,9 @@ import Input from "./Input.js"
 import ItemDef from "./defs/ItemDef.js"
 import MenuState from "./enums/MenuState.js"
 import Sound from "./sound/Sound.js"
+import { SoundDef } from "./util/interfaces.js"
 import Texture from "./texture/Texture.js"
-import World from "./world/World.js"
-import YSON from "https://j0code.github.io/yson/main.js"
+import YSON from "https://j0code.github.io/yson/YSON.js"
 
 // eslint-disable-next-line no-console
 console.log("Never Gonna Give You Up")
@@ -48,11 +50,12 @@ validateRecord( // should capture Record<string, SoundDef>
 const audioFiles: Map<string, AudioFile> = new Map()
 const sounds: Map<string, Sound> = new Map()
 
-// defs
-export const blockdefs  = await loadDefs("blocks.yson",   BlockDef)
-export const itemdefs   = await loadDefs("items.yson",    ItemDef)
-export const entitydefs = await loadDefs("entities.yson", EntityDef)
-blockdefs.set("tiny:air", new BlockDef("tiny", "air", {}))
+// registries
+export const rootRegistry = await createRegistries()
+export const blockdefs  = rootRegistry.get("tiny:block")  as Registry<BlockDef>
+export const itemdefs   = rootRegistry.get("tiny:item")   as Registry<ItemDef>
+export const entitydefs = rootRegistry.get("tiny:entity") as Registry<EntityDef>
+export const attributes = rootRegistry.get("tiny:attribute") as Registry<Attribute>
 
 // other
 export const input = new Input()
@@ -129,20 +132,6 @@ function perfRun(name: "tick" | "draw", fn: () => void, target: number) {
 	}
 }
 
-async function loadDefs<T>(path: string, cls: { new(ns: string, id: string, data: unknown): T }): Promise<Map<NamespacedId, T>> {
-	const data = await YSON.load(`./${path}`)
-	const defs = new Map<NamespacedId, T>()
-	const namespaces = Object.keys(data)
-
-	for (const ns of namespaces) {
-		const ids = Object.keys(data[ns])
-
-		for (const id of ids) defs.set(`${ns}:${id}`, new cls(ns, id, data[ns][id]))
-	}
-
-	return defs
-}
-
 export function getTexture(path: string) {
 	let texture = textures.get(path)
 	if (texture) if (texture.state != Texture.FAILED) return texture
@@ -196,21 +185,21 @@ export function saveGame() {
 	if (menuState != MenuState.INGAME && menuState != MenuState.INGAME_MENU) return
 	if (!ingameState.world) return
 
-	const currentWorlds = YSON.parse(localStorage.getItem("worlds") || "[]")
-	const currentWorldIndex = currentWorlds.findIndex((worldSave: { name: string, data: unknown }) => worldSave.name == ingameState.world.name)
+	const currentWorlds = YSON.parse(localStorage.getItem("worlds") || "[]") as WorldSave[]
+	const currentWorldIndex = currentWorlds.findIndex(worldSave => worldSave.name == ingameState.world.name)
 
 	currentWorlds[currentWorldIndex] = {
 		...currentWorlds[currentWorldIndex],
 		...ingameState.world.save()
 	}
-	localStorage.setItem("worlds", YSON.stringify(currentWorlds))
+	localStorage.setItem("worlds", YSON.stringify(currentWorlds)!)
 }
 
 export function saveNewWorld(world: World) {
-	const currentWorlds = YSON.parse(localStorage.getItem("worlds") || "[]")
+	const currentWorlds = YSON.parse(localStorage.getItem("worlds") || "[]") as WorldSave[]
 
-	currentWorlds.push({ ...world.save() })
-	localStorage.setItem("worlds", YSON.stringify(currentWorlds))
+	currentWorlds.push(world.save())
+	localStorage.setItem("worlds", YSON.stringify(currentWorlds)!)
 }
 
 window.addEventListener("beforeunload", () => {
@@ -248,5 +237,3 @@ input.on("mousemove", () => {
 	/* if (menuState == MenuState.MENU) gameMenuState.onMouseMove()
 	else*/ if (menuState == MenuState.INGAME) ingameState.onMouseMove()
 })
-
-

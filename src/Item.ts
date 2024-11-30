@@ -1,8 +1,8 @@
 import { type BaseData, type Flatten, type HasData, type NamespacedId } from "./util/interfaces.js"
 import { blockdefs, itemdefs } from "./main.js"
 import BlockDef from "./defs/BlockDef.js"
-import ItemDef from "./defs/ItemDef.js"
 import { createBlock } from "./gui/state/ingame.js"
+import ItemDef from "./defs/ItemDef.js"
 
 export default class Item implements HasData {
 

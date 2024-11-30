@@ -68,7 +68,7 @@ export default class Entity implements HasData {
 		this.motion   = new Dim3(...(data.motion   || [0, 0, 0]))
 		this.size     = new Dim2()
 		this.spawnTime = spawnTime
-		this.attributes = new AttributeList(this.def)
+		this.attributes = new AttributeList(this)
 		this.noGravity = typeof data.noGravity == "undefined" ? false : data.noGravity
 		this.onGround  = typeof data.onGround == "undefined" ? false : data.onGround
 		this.inFluid   = false
@@ -93,7 +93,7 @@ export default class Entity implements HasData {
 	}
 
 	get eyeHeight() {
-		return this.attributes.get("generic.scale", 1)! * this.size.y * this.def.eyeHeight
+		return this.attributes.get("tiny:scale") * this.size.y * this.def.eyeHeight
 	}
 
 	get rotationAngle() {
@@ -105,7 +105,7 @@ export default class Entity implements HasData {
 	}
 
 	getBoundingBox() {
-		const size = this.size.copy().scale(this.attributes.get("generic.scale", 1)!)
+		const size = this.size.copy().scale(this.attributes.get("tiny:scale"))
 		const pos = this.position.copy()
 
 		pos.x -= size.x/2

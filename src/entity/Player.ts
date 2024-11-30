@@ -1,7 +1,8 @@
 import Entity, { EntityData } from "./Entity.js"
+import { entitydefs, getTexture } from "../main.js"
+import { getMousePos, world } from "../gui/state/ingame.js"
 import Inventory, { InventoryData } from "../Inventory.js"
 import ItemStack, { ItemStackData } from "../ItemStack.js"
-import { getMousePos, world } from "../gui/state/ingame.js"
 import Block from "../block/Block.js"
 import Dim2 from "../dim/Dim2.js"
 import { type Flatten } from "../util/interfaces.js"
@@ -10,9 +11,6 @@ import { ItemEntityData } from "./ItemEntity.js"
 import PlayerDef from "../defs/PlayerDef.js"
 import Texture from "../texture/Texture.js"
 import World from "../world/World.js"
-import { getTexture } from "../main.js"
-
-const playerDef = new PlayerDef()
 
 export default class Player extends Entity {
 
@@ -23,7 +21,7 @@ export default class Player extends Entity {
 	readonly hotbar: Inventory
 
 	constructor(skin: string, name: string, spawnTime: number, data: Partial<PlayerData> = {}) {
-		super(playerDef, spawnTime, data)
+		super(entitydefs.get("tiny:player")!, spawnTime, data)
 		this.name = name
 		this.hotbar = data.hotbar ? new Inventory(5, 5, data.hotbar) : new Inventory(5)
 		this.skin = skin

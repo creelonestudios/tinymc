@@ -1,6 +1,6 @@
 import Entity, { type EntityData } from "./Entity.js"
 import ItemStack, { type ItemStackData } from "../ItemStack.js"
-import EntityDef from "../defs/EntityDef.js"
+import { entitydefs } from "../main.js"
 import { type Flatten } from "../util/interfaces.js"
 import Player from "./Player.js"
 import World from "../world/World.js"
@@ -12,7 +12,7 @@ export default class ItemEntity extends Entity {
 	readonly itemstack: ItemStack
 
 	constructor(itemstack: ItemStack | null, spawnTime: number, data: Partial<ItemEntityData> = {}) {
-		super(new EntityDef("tiny", "item", { hasFriction: true }), spawnTime, data)
+		super(entitydefs.get("tiny:item")!, spawnTime, data)
 		this.itemstack = data.item ? new ItemStack(data.item.item.id, data.item.amount) : (itemstack || new ItemStack("tiny:air"))
 		this.size.set(0.5, 0.5)
 	}

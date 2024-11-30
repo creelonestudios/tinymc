@@ -1,13 +1,13 @@
 import Block, { BlockData } from "../block/Block.js"
+import { blockSize, cam, createBlock, createEntity, gameOffset, getFirstBlock } from "../gui/state/ingame.js"
 import Entity, { EntityData } from "../entity/Entity.js"
 import Player, { type PlayerData } from "../entity/Player.js"
-import { blockSize, cam, createBlock, createEntity, gameOffset, getFirstBlock } from "../gui/state/ingame.js"
 import Dim2 from "../dim/Dim2.js"
+import { game } from "../main.js"
 import Graphics from "../Graphics.js"
+import { isNamespacedId } from "../util/typecheck.js"
 import LightColor from "../util/LightColor.js"
 import { type NamespacedId } from "../util/interfaces.js"
-import { game } from "../main.js"
-import { isNamespacedId } from "../util/typecheck.js"
 
 // import YSON from "https://j0code.github.io/browserjs-yson/main.mjs"
 
@@ -355,3 +355,5 @@ export default class World {
 	}
 
 }
+
+export type WorldSave = ReturnType<World["save"]>

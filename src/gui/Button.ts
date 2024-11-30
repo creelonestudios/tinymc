@@ -14,7 +14,7 @@ let buttonTex: Subtexture
 let hoverButtonTex: Subtexture
 let clickSound: Sound
 
-export class Button extends EventEmitter {
+export default class Button extends EventEmitter {
 
 	readonly boundingBox: BoundingBox
 

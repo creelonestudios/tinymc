@@ -1,12 +1,12 @@
 import * as ingameState from "./ingame.js"
 import { game, getTexture, menuState, saveNewWorld, setMenuState } from "../../main.js"
-import { Button } from "../Button.js"
+import World, { WorldSave } from "../../world/World.js"
+import Button from "../Button.js"
 import type Graphics from "../../Graphics.js"
 import MenuState from "../../enums/MenuState.js"
 import TextRenderer from "../../util/TextRenderer.js"
 import Texture from "../../texture/Texture.js"
-import World from "../../world/World.js"
-import YSON from "https://j0code.github.io/yson/main.js"
+import YSON from "https://j0code.github.io/yson/YSON.js"
 
 let logoTex: Texture
 const singleplayerButton = new Button(0, -100, 800, 80, "Singleplayer")
@@ -17,7 +17,7 @@ const createWorldButton = new Button(600, 400, 300, 60, "Create World")
 
 singleplayerButton.on("click", () => {
 	worldButtons = []
-	const worldSaves = YSON.parse(localStorage.getItem("worlds") || "[]")
+	const worldSaves = YSON.parse(localStorage.getItem("worlds") || "[]") as WorldSave[]
 
 	for (let i = 0; i < worldSaves.length; i++) {
 		const worldSave = worldSaves[i]
@@ -49,7 +49,7 @@ optionsButton.on("click", () => {
 quitButton.on("click", () => {
 	try {
 		window.close()
-	} catch (e) {
+	} catch (ignore) {
 		location.href = "about:blank"
 	}
 })

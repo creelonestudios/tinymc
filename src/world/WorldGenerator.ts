@@ -1,7 +1,7 @@
 import Block from "../block/Block.js"
+import { blockdefs } from "../main.js"
 import { NamespacedId } from "../util/interfaces.js"
 import World from "./World.js"
-import { blockdefs } from "../main.js"
 
 export default class WorldGenerator {
 

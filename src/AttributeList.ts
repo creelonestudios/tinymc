@@ -1,67 +1,44 @@
-import { type ArrayElement, type HasData } from "./util/interfaces"
-import EntityDef from "./defs/EntityDef"
-
-const AttributeNames = [
-	"generic.movement_speed",
-	"generic.jump_strength",
-	"generic.scale",
-	"player.block_interaction_range",
-	"player.entity_interaction_range"
-] as const satisfies `${string}.${string}`[]
-
-export type AttributeName = ArrayElement<typeof AttributeNames>
-
-export type Attribute = {
-	name: AttributeName,
-	base: number
-}
-
-export function isAttribute(data: unknown): data is Attribute {
-	if (typeof data != "object" || data == null) return false
-
-	// @ts-expect-error ts is being stupid here (AttributeNames.includes() should accept any string)
-	if (!("name" in data) || typeof data.name != "string" || !AttributeNames.includes(data.name)) return false
-	if (!("base" in data) || typeof data.base != "number") return false
-
-	return true
-}
+import { type HasData, NamespacedId } from "./util/interfaces.js"
+import { AttributeData } from "./defs/Attribute.js"
+import { attributes } from "./main.js"
+import Entity from "./entity/Entity.js"
+import { isInRangeIncl } from "./util/typecheck.js"
 
 export default class AttributeList implements HasData {
 
-	private def: EntityDef
-	private list: Map<AttributeName, number>
+	private list: Map<NamespacedId, number>
+	private entity: Entity
 
-	constructor(def: EntityDef) {
-		this.def = def
+	constructor(entity: Entity) {
 		this.list = new Map()
+		this.entity = entity
 
 		// default
-		def.attributes.forEach(attr => {
-			this.list.set(attr.name, attr.base)
-		})
-	}
-
-	get(name: AttributeName, defaultValue?: number) {
-		return this.list.get(name) || defaultValue
-	}
-
-	set(name: AttributeName, base: number) {
-		let allowed = false
-		for (const attr of this.def.attributes) {
-			if (attr.name == name) {
-				allowed = true
-
-				break
-			}
+		for (const attr of attributes.values()) {
+			this.list.set(attr.id, entity.def.attributes.get(attr.id) || attr.base)
 		}
-
-		if (!allowed) return // TODO: error
-
-		this.list.set(name, base)
 	}
 
-	getData(): Attribute[] {
-		return Array.from(this.list).map(e => ({ name: e[0], base: e[1] }))
+	get(id: NamespacedId): number {
+		if (!attributes.exists(id)) throw new Error(`Unknown attribute: ${id}`)
+
+		return this.list.get(id) || this.entity.def.attributes.get(id) || attributes.get(id)!.base
+	}
+
+	set(id: NamespacedId, base: number) {
+		if (!attributes.exists(id)) throw new Error(`Unknown attribute: ${id}`)
+
+		const attr = attributes.get(id)!
+
+		if (isInRangeIncl(attr.min, attr.max)(base)) {
+			this.list.set(id, base)
+
+			return
+		}
+	}
+
+	getData(): AttributeData[] {
+		return Array.from(this.list).map(e => ({ id: e[0], base: e[1] }))
 	}
 
 }

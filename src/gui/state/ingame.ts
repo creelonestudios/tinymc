@@ -1,8 +1,8 @@
 import Block, { BlockData } from "../../block/Block.js"
-import Entity, { EntityData } from "../../entity/Entity.js"
-import ItemEntity, { ItemEntityData, isItemEntityData } from "../../entity/ItemEntity.js"
-import Player, { PlayerData } from "../../entity/Player.js"
 import { blockdefs, cursors, debug, game, input, menuState } from "../../main.js"
+import Entity, { EntityData } from "../../entity/Entity.js"
+import ItemEntity, { isItemEntityData, ItemEntityData } from "../../entity/ItemEntity.js"
+import Player, { PlayerData } from "../../entity/Player.js"
 import Cam from "../../Cam.js"
 import Container from "../../util/Container.js"
 import ContainerBlock from "../../block/ContainerBlock.js"
@@ -56,7 +56,7 @@ export function loadWorld(newWorld: World, playerData: PlayerData) {
 export function tick() {
 	if (input.keyPressed("Space")) {
 		if (player.inFluid) player.motion.y = Entity.TERMINAL_FLUID_VELOCITY
-		else if (player.onGround) player.motion.y = player.attributes.get("generic.jump_strength", 0.35)!
+		else if (player.onGround) player.motion.y = player.attributes.get("tiny:jump_strength")
 	}
 
 	player.motion.x = (Number(input.keyPressed("KeyD")) - Number(input.keyPressed("KeyA"))) * 0.15
@@ -169,7 +169,7 @@ function drawGame() {
 
 	// distance and player range (debug)
 	if (debug.showDebugScreen && debug.showRange) {
-		const range  = (player.attributes.get("player.block_interaction_range", 0)!) * blockSize
+		const range  = (player.attributes.get("tiny:block_interaction_range")) * blockSize
 
 		og.lineWidth = 2
 		og.strokeStyle = "white"
@@ -333,7 +333,7 @@ export function onMouseMove() {
 
 	for (const item of items) {
 		if (item.getBoundingBox().touch(mouse)) {
-			const reachable = item.position.distanceTo(player.position) <= player.attributes.get("player.entity_interaction_range")!
+			const reachable = item.position.distanceTo(player.position) <= player.attributes.get("tiny:entity_interaction_range")
 
 			if (!reachable) continue
 
@@ -359,7 +359,7 @@ export function getMousePos() {
 function isBlockReachable(pos: Dim2) {
 	return pos.copy().add(new Dim2(0.5, 0.5))
 		.distanceTo(player.position.copy()
-			.add(new Dim2(0, player.eyeHeight))) <= player.attributes.get("player.block_interaction_range", 0)!
+			.add(new Dim2(0, player.eyeHeight))) <= player.attributes.get("tiny:block_interaction_range")
 }
 
 function drawCrosshair(g: Graphics, size: number, color: string) {

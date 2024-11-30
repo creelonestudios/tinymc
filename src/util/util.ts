@@ -5,3 +5,9 @@ export function $<T extends Element>(q: string): T {
 
 	return elem
 }
+
+export function recordToMap<K extends string | number | symbol, V>(record: Record<K, V>): Map<K, V> {
+	const arr = Object.entries(record) as [K, V][]
+
+	return new Map<K, V>(arr)
+}

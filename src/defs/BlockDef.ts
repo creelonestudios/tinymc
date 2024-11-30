@@ -1,12 +1,12 @@
 import { equalsAny, isIntInRange, isObject, isPosInt, validateArray, validateProperty } from "../util/typecheck.js"
-import Base from "./Base.js"
 import { type Flatten } from "../util/interfaces.js"
+import { getSound } from "../main.js"
 import LightColor from "../util/LightColor.js"
 import Sound from "../sound/Sound.js"
+import TexturedResource from "./TexturedResource.js"
 import TinyError from "../TinyError.js"
-import { getSound } from "../main.js"
 
-export default class BlockDef extends Base {
+export default class BlockDef extends TexturedResource {
 
 	readonly type: "block" | "fluid" | "container"
 	readonly maxItemStack: number
@@ -86,7 +86,7 @@ type BlockDefData = Flatten<{
 }))>
 
 function validate(data: unknown): data is BlockDefData {
-	if (!isObject(data)) throw new Error(`expected an object but got${data}`)
+	if (!isObject(data)) throw new Error(`expected an object but got ${data}`)
 
 	const allowedTypes = ["block", "fluid", "container"]
 

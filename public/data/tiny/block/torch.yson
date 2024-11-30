@@ -1,0 +1,5 @@
+{
+	full: false,
+	light: [15, 13, 0],
+	soundMaterial: "wood"
+}

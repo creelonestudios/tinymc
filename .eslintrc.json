@@ -91,7 +91,7 @@
 		"no-caller":                  "error",
 		"no-case-declarations":       "error",
 		"no-confusing-arrow":        ["error", {"allowParens": true, "onlyOneSimpleParam": true}],
-		"no-console":                ["error", {"allow": ["table", "group", "groupEnd", "dir", "warn", "debug"]}],
+		"no-console":                ["error", {"allow": ["error", "warn", "debug"]}],
 		"no-continue":                "off",
 		"no-delete-var":              "error",
 		"no-div-regex":               "warn",
@@ -194,7 +194,7 @@
 		"require-await":              "warn",
 		"require-unicode-regexp":     "off",
 		"require-yield":              "warn",
-		"sort-imports":               "warn",
+		"sort-imports":              ["warn", {"ignoreCase": true}],
 		"sort-keys":                  "off",
 		"sort-vars":                  "warn",
 		"spaced-comment":            ["warn", "always"],
@@ -294,6 +294,18 @@
 		"wrap-regex":                    "warn",
 		"yield-star-spacing":           ["warn", "after"],
 
-		"@typescript-eslint/no-empty-function": "off"
+		"@typescript-eslint/no-empty-function": "off",
+		"@typescript-eslint/no-unused-vars": [
+			"error",
+			{
+				"args": "all",
+				"argsIgnorePattern": "_",
+				"caughtErrors": "all",
+				"caughtErrorsIgnorePattern": "ignore",
+				"destructuredArrayIgnorePattern": "_",
+				"varsIgnorePattern": "_",
+				"ignoreRestSiblings": true
+			}
+		]
     }
 }
