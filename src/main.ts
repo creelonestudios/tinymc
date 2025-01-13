@@ -2,7 +2,7 @@ import * as gameMenuState from "./gui/state/gameMenu.js"
 import * as ingameMenuState from "./gui/state/ingameMenu.js"
 import * as ingameState from "./gui/state/ingame.js"
 import { createRegistries, Registry } from "./Registry.js"
-import { isObject, validateArray, validateProperty, validateRecord } from "./util/typecheck.js"
+import { isObject, safeValidateArray, safeValidateProperty, validateRecord } from "./util/typecheck.js"
 import World, { WorldSave } from "./world/World.js"
 import { $ } from "./util/util.js"
 import Attribute from "./defs/Attribute.js"
@@ -39,14 +39,14 @@ const textures: Map<string, Texture> = new Map()
 
 export const cursors = { openContainer: getTexture("tiny/textures/gui/cursors/open_container.png") } satisfies Record<string, Texture>
 export const soundList: Record<string, SoundDef> = await fetch("./assets/tiny/sounds.json").then(res => res.json())
-validateRecord( // should capture Record<string, SoundDef>
+;(validateRecord( // should capture Record<string, SoundDef>
 	"string",
-	(value): value is object => isObject(value) && validateProperty(
+	(value): value is object => isObject(value) && safeValidateProperty(
 		value,
 		"sounds",
-		validateArray((e): e is unknown => typeof e == "string" || (isObject(e) && validateProperty(e, "name", "string")))
+		safeValidateArray((e): e is unknown => typeof e == "string" || (isObject(e) && safeValidateProperty(e, "name", "string")))
 	)
-)(soundList)
+)(soundList))
 const audioFiles: Map<string, AudioFile> = new Map()
 const sounds: Map<string, Sound> = new Map()
 

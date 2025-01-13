@@ -1,11 +1,10 @@
-import { equalsAny, isIntInRange, isObject, isPosInt, validateArray, validateProperty } from "../util/typecheck.js"
+import { assertObject, equalsAny, isIntInRange, isPosInt, safeValidateArray, validateProperty } from "../util/typecheck.js"
 import { type Flatten, NamespacedId } from "../util/interfaces.js"
 import { getSound } from "../main.js"
 import LightColor from "../util/LightColor.js"
 import Sound from "../sound/Sound.js"
 import TexturedResource from "./TexturedResource.js"
 import TinyError from "../TinyError.js"
-import YSON from "https://j0code.github.io/yson/YSON.js"
 
 export default class BlockDef extends TexturedResource {
 
@@ -25,7 +24,7 @@ export default class BlockDef extends TexturedResource {
 	constructor(id: NamespacedId, data: unknown) {
 		super(id)
 		try {
-			if (!validate(data)) throw new Error(`Invalid blockdef for ${id}: ${YSON.stringify(data)}`)
+			validate(data)
 		} catch (e) {
 			// @ts-expect-error e should be an Error
 			throw new TinyError(`Invalid blockdef for ${id}`, e)
@@ -86,15 +85,12 @@ type BlockDefData = Flatten<{
 	inventoryColumns: number
 }))>
 
-function validate(data: unknown): data is BlockDefData {
-	if (!isObject(data)) throw new Error(`expected an object but got ${data}`)
+function validate(data: unknown): asserts data is BlockDefData {
+	assertObject(data)
 
 	const allowedTypes = ["block", "fluid", "container"]
 
-	if (!validateProperty<BlockDefData["type"], "type">(data, "type", x => equalsAny(allowedTypes, x), "block")) {
-		return false
-	}
-
+	validateProperty<BlockDefData["type"], "type">(data, "type", x => equalsAny(allowedTypes, x), "block")
 	validateProperty(data, "maxItemStack", isPosInt, 128)
 	validateProperty(data, "soundMaterial", "string", "grass")
 
@@ -103,13 +99,11 @@ function validate(data: unknown): data is BlockDefData {
 	}
 
 	if (data.type == "block") {
-		validateProperty(data, "light", validateArray(isIntInRange(0, 16)), [0, 0, 0])
+		validateProperty(data, "light", safeValidateArray(isIntInRange(0, 16)), [0, 0, 0])
 	}
 
 	if (data.type == "container") {
 		validateProperty(data, "inventorySlots", isPosInt, 27)
 		validateProperty(data, "inventoryColumns", isPosInt, 9)
 	}
-
-	return true
 }

@@ -1,8 +1,7 @@
-import { isInRangeIncl, isObject, validateProperty } from "../util/typecheck.js"
+import { assertObject, isInRangeIncl, validateProperty } from "../util/typecheck.js"
 import { NamespacedId } from "../util/interfaces.js"
 import Resource from "./Resource.js"
 import TinyError from "../TinyError.js"
-import YSON from "https://j0code.github.io/yson/YSON.js"
 
 export default class Attribute extends Resource {
 
@@ -13,7 +12,7 @@ export default class Attribute extends Resource {
 	constructor(id: NamespacedId, data: unknown) {
 		super(id)
 		try {
-			if (!isAttributeDef(data)) throw new Error(`Invalid attribute ${id}: ${YSON.stringify(data)}`)
+			isAttributeDef(data)
 		} catch (e) {
 			// @ts-expect-error e should be an Error
 			throw new TinyError(`Invalid attribute ${id}`, e)
@@ -35,21 +34,16 @@ export type AttributeDefData = AttributeData & {
 	max: number
 }
 
-export function isAttribute(data: unknown): data is AttributeData {
-	if (!isObject(data)) throw new Error(`expected an object but got ${data}`)
+export function isAttribute(data: unknown): asserts data is AttributeData {
+	assertObject(data)
 
 	validateProperty(data, "base", "number")
-
-	return true
 }
 
-export function isAttributeDef(data: unknown): data is AttributeDefData {
-	if (!isAttribute(data)) return false
+export function isAttributeDef(data: unknown): asserts data is AttributeDefData {
+	isAttribute(data)
 
-	if (!validateProperty(data, "min",  "number", 0)) return false
-	if (!validateProperty(data, "max",  "number", 1)) return false
-
+	validateProperty(data, "min",  "number", 0)
+	validateProperty(data, "max",  "number", 1)
 	validateProperty(data, "base", isInRangeIncl(Number(data.min), Number(data.max)), Number(data.min))
-
-	return true
 }

@@ -13,6 +13,7 @@ export default class Chat {
 
 	constructor() {
 		this.open = false
+		this.block = true
 		this.history = []
 		this.input = ""
 	}
