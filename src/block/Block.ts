@@ -102,7 +102,6 @@ export default class Block implements HasData {
 		this.light.block = updateBlockLight(world, this, x, y, z, this.light.block)
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	draw(g: Graphics, world: World, x: number, y: number, z: number) {
 		let light = this.lightColor(world)
 		if (z < 0) light = light.scale(12)
@@ -158,6 +157,8 @@ export type BlockData = Flatten<BaseData & {
 
 function updateSkyLight(world: World, block: Block, x: number, y: number, z: number, skyLightBefore: number) {
 	const derivLight = []
+
+	// eslint-disable-next-line no-useless-assignment
 	let skyLight: number = skyLightBefore
 
 	// from above

@@ -74,7 +74,7 @@ export function validateArray<T>(check?: TypeCheck<T>): (arr: unknown, path?: st
 
 		for (let i = 0; i < arr.length; i++) {
 			if (typeof check == "function") {
-				if (!check(arr[i], `${path}[${i}]`)) throw new Error(`${path}[${i}] is invalid ${YSON.stringify(arr[i])}`)
+				if (!check(arr[i], `${path}[${i}]`)) throw new Error(`${path}[${i}] is invalid: ${YSON.stringify(arr[i])}`)
 			} else if (typeof arr[i] != check) {
 				throw new Error(`Expected a ${check} at ${path}[${i}] but got ${YSON.stringify(arr[i])}`)
 			}
@@ -105,7 +105,7 @@ export function validateRecord<K extends string | number | symbol, V>(
 		if (!isObject(rec)) throw new Error(`Expected a Record at ${path} but got ${YSON.stringify(rec)}`)
 		if (!keyCheck && !valueCheck) return
 
-		for (const k in Object.values(rec)) {
+		for (const k of Object.keys(rec)) {
 			// @ts-expect-error k can be used to index rec (see for loop)
 			const v = rec[k]
 
@@ -119,7 +119,7 @@ export function validateRecord<K extends string | number | symbol, V>(
 
 			if (valueCheck) {
 				if (typeof valueCheck == "function") {
-					if (!valueCheck(v, `${path}.${k}`)) throw new Error(`${path}.${k} is invalid ${YSON.stringify(v)}`)
+					if (!valueCheck(v, `${path}.${k}`)) throw new Error(`${path}.${k} is invalid: ${YSON.stringify(v)}`)
 				} else if (typeof v != valueCheck) {
 					throw new Error(`Expected a ${valueCheck} at ${path}.${k} but got ${YSON.stringify(v)}`)
 				}

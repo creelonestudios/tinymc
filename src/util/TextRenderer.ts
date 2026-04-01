@@ -2,6 +2,7 @@ const SHADOW_BRIGHTNESS = "0.314"
 
 export default class TextRenderer {
 
+	// eslint-disable-next-line complexity
 	static drawText(ctx: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, text: string, x: number = 0, y: number = 0, options?: TextRenderingOptions) {
 		const {
 			color = ctx.fillStyle || "white",
